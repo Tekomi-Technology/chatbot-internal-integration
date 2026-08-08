@@ -1,0 +1,145 @@
+// Schema cho Dashboard quản trị chatbot đa tenant.
+// Xem docs/prompt.md mục 4 để đối chiếu thiết kế gốc.
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+/// Tài khoản quản trị dashboard. Phase 1 chỉ có 1 loại tài khoản, không phân quyền.
+model Admin {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  name         String?
+  passwordHash String   @map("password_hash")
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  @@map("admins")
+}
+
+enum TenantStatus {
+  ACTIVE
+  INACTIVE
+
+  @@map("tenant_status")
+}
+
+/// Một đơn vị/công ty sử dụng chatbot. Mỗi tenant map tới đúng 1 app bên Dify.ai.
+model Tenant {
+  id     String       @id @default(cuid())
+  name   String
+  slug   String       @unique
+  status TenantStatus @default(ACTIVE)
+
+  difyAppId String @map("dify_app_id")
+  /// Ciphertext AES-256-GCM, không bao giờ lưu plaintext. Xem src/lib/crypto.ts.
+  difyApiKeyEncrypted String @map("dify_api_key_encrypted")
+  /// Override base URL cho bản Dify self-hosted của riêng tenant. Null = dùng DIFY_API_BASE_URL.
+  difyApiBaseUrl      String? @map("dify_api_base_url")
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  apiKeys      ApiKey[]
+  domains      DomainWhitelist[]
+  widgetConfig WidgetConfig?
+  logs         ConversationLog[]
+
+  @@map("tenants")
+}
+
+enum ApiKeyType {
+  PUBLIC
+  ADMIN
+
+  @@map("api_key_type")
+}
+
+/// Key public phát cho widget nhúng trên site của tenant.
+model ApiKey {
+  id       String @id @default(cuid())
+  tenantId String @map("tenant_id")
+  tenant   Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  keyValue String     @unique @map("key_value")
+  label    String?
+  type     ApiKeyType @default(PUBLIC)
+  isActive Boolean    @default(true) @map("is_active")
+
+  lastUsedAt DateTime? @map("last_used_at")
+  createdAt  DateTime  @default(now()) @map("created_at")
+  revokedAt  DateTime? @map("revoked_at")
+
+  @@index([tenantId])
+  @@map("api_keys")
+}
+
+/// Domain được phép gọi /api/widget/chat bằng key của tenant này.
+model DomainWhitelist {
+  id       String @id @default(cuid())
+  tenantId String @map("tenant_id")
+  tenant   Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  /// Hostname đã chuẩn hoá, lowercase, không scheme/port. Hỗ trợ wildcard "*.example.com".
+  domain    String
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@unique([tenantId, domain])
+  @@index([tenantId])
+  @@map("domain_whitelists")
+}
+
+enum WidgetMode {
+  BUBBLE
+  INLINE
+
+  @@map("widget_mode")
+}
+
+enum WidgetPosition {
+  BOTTOM_RIGHT
+  BOTTOM_LEFT
+
+  @@map("widget_position")
+}
+
+model WidgetConfig {
+  id       String @id @default(cuid())
+  tenantId String @unique @map("tenant_id")
+  tenant   Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  mode           WidgetMode     @default(BUBBLE)
+  botName        String         @default("Trợ lý AI") @map("bot_name")
+  logoUrl        String?        @map("logo_url")
+  primaryColor   String         @default("#4F46E5") @map("primary_color")
+  welcomeMessage String         @default("Xin chào! Tôi có thể giúp gì cho bạn?") @map("welcome_message")
+  inputPlaceholder String       @default("Nhập câu hỏi của bạn...") @map("input_placeholder")
+  position       WidgetPosition @default(BOTTOM_RIGHT)
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("widget_configs")
+}
+
+/// Phase 2. Chỉ ghi khi ENABLE_CONVERSATION_LOG=true; chưa có UI đọc.
+model ConversationLog {
+  id       String @id @default(cuid())
+  tenantId String @map("tenant_id")
+  tenant   Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  sessionId       String  @map("session_id")
+  difyConversationId String? @map("dify_conversation_id")
+  requestPayload  Json    @map("request_payload")
+  responsePayload Json    @map("response_payload")
+  latencyMs       Int?    @map("latency_ms")
+  createdAt       DateTime @default(now()) @map("created_at")
+
+  @@index([tenantId, createdAt])
+  @@map("conversation_logs")
+}
