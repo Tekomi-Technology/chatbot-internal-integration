@@ -1,0 +1,83 @@
+name: chatbot-internal-integration
+
+x-env-file: &env-file
+  - path: .env
+    required: false
+
+x-db-url: &db-url
+  DATABASE_URL: ${DATABASE_URL_DOCKER:-postgresql://${POSTGRES_USER:-chatbot}:${POSTGRES_PASSWORD:-chatbot}@db:5432/${POSTGRES_DB:-chatbot_dashboard}?schema=public}
+
+services:
+  db:
+    image: postgres:17-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-chatbot}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-chatbot}
+      POSTGRES_DB: ${POSTGRES_DB:-chatbot_dashboard}
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "pg_isready -U ${POSTGRES_USER:-chatbot} -d ${POSTGRES_DB:-chatbot_dashboard}",
+        ]
+      interval: 5s
+      timeout: 5s
+      retries: 12
+
+  migrate:
+    profiles: ["app"]
+    build:
+      context: .
+      target: migrator
+    restart: "no"
+    env_file: *env-file
+    environment: *db-url
+    depends_on:
+      db:
+        condition: service_healthy
+
+  seed:
+    profiles: ["seed"]
+    build:
+      context: .
+      target: migrator
+    restart: "no"
+    command: ["npm", "run", "db:seed"]
+    env_file: *env-file
+    environment: *db-url
+    depends_on:
+      db:
+        condition: service_healthy
+
+  app:
+    profiles: ["app"]
+    build:
+      context: .
+      target: runner
+    restart: unless-stopped
+    ports:
+      - "${APP_PORT:-3000}:3000"
+    env_file: *env-file
+    environment:
+      <<: *db-url
+      APP_URL: ${APP_URL:-http://localhost:3000}
+      AUTH_TRUST_HOST: "true"
+    depends_on:
+      db:
+        condition: service_healthy
+      migrate:
+        condition: service_completed_successfully
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q --spider http://127.0.0.1:3000/login || exit 1"]
+      interval: 15s
+      timeout: 5s
+      start_period: 20s
+      retries: 5
+
+volumes:
+  postgres-data:

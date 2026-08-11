@@ -79,6 +79,44 @@ openssl rand -hex 32      # -> ENCRYPTION_KEY (bắt buộc 32 byte)
 `APP_URL` cố tình **không** dùng tiền tố `NEXT_PUBLIC_`: biến có tiền tố đó bị
 Next.js thay bằng hằng số lúc build, đổi origin sẽ phải build lại.
 
+## Docker
+
+`docker-compose.yml` có hai chế độ.
+
+**1. Chỉ Postgres** (dev hằng ngày — app vẫn chạy `npm run dev` ở host):
+
+```bash
+docker compose up -d db
+# DATABASE_URL="postgresql://chatbot:chatbot@localhost:5432/chatbot_dashboard?schema=public"
+npm run db:deploy && npm run db:seed
+```
+
+**2. Cả stack trong container**:
+
+```bash
+docker compose --profile app up -d --build   # db -> migrate -> app (http://localhost:3000)
+docker compose up seed --build               # tạo admin, chạy một lần
+docker compose --profile app logs -f app
+docker compose --profile app down            # thêm -v nếu muốn xoá luôn dữ liệu DB
+```
+
+Service `migrate` chạy `prisma migrate deploy` rồi thoát; `app` chỉ khởi động sau
+khi migrate exit 0. Cả hai đọc `.env` qua `env_file`, riêng `DATABASE_URL` bị ghi
+đè để trỏ tới host `db` trong mạng compose. `AUTH_SECRET`, `ENCRYPTION_KEY`,
+`DIFY_API_BASE_URL` vẫn phải có trong `.env`.
+
+Biến điều chỉnh compose (đặt ở shell hoặc `.env`):
+
+| Biến | Mặc định | Ý nghĩa |
+|---|---|---|
+| `POSTGRES_USER` / `POSTGRES_PASSWORD` / `POSTGRES_DB` | `chatbot` / `chatbot` / `chatbot_dashboard` | Thông tin DB trong container |
+| `POSTGRES_PORT` | `5432` | Cổng host map vào Postgres — đổi nếu máy đã có Postgres |
+| `APP_PORT` | `3000` | Cổng host map vào app |
+| `DATABASE_URL_DOCKER` | tự sinh từ các biến trên | Ghi đè hẳn chuỗi kết nối dùng trong container |
+
+Image dùng `output: "standalone"` (khai báo trong `next.config.ts`) nên bắt buộc
+giữ config đó khi build Docker.
+
 ## Quy trình onboard một tenant
 
 1. **Tạo tenant** — nhập tên, `dify_app_id`, `dify_api_key`. Hệ thống tự sinh sẵn
