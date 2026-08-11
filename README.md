@@ -79,43 +79,90 @@ openssl rand -hex 32      # -> ENCRYPTION_KEY (bắt buộc 32 byte)
 `APP_URL` cố tình **không** dùng tiền tố `NEXT_PUBLIC_`: biến có tiền tố đó bị
 Next.js thay bằng hằng số lúc build, đổi origin sẽ phải build lại.
 
-## Docker
+## Deploy lên VPS
 
-`docker-compose.yml` có hai chế độ.
+App chạy trong Docker, **Postgres dùng bản cài sẵn trên host** — `docker-compose.yml`
+không có service `db`. File mẫu nginx và script deploy nằm trong `deploy/`.
 
-**1. Chỉ Postgres** (dev hằng ngày — app vẫn chạy `npm run dev` ở host):
-
-```bash
-docker compose up -d db
-# DATABASE_URL="postgresql://chatbot:chatbot@localhost:5432/chatbot_dashboard?schema=public"
-npm run db:deploy && npm run db:seed
-```
-
-**2. Cả stack trong container**:
+### 1. Tạo database
 
 ```bash
-docker compose --profile app up -d --build   # db -> migrate -> app (http://localhost:3000)
-docker compose up seed --build               # tạo admin, chạy một lần
-docker compose --profile app logs -f app
-docker compose --profile app down            # thêm -v nếu muốn xoá luôn dữ liệu DB
+sudo -u postgres psql -c "CREATE ROLE its LOGIN PASSWORD 'mat_khau';"
+sudo -u postgres psql -c "CREATE DATABASE chatbot_internal OWNER its ENCODING 'UTF8' TEMPLATE template0;"
 ```
 
-Service `migrate` chạy `prisma migrate deploy` rồi thoát; `app` chỉ khởi động sau
-khi migrate exit 0. Cả hai đọc `.env` qua `env_file`, riêng `DATABASE_URL` bị ghi
-đè để trỏ tới host `db` trong mạng compose. `AUTH_SECRET`, `ENCRYPTION_KEY`,
-`DIFY_API_BASE_URL` vẫn phải có trong `.env`.
+DB **phải** do chính role của app làm owner: từ PostgreSQL 15, schema `public` không
+còn cấp `CREATE` cho `PUBLIC`, nên nếu owner là `postgres` thì `prisma migrate deploy`
+sẽ fail với `permission denied for schema public`.
 
-Biến điều chỉnh compose (đặt ở shell hoặc `.env`):
+### 2. Cho container kết nối vào Postgres của host
 
-| Biến | Mặc định | Ý nghĩa |
-|---|---|---|
-| `POSTGRES_USER` / `POSTGRES_PASSWORD` / `POSTGRES_DB` | `chatbot` / `chatbot` / `chatbot_dashboard` | Thông tin DB trong container |
-| `POSTGRES_PORT` | `5432` | Cổng host map vào Postgres — đổi nếu máy đã có Postgres |
-| `APP_PORT` | `3000` | Cổng host map vào app |
-| `DATABASE_URL_DOCKER` | tự sinh từ các biến trên | Ghi đè hẳn chuỗi kết nối dùng trong container |
+Mặc định Postgres chỉ nghe `localhost` nên container không vào được. Mở thêm cho
+subnet bridge của Docker:
 
-Image dùng `output: "standalone"` (khai báo trong `next.config.ts`) nên bắt buộc
-giữ config đó khi build Docker.
+```conf
+# /etc/postgresql/15/main/postgresql.conf
+listen_addresses = 'localhost,172.17.0.1'
+
+# /etc/postgresql/15/main/pg_hba.conf
+host  chatbot_internal  its  172.16.0.0/12  scram-sha-256
+```
+
+```bash
+sudo systemctl reload postgresql
+```
+
+Không mở port 5432 ra ngoài internet — chỉ subnet nội bộ của Docker.
+
+### 3. Cấu hình và khởi động
+
+```bash
+git clone <repo> ~/chatbot-internal-integration && cd ~/chatbot-internal-integration
+cp .env.example .env
+```
+
+Trong container, `localhost` là chính container đó, nên `DATABASE_URL` phải trỏ tới
+`host.docker.internal` (compose đã map sẵn sang gateway của host):
+
+```
+DATABASE_URL="postgresql://its:mat_khau@host.docker.internal:5432/chatbot_internal?schema=public"
+APP_URL="https://ten-mien-that"
+AUTH_TRUST_HOST="true"
+```
+
+Mật khẩu có ký tự đặc biệt (`@ : / ? # %`) phải URL-encode — `@` thành `%40`.
+
+```bash
+docker compose up -d --build                     # migrate chạy trước, xong mới start app
+docker compose run --rm migrate npm run db:seed  # tạo admin, chạy tay một lần
+docker compose logs -f app
+```
+
+App publish ra `5679` trên host, nginx proxy vào đó:
+
+```bash
+sudo cp deploy/nginx.conf /etc/nginx/sites-available/chatbot
+sudo ln -s /etc/nginx/sites-available/chatbot /etc/nginx/sites-enabled/
+sudo nginx -t && sudo systemctl reload nginx
+sudo certbot --nginx -d ten-mien-that
+```
+
+`APP_URL` phải là origin thật vì mã nhúng widget sinh từ biến này.
+
+### Các lần sau
+
+```bash
+./deploy/deploy.sh     # git pull -> build -> migrate -> restart
+```
+
+Service `migrate` chạy `prisma migrate deploy` rồi thoát; `app` có `depends_on:
+service_completed_successfully` nên chỉ start khi migrate exit 0. Không dùng
+`npm run db:migrate` (migrate dev) trên production — nó cần shadow database, đòi
+role có quyền `CREATEDB`.
+
+Image build theo `output: "standalone"` khai báo trong `next.config.ts`, phải giữ
+config đó. App publish ra cổng `5679` của host; đổi cổng thì sửa vế trái của
+`ports` trong `docker-compose.yml`, vế phải giữ nguyên `3000`.
 
 ## Quy trình onboard một tenant
 
