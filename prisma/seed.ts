@@ -13,9 +13,11 @@ const prisma = new PrismaClient({
 });
 
 async function main() {
-  const email = (process.env.SEED_ADMIN_EMAIL ?? "admin@example.com").toLowerCase();
+  // Dùng `||` chứ không phải `??`: copy nguyên .env.example sẽ cho chuỗi rỗng,
+  // mà chuỗi rỗng phải rơi về mặc định chứ không được coi là "đã cấu hình".
+  const email = (process.env.SEED_ADMIN_EMAIL || "admin@example.com").toLowerCase();
   const generated = randomBytes(9).toString("base64url");
-  const password = process.env.SEED_ADMIN_PASSWORD ?? generated;
+  const password = process.env.SEED_ADMIN_PASSWORD || generated;
 
   const existing = await prisma.admin.findUnique({ where: { email } });
   if (existing) {
@@ -26,7 +28,7 @@ async function main() {
   await prisma.admin.create({
     data: {
       email,
-      name: process.env.SEED_ADMIN_NAME ?? "Quản trị viên",
+      name: process.env.SEED_ADMIN_NAME || "Quản trị viên",
       passwordHash: await bcrypt.hash(password, 12),
     },
   });

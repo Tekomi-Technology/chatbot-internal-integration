@@ -7,6 +7,7 @@ import { ConfirmActionButton } from "@/components/confirm-action-button";
 import { ApiKeysTab } from "@/components/tenants/api-keys-tab";
 import { EmbedTab } from "@/components/tenants/embed-tab";
 import { GeneralTab } from "@/components/tenants/general-tab";
+import { PluginTab } from "@/components/tenants/plugin-tab";
 import { TenantDetailTabs } from "@/components/tenants/tenant-detail-tabs";
 import { WidgetConfigTab } from "@/components/tenants/widget-config-tab";
 import { Badge } from "@/components/ui/badge";
@@ -53,8 +54,6 @@ export default async function TenantDetailPage({ params }: PageProps) {
 
   if (!tenant) notFound();
 
-  // Giải mã chỉ để hiển thị dạng che (4 ký tự đầu/cuối) — plaintext không rời
-  // khỏi server. Key hỏng (vd đổi ENCRYPTION_KEY) không được làm sập cả trang.
   let difyApiKeyMasked: string;
   try {
     difyApiKeyMasked = maskSecret(decryptSecret(tenant.difyApiKeyEncrypted));
@@ -134,6 +133,7 @@ export default async function TenantDetailPage({ params }: PageProps) {
             action={updateWidgetConfigAction.bind(null, tenant.id)}
           />
         }
+        plugin={<PluginTab />}
         embed={
           <EmbedTab
             apiKey={embedKey ?? null}

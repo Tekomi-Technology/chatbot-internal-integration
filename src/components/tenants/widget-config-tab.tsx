@@ -15,6 +15,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Select } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
+import { WidgetPreview } from "@/components/tenants/widget-preview";
 import { idleState, type ActionState } from "@/server/action-state";
 
 export type WidgetConfigValues = {
@@ -35,160 +36,191 @@ export function WidgetConfigTab({
   action: (prev: ActionState, formData: FormData) => Promise<ActionState>;
 }) {
   const [state, formAction] = useActionState(action, idleState);
-  // Giữ ở state cục bộ để ô color và ô text hex luôn khớp nhau.
-  const [color, setColor] = useState(config.primaryColor);
-  const [mode, setMode] = useState(config.mode);
+
+  // Mọi field ảnh hưởng tới giao diện đều là input kiểm soát, để khung xem trước
+  // bên phải cập nhật ngay theo từng ký tự chứ không phải đợi lưu.
+  const [draft, setDraft] = useState<WidgetConfigValues>({
+    ...config,
+    logoUrl: config.logoUrl ?? "",
+  });
+
+  function set<K extends keyof WidgetConfigValues>(
+    field: K,
+    value: WidgetConfigValues[K],
+  ) {
+    setDraft((current) => ({ ...current, [field]: value }));
+  }
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Cấu hình widget</CardTitle>
-        <CardDescription>
-          Widget đọc cấu hình này mỗi lần tải trang, nên thay đổi có hiệu lực ngay
-          mà tenant không phải dán lại mã nhúng.
-        </CardDescription>
-      </CardHeader>
+    <div className="grid items-start gap-6 xl:grid-cols-[minmax(0,1fr)_minmax(0,26rem)]">
+      <Card>
+        <CardHeader>
+          <CardTitle>Cấu hình widget</CardTitle>
+          <CardDescription>
+            Widget đọc cấu hình này mỗi lần tải trang, nên thay đổi có hiệu lực
+            ngay mà tenant không phải dán lại mã nhúng.
+          </CardDescription>
+        </CardHeader>
 
-      <CardContent>
-        {/* Xem chú thích ở new-tenant-form: remount để giữ giá trị khi lỗi. */}
-        <form
-          key={state.stamp ?? "init"}
-          action={formAction}
-          className="flex max-w-xl flex-col gap-5"
-        >
-          <FormField name="mode" label="Chế độ hiển thị" error={state.errors?.mode}>
-            <Select
-              id="mode"
-              name="mode"
-              value={mode}
-              onChange={(event) =>
-                setMode(event.target.value as WidgetConfigValues["mode"])
-              }
-            >
-              <option value="BUBBLE">Bubble — bong bóng nổi ở góc màn hình</option>
-              <option value="INLINE">Inline — nhúng cố định vào một div</option>
-            </Select>
-          </FormField>
-
-          {mode === "BUBBLE" ? (
-            <FormField
-              name="position"
-              label="Vị trí bong bóng"
-              error={state.errors?.position}
-            >
+        <CardContent>
+          {/* Xem chú thích ở new-tenant-form: remount để giữ giá trị khi lỗi. */}
+          <form
+            key={state.stamp ?? "init"}
+            action={formAction}
+            className="flex max-w-xl flex-col gap-5"
+          >
+            <FormField name="mode" label="Chế độ hiển thị" error={state.errors?.mode}>
               <Select
-                id="position"
-                name="position"
-                defaultValue={state.values?.position ?? config.position}
+                id="mode"
+                name="mode"
+                value={draft.mode}
+                onChange={(event) =>
+                  set("mode", event.target.value as WidgetConfigValues["mode"])
+                }
               >
-                <option value="BOTTOM_RIGHT">Góc dưới bên phải</option>
-                <option value="BOTTOM_LEFT">Góc dưới bên trái</option>
+                <option value="BUBBLE">Bubble — bong bóng nổi ở góc màn hình</option>
+                <option value="INLINE">Inline — nhúng cố định vào một div</option>
               </Select>
             </FormField>
-          ) : (
-            // Mode inline không dùng position, nhưng vẫn phải gửi giá trị để
-            // schema validate được và cấu hình cũ không bị mất.
-            <input
-              type="hidden"
-              name="position"
-              value={state.values?.position ?? config.position}
-            />
-          )}
 
-          <FormField name="botName" label="Tên bot" error={state.errors?.botName}>
-            <Input
-              id="botName"
-              name="botName"
-              defaultValue={state.values?.botName ?? config.botName}
-              required
-            />
-          </FormField>
+            {draft.mode === "BUBBLE" ? (
+              <FormField
+                name="position"
+                label="Vị trí bong bóng"
+                error={state.errors?.position}
+              >
+                <Select
+                  id="position"
+                  name="position"
+                  value={draft.position}
+                  onChange={(event) =>
+                    set(
+                      "position",
+                      event.target.value as WidgetConfigValues["position"],
+                    )
+                  }
+                >
+                  <option value="BOTTOM_RIGHT">Góc dưới bên phải</option>
+                  <option value="BOTTOM_LEFT">Góc dưới bên trái</option>
+                </Select>
+              </FormField>
+            ) : (
+              // Mode inline không dùng position, nhưng vẫn phải gửi giá trị để
+              // schema validate được và cấu hình cũ không bị mất.
+              <input type="hidden" name="position" value={draft.position} />
+            )}
 
-          <FormField
-            name="primaryColor"
-            label="Màu chủ đạo"
-            error={state.errors?.primaryColor}
-          >
-            <div className="flex items-center gap-3">
-              <input
-                type="color"
-                value={color}
-                onChange={(event) => setColor(event.target.value)}
-                className="size-9 cursor-pointer rounded-md border border-input bg-card p-1"
-                aria-label="Chọn màu chủ đạo"
-              />
+            <FormField name="botName" label="Tên bot" error={state.errors?.botName}>
               <Input
-                id="primaryColor"
-                name="primaryColor"
-                value={color}
-                onChange={(event) => setColor(event.target.value)}
-                className="w-32 font-mono"
+                id="botName"
+                name="botName"
+                value={draft.botName}
+                onChange={(event) => set("botName", event.target.value)}
+                required
               />
-            </div>
-          </FormField>
+            </FormField>
 
-          <FormField
-            name="logoUrl"
-            label="Logo URL (tuỳ chọn)"
-            hint="Ảnh vuông, tối thiểu 64×64. Để trống sẽ hiển thị chữ cái đầu của tên bot."
-            error={state.errors?.logoUrl}
-          >
-            <Input
-              id="logoUrl"
-              name="logoUrl"
-              defaultValue={state.values?.logoUrl ?? config.logoUrl ?? ""}
-              placeholder="https://example.com/logo.png"
-            />
-          </FormField>
-
-          <FormField
-            name="welcomeMessage"
-            label="Tin nhắn chào"
-            error={state.errors?.welcomeMessage}
-          >
-            <Textarea
-              id="welcomeMessage"
-              name="welcomeMessage"
-              defaultValue={state.values?.welcomeMessage ?? config.welcomeMessage}
-              required
-            />
-          </FormField>
-
-          <FormField
-            name="inputPlaceholder"
-            label="Placeholder ô nhập"
-            error={state.errors?.inputPlaceholder}
-          >
-            <Input
-              id="inputPlaceholder"
-              name="inputPlaceholder"
-              defaultValue={state.values?.inputPlaceholder ?? config.inputPlaceholder}
-              required
-            />
-          </FormField>
-
-          {state.status !== "idle" && state.message ? (
-            <p
-              className={
-                state.status === "success"
-                  ? "flex items-center gap-2 rounded-md bg-success-muted px-3 py-2 text-sm text-success"
-                  : "flex items-center gap-2 rounded-md bg-destructive-muted px-3 py-2 text-sm text-destructive"
-              }
+            <FormField
+              name="primaryColor"
+              label="Màu chủ đạo"
+              error={state.errors?.primaryColor}
             >
-              {state.status === "success" ? (
-                <CheckCircle2 className="size-4 shrink-0" />
-              ) : (
-                <AlertCircle className="size-4 shrink-0" />
-              )}
-              {state.message}
-            </p>
-          ) : null}
+              <div className="flex items-center gap-3">
+                <input
+                  type="color"
+                  value={draft.primaryColor}
+                  onChange={(event) => set("primaryColor", event.target.value)}
+                  className="size-9 cursor-pointer rounded-md border border-input bg-card p-1"
+                  aria-label="Chọn màu chủ đạo"
+                />
+                <Input
+                  id="primaryColor"
+                  name="primaryColor"
+                  value={draft.primaryColor}
+                  onChange={(event) => set("primaryColor", event.target.value)}
+                  className="w-32 font-mono"
+                />
+              </div>
+            </FormField>
 
-          <div className="flex justify-end">
-            <SubmitButton>Lưu cấu hình</SubmitButton>
-          </div>
-        </form>
-      </CardContent>
-    </Card>
+            <FormField
+              name="logoUrl"
+              label="Logo URL (tuỳ chọn)"
+              hint="Ảnh vuông, tối thiểu 64×64. Để trống sẽ hiển thị chữ cái đầu của tên bot."
+              error={state.errors?.logoUrl}
+            >
+              <Input
+                id="logoUrl"
+                name="logoUrl"
+                value={draft.logoUrl ?? ""}
+                onChange={(event) => set("logoUrl", event.target.value)}
+                placeholder="https://example.com/logo.png"
+              />
+            </FormField>
+
+            <FormField
+              name="welcomeMessage"
+              label="Tin nhắn chào"
+              error={state.errors?.welcomeMessage}
+            >
+              <Textarea
+                id="welcomeMessage"
+                name="welcomeMessage"
+                value={draft.welcomeMessage}
+                onChange={(event) => set("welcomeMessage", event.target.value)}
+                required
+              />
+            </FormField>
+
+            <FormField
+              name="inputPlaceholder"
+              label="Placeholder ô nhập"
+              error={state.errors?.inputPlaceholder}
+            >
+              <Input
+                id="inputPlaceholder"
+                name="inputPlaceholder"
+                value={draft.inputPlaceholder}
+                onChange={(event) => set("inputPlaceholder", event.target.value)}
+                required
+              />
+            </FormField>
+
+            {state.status !== "idle" && state.message ? (
+              <p
+                className={
+                  state.status === "success"
+                    ? "flex items-center gap-2 rounded-md bg-success-muted px-3 py-2 text-sm text-success"
+                    : "flex items-center gap-2 rounded-md bg-destructive-muted px-3 py-2 text-sm text-destructive"
+                }
+              >
+                {state.status === "success" ? (
+                  <CheckCircle2 className="size-4 shrink-0" />
+                ) : (
+                  <AlertCircle className="size-4 shrink-0" />
+                )}
+                {state.message}
+              </p>
+            ) : null}
+
+            <div className="flex justify-end">
+              <SubmitButton>Lưu cấu hình</SubmitButton>
+            </div>
+          </form>
+        </CardContent>
+      </Card>
+
+      <Card className="xl:sticky xl:top-6">
+        <CardHeader>
+          <CardTitle>Xem trước</CardTitle>
+          <CardDescription>
+            Cập nhật ngay theo cấu hình đang nhập, kể cả khi chưa bấm lưu.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <WidgetPreview config={draft} />
+        </CardContent>
+      </Card>
+    </div>
   );
 }
