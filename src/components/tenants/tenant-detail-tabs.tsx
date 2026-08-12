@@ -10,12 +10,14 @@ export function TenantDetailTabs({
   general,
   apiKeys,
   widget,
+  meta,
   plugin,
   embed,
 }: {
   general: React.ReactNode;
   apiKeys: React.ReactNode;
   widget: React.ReactNode;
+  meta: React.ReactNode;
   plugin: React.ReactNode;
   embed: React.ReactNode;
 }) {
@@ -25,6 +27,7 @@ export function TenantDetailTabs({
         <TabsTrigger value="general">Thông tin</TabsTrigger>
         <TabsTrigger value="api-keys">API key & Domain</TabsTrigger>
         <TabsTrigger value="widget">Cấu hình widget</TabsTrigger>
+        <TabsTrigger value="meta">Meta</TabsTrigger>
         <TabsTrigger value="plugin">Plugin</TabsTrigger>
         <TabsTrigger value="embed">Mã nhúng</TabsTrigger>
       </TabsList>
@@ -32,6 +35,7 @@ export function TenantDetailTabs({
       <TabsContent value="general">{general}</TabsContent>
       <TabsContent value="api-keys">{apiKeys}</TabsContent>
       <TabsContent value="widget">{widget}</TabsContent>
+      <TabsContent value="meta">{meta}</TabsContent>
       <TabsContent value="plugin">{plugin}</TabsContent>
       <TabsContent value="embed">{embed}</TabsContent>
     </Tabs>

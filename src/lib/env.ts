@@ -45,6 +45,20 @@ export const env = {
   get enableConversationLog() {
     return process.env.ENABLE_CONVERSATION_LOG === "true";
   },
+  /**
+   * Cấu hình Meta App dùng chung cho mọi tenant.
+   *
+   * Cố tình trả `null` thay vì throw khi thiếu: tab Meta trên dashboard cần đọc
+   * verify token để hiển thị, và nếu thiếu env thì phải hiện cảnh báo chứ không
+   * được làm sập cả trang tenant.
+   */
+  get messenger() {
+    return {
+      verifyToken: process.env.MESSENGER_VERIFY_TOKEN?.trim() || null,
+      appSecret: process.env.MESSENGER_APP_SECRET?.trim() || null,
+      graphApiVersion: process.env.MESSENGER_API_VERSION?.trim() || "v21.0",
+    };
+  },
   get widgetRateLimit() {
     return {
       /** Số request tối đa cho mỗi cửa sổ. */

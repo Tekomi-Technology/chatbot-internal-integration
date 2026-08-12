@@ -45,7 +45,6 @@ export function GeneralTab({
       </CardHeader>
 
       <CardContent>
-        {/* Xem chú thích ở new-tenant-form: remount để giữ giá trị khi lỗi. */}
         <form
           key={state.stamp ?? "init"}
           action={formAction}

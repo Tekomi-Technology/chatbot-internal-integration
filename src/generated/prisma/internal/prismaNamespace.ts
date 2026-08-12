@@ -402,7 +402,9 @@ export const ModelName = {
   ApiKey: 'ApiKey',
   DomainWhitelist: 'DomainWhitelist',
   WidgetConfig: 'WidgetConfig',
-  ConversationLog: 'ConversationLog'
+  ConversationLog: 'ConversationLog',
+  MessengerChannel: 'MessengerChannel',
+  MessengerConversation: 'MessengerConversation'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -418,7 +420,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "admin" | "tenant" | "apiKey" | "domainWhitelist" | "widgetConfig" | "conversationLog"
+    modelProps: "admin" | "tenant" | "apiKey" | "domainWhitelist" | "widgetConfig" | "conversationLog" | "messengerChannel" | "messengerConversation"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -866,6 +868,154 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    MessengerChannel: {
+      payload: Prisma.$MessengerChannelPayload<ExtArgs>
+      fields: Prisma.MessengerChannelFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.MessengerChannelFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MessengerChannelPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.MessengerChannelFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MessengerChannelPayload>
+        }
+        findFirst: {
+          args: Prisma.MessengerChannelFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MessengerChannelPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.MessengerChannelFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MessengerChannelPayload>
+        }
+        findMany: {
+          args: Prisma.MessengerChannelFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MessengerChannelPayload>[]
+        }
+        create: {
+          args: Prisma.MessengerChannelCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MessengerChannelPayload>
+        }
+        createMany: {
+          args: Prisma.MessengerChannelCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.MessengerChannelCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MessengerChannelPayload>[]
+        }
+        delete: {
+          args: Prisma.MessengerChannelDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MessengerChannelPayload>
+        }
+        update: {
+          args: Prisma.MessengerChannelUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MessengerChannelPayload>
+        }
+        deleteMany: {
+          args: Prisma.MessengerChannelDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.MessengerChannelUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.MessengerChannelUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MessengerChannelPayload>[]
+        }
+        upsert: {
+          args: Prisma.MessengerChannelUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MessengerChannelPayload>
+        }
+        aggregate: {
+          args: Prisma.MessengerChannelAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateMessengerChannel>
+        }
+        groupBy: {
+          args: Prisma.MessengerChannelGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.MessengerChannelGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.MessengerChannelCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.MessengerChannelCountAggregateOutputType> | number
+        }
+      }
+    }
+    MessengerConversation: {
+      payload: Prisma.$MessengerConversationPayload<ExtArgs>
+      fields: Prisma.MessengerConversationFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.MessengerConversationFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MessengerConversationPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.MessengerConversationFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MessengerConversationPayload>
+        }
+        findFirst: {
+          args: Prisma.MessengerConversationFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MessengerConversationPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.MessengerConversationFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MessengerConversationPayload>
+        }
+        findMany: {
+          args: Prisma.MessengerConversationFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MessengerConversationPayload>[]
+        }
+        create: {
+          args: Prisma.MessengerConversationCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MessengerConversationPayload>
+        }
+        createMany: {
+          args: Prisma.MessengerConversationCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.MessengerConversationCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MessengerConversationPayload>[]
+        }
+        delete: {
+          args: Prisma.MessengerConversationDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MessengerConversationPayload>
+        }
+        update: {
+          args: Prisma.MessengerConversationUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MessengerConversationPayload>
+        }
+        deleteMany: {
+          args: Prisma.MessengerConversationDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.MessengerConversationUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.MessengerConversationUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MessengerConversationPayload>[]
+        }
+        upsert: {
+          args: Prisma.MessengerConversationUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MessengerConversationPayload>
+        }
+        aggregate: {
+          args: Prisma.MessengerConversationAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateMessengerConversation>
+        }
+        groupBy: {
+          args: Prisma.MessengerConversationGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.MessengerConversationGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.MessengerConversationCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.MessengerConversationCountAggregateOutputType> | number
+        }
+      }
+    }
   }
 } & {
   other: {
@@ -986,6 +1136,32 @@ export const ConversationLogScalarFieldEnum = {
 } as const
 
 export type ConversationLogScalarFieldEnum = (typeof ConversationLogScalarFieldEnum)[keyof typeof ConversationLogScalarFieldEnum]
+
+
+export const MessengerChannelScalarFieldEnum = {
+  id: 'id',
+  tenantId: 'tenantId',
+  pageId: 'pageId',
+  pageName: 'pageName',
+  pageAccessTokenEncrypted: 'pageAccessTokenEncrypted',
+  isActive: 'isActive',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type MessengerChannelScalarFieldEnum = (typeof MessengerChannelScalarFieldEnum)[keyof typeof MessengerChannelScalarFieldEnum]
+
+
+export const MessengerConversationScalarFieldEnum = {
+  id: 'id',
+  channelId: 'channelId',
+  psid: 'psid',
+  difyConversationId: 'difyConversationId',
+  lastMessageAt: 'lastMessageAt',
+  createdAt: 'createdAt'
+} as const
+
+export type MessengerConversationScalarFieldEnum = (typeof MessengerConversationScalarFieldEnum)[keyof typeof MessengerConversationScalarFieldEnum]
 
 
 export const SortOrder = {
@@ -1323,6 +1499,8 @@ export type GlobalOmitConfig = {
   domainWhitelist?: Prisma.DomainWhitelistOmit
   widgetConfig?: Prisma.WidgetConfigOmit
   conversationLog?: Prisma.ConversationLogOmit
+  messengerChannel?: Prisma.MessengerChannelOmit
+  messengerConversation?: Prisma.MessengerConversationOmit
 }
 
 /* Types for Logging */

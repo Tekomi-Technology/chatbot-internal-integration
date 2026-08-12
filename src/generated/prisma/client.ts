@@ -71,3 +71,18 @@ export type WidgetConfig = Prisma.WidgetConfigModel
  * Phase 2. Chỉ ghi khi ENABLE_CONVERSATION_LOG=true; chưa có UI đọc.
  */
 export type ConversationLog = Prisma.ConversationLogModel
+/**
+ * Model MessengerChannel
+ * Kết nối một Facebook Page của tenant vào Meta App dùng chung của hệ thống.
+ * 
+ * Chỉ có MỘT callback URL cho mọi tenant (`/api/channels/messenger`), nên
+ * `pageId` chính là khoá định tuyến: webhook đọc `entry[].id` rồi tra ngược ra
+ * tenant qua bảng này.
+ */
+export type MessengerChannel = Prisma.MessengerChannelModel
+/**
+ * Model MessengerConversation
+ * Ánh xạ một người dùng Messenger (PSID) tới hội thoại Dify của họ, để bot
+ * nhớ được ngữ cảnh giữa các tin nhắn.
+ */
+export type MessengerConversation = Prisma.MessengerConversationModel

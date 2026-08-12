@@ -47,6 +47,23 @@ export const domainCreateSchema = z.object({
     }),
 });
 
+export const messengerChannelSchema = z.object({
+  pageId: z
+    .string()
+    .trim()
+    .min(1, "Bắt buộc nhập Page ID.")
+    .regex(/^\d{5,32}$/, "Page ID chỉ gồm chữ số, copy từ trang cài đặt Page."),
+  pageName: z
+    .string()
+    .trim()
+    .max(120)
+    .optional()
+    .transform((value) => (value ? value : null)),
+  // Để trống nghĩa là giữ nguyên token cũ — không ghi đè bằng chuỗi rỗng.
+  pageAccessToken: z.string().trim().max(500).optional(),
+  isActive: z.enum(["ACTIVE", "INACTIVE"]),
+});
+
 const HEX_COLOR = /^#(?:[0-9a-fA-F]{3}|[0-9a-fA-F]{6})$/;
 
 export const widgetConfigSchema = z.object({

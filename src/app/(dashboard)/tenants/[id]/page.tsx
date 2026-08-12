@@ -7,6 +7,7 @@ import { ConfirmActionButton } from "@/components/confirm-action-button";
 import { ApiKeysTab } from "@/components/tenants/api-keys-tab";
 import { EmbedTab } from "@/components/tenants/embed-tab";
 import { GeneralTab } from "@/components/tenants/general-tab";
+import { MetaTab } from "@/components/tenants/meta-tab";
 import { PluginTab } from "@/components/tenants/plugin-tab";
 import { TenantDetailTabs } from "@/components/tenants/tenant-detail-tabs";
 import { WidgetConfigTab } from "@/components/tenants/widget-config-tab";
@@ -16,6 +17,10 @@ import { decryptSecret, maskSecret } from "@/lib/crypto";
 import { env } from "@/lib/env";
 import { prisma } from "@/lib/prisma";
 import { buildEmbedSnippet } from "@/server/embed-script";
+import {
+  disconnectMessengerChannelAction,
+  updateMessengerChannelAction,
+} from "@/server/actions/messenger";
 import { deleteTenantAction, updateTenantAction } from "@/server/actions/tenants";
 import { updateWidgetConfigAction } from "@/server/actions/widget-config";
 
@@ -49,16 +54,31 @@ export default async function TenantDetailPage({ params }: PageProps) {
       apiKeys: { orderBy: { createdAt: "desc" } },
       domains: { orderBy: { domain: "asc" } },
       widgetConfig: true,
+      messengerChannel: true,
     },
   });
 
   if (!tenant) notFound();
 
+  const UNDECRYPTABLE = "⚠ không giải mã được (kiểm tra ENCRYPTION_KEY)";
+
   let difyApiKeyMasked: string;
   try {
     difyApiKeyMasked = maskSecret(decryptSecret(tenant.difyApiKeyEncrypted));
   } catch {
-    difyApiKeyMasked = "⚠ không giải mã được (kiểm tra ENCRYPTION_KEY)";
+    difyApiKeyMasked = UNDECRYPTABLE;
+  }
+
+  const channel = tenant.messengerChannel;
+  let pageAccessTokenMasked = "";
+  if (channel) {
+    try {
+      pageAccessTokenMasked = maskSecret(
+        decryptSecret(channel.pageAccessTokenEncrypted),
+      );
+    } catch {
+      pageAccessTokenMasked = UNDECRYPTABLE;
+    }
   }
 
   const widgetConfig = tenant.widgetConfig ?? DEFAULT_WIDGET_CONFIG;
@@ -131,6 +151,27 @@ export default async function TenantDetailPage({ params }: PageProps) {
               inputPlaceholder: widgetConfig.inputPlaceholder,
             }}
             action={updateWidgetConfigAction.bind(null, tenant.id)}
+          />
+        }
+        meta={
+          <MetaTab
+            channel={
+              channel
+                ? {
+                    pageId: channel.pageId,
+                    pageName: channel.pageName,
+                    isActive: channel.isActive,
+                    pageAccessTokenMasked,
+                  }
+                : null
+            }
+            callbackUrl={`${env.publicAppUrl}/api/channels/messenger`}
+            verifyToken={env.messenger.verifyToken}
+            action={updateMessengerChannelAction.bind(null, tenant.id)}
+            disconnectAction={disconnectMessengerChannelAction.bind(
+              null,
+              tenant.id,
+            )}
           />
         }
         plugin={<PluginTab />}

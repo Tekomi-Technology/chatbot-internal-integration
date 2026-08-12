@@ -218,6 +218,7 @@ export type TenantWhereInput = {
   domains?: Prisma.DomainWhitelistListRelationFilter
   widgetConfig?: Prisma.XOR<Prisma.WidgetConfigNullableScalarRelationFilter, Prisma.WidgetConfigWhereInput> | null
   logs?: Prisma.ConversationLogListRelationFilter
+  messengerChannel?: Prisma.XOR<Prisma.MessengerChannelNullableScalarRelationFilter, Prisma.MessengerChannelWhereInput> | null
 }
 
 export type TenantOrderByWithRelationInput = {
@@ -234,6 +235,7 @@ export type TenantOrderByWithRelationInput = {
   domains?: Prisma.DomainWhitelistOrderByRelationAggregateInput
   widgetConfig?: Prisma.WidgetConfigOrderByWithRelationInput
   logs?: Prisma.ConversationLogOrderByRelationAggregateInput
+  messengerChannel?: Prisma.MessengerChannelOrderByWithRelationInput
 }
 
 export type TenantWhereUniqueInput = Prisma.AtLeast<{
@@ -253,6 +255,7 @@ export type TenantWhereUniqueInput = Prisma.AtLeast<{
   domains?: Prisma.DomainWhitelistListRelationFilter
   widgetConfig?: Prisma.XOR<Prisma.WidgetConfigNullableScalarRelationFilter, Prisma.WidgetConfigWhereInput> | null
   logs?: Prisma.ConversationLogListRelationFilter
+  messengerChannel?: Prisma.XOR<Prisma.MessengerChannelNullableScalarRelationFilter, Prisma.MessengerChannelWhereInput> | null
 }, "id" | "slug">
 
 export type TenantOrderByWithAggregationInput = {
@@ -299,6 +302,7 @@ export type TenantCreateInput = {
   domains?: Prisma.DomainWhitelistCreateNestedManyWithoutTenantInput
   widgetConfig?: Prisma.WidgetConfigCreateNestedOneWithoutTenantInput
   logs?: Prisma.ConversationLogCreateNestedManyWithoutTenantInput
+  messengerChannel?: Prisma.MessengerChannelCreateNestedOneWithoutTenantInput
 }
 
 export type TenantUncheckedCreateInput = {
@@ -315,6 +319,7 @@ export type TenantUncheckedCreateInput = {
   domains?: Prisma.DomainWhitelistUncheckedCreateNestedManyWithoutTenantInput
   widgetConfig?: Prisma.WidgetConfigUncheckedCreateNestedOneWithoutTenantInput
   logs?: Prisma.ConversationLogUncheckedCreateNestedManyWithoutTenantInput
+  messengerChannel?: Prisma.MessengerChannelUncheckedCreateNestedOneWithoutTenantInput
 }
 
 export type TenantUpdateInput = {
@@ -331,6 +336,7 @@ export type TenantUpdateInput = {
   domains?: Prisma.DomainWhitelistUpdateManyWithoutTenantNestedInput
   widgetConfig?: Prisma.WidgetConfigUpdateOneWithoutTenantNestedInput
   logs?: Prisma.ConversationLogUpdateManyWithoutTenantNestedInput
+  messengerChannel?: Prisma.MessengerChannelUpdateOneWithoutTenantNestedInput
 }
 
 export type TenantUncheckedUpdateInput = {
@@ -347,6 +353,7 @@ export type TenantUncheckedUpdateInput = {
   domains?: Prisma.DomainWhitelistUncheckedUpdateManyWithoutTenantNestedInput
   widgetConfig?: Prisma.WidgetConfigUncheckedUpdateOneWithoutTenantNestedInput
   logs?: Prisma.ConversationLogUncheckedUpdateManyWithoutTenantNestedInput
+  messengerChannel?: Prisma.MessengerChannelUncheckedUpdateOneWithoutTenantNestedInput
 }
 
 export type TenantCreateManyInput = {
@@ -486,6 +493,20 @@ export type TenantUpdateOneRequiredWithoutLogsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.TenantUpdateToOneWithWhereWithoutLogsInput, Prisma.TenantUpdateWithoutLogsInput>, Prisma.TenantUncheckedUpdateWithoutLogsInput>
 }
 
+export type TenantCreateNestedOneWithoutMessengerChannelInput = {
+  create?: Prisma.XOR<Prisma.TenantCreateWithoutMessengerChannelInput, Prisma.TenantUncheckedCreateWithoutMessengerChannelInput>
+  connectOrCreate?: Prisma.TenantCreateOrConnectWithoutMessengerChannelInput
+  connect?: Prisma.TenantWhereUniqueInput
+}
+
+export type TenantUpdateOneRequiredWithoutMessengerChannelNestedInput = {
+  create?: Prisma.XOR<Prisma.TenantCreateWithoutMessengerChannelInput, Prisma.TenantUncheckedCreateWithoutMessengerChannelInput>
+  connectOrCreate?: Prisma.TenantCreateOrConnectWithoutMessengerChannelInput
+  upsert?: Prisma.TenantUpsertWithoutMessengerChannelInput
+  connect?: Prisma.TenantWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.TenantUpdateToOneWithWhereWithoutMessengerChannelInput, Prisma.TenantUpdateWithoutMessengerChannelInput>, Prisma.TenantUncheckedUpdateWithoutMessengerChannelInput>
+}
+
 export type TenantCreateWithoutApiKeysInput = {
   id?: string
   name: string
@@ -499,6 +520,7 @@ export type TenantCreateWithoutApiKeysInput = {
   domains?: Prisma.DomainWhitelistCreateNestedManyWithoutTenantInput
   widgetConfig?: Prisma.WidgetConfigCreateNestedOneWithoutTenantInput
   logs?: Prisma.ConversationLogCreateNestedManyWithoutTenantInput
+  messengerChannel?: Prisma.MessengerChannelCreateNestedOneWithoutTenantInput
 }
 
 export type TenantUncheckedCreateWithoutApiKeysInput = {
@@ -514,6 +536,7 @@ export type TenantUncheckedCreateWithoutApiKeysInput = {
   domains?: Prisma.DomainWhitelistUncheckedCreateNestedManyWithoutTenantInput
   widgetConfig?: Prisma.WidgetConfigUncheckedCreateNestedOneWithoutTenantInput
   logs?: Prisma.ConversationLogUncheckedCreateNestedManyWithoutTenantInput
+  messengerChannel?: Prisma.MessengerChannelUncheckedCreateNestedOneWithoutTenantInput
 }
 
 export type TenantCreateOrConnectWithoutApiKeysInput = {
@@ -545,6 +568,7 @@ export type TenantUpdateWithoutApiKeysInput = {
   domains?: Prisma.DomainWhitelistUpdateManyWithoutTenantNestedInput
   widgetConfig?: Prisma.WidgetConfigUpdateOneWithoutTenantNestedInput
   logs?: Prisma.ConversationLogUpdateManyWithoutTenantNestedInput
+  messengerChannel?: Prisma.MessengerChannelUpdateOneWithoutTenantNestedInput
 }
 
 export type TenantUncheckedUpdateWithoutApiKeysInput = {
@@ -560,6 +584,7 @@ export type TenantUncheckedUpdateWithoutApiKeysInput = {
   domains?: Prisma.DomainWhitelistUncheckedUpdateManyWithoutTenantNestedInput
   widgetConfig?: Prisma.WidgetConfigUncheckedUpdateOneWithoutTenantNestedInput
   logs?: Prisma.ConversationLogUncheckedUpdateManyWithoutTenantNestedInput
+  messengerChannel?: Prisma.MessengerChannelUncheckedUpdateOneWithoutTenantNestedInput
 }
 
 export type TenantCreateWithoutDomainsInput = {
@@ -575,6 +600,7 @@ export type TenantCreateWithoutDomainsInput = {
   apiKeys?: Prisma.ApiKeyCreateNestedManyWithoutTenantInput
   widgetConfig?: Prisma.WidgetConfigCreateNestedOneWithoutTenantInput
   logs?: Prisma.ConversationLogCreateNestedManyWithoutTenantInput
+  messengerChannel?: Prisma.MessengerChannelCreateNestedOneWithoutTenantInput
 }
 
 export type TenantUncheckedCreateWithoutDomainsInput = {
@@ -590,6 +616,7 @@ export type TenantUncheckedCreateWithoutDomainsInput = {
   apiKeys?: Prisma.ApiKeyUncheckedCreateNestedManyWithoutTenantInput
   widgetConfig?: Prisma.WidgetConfigUncheckedCreateNestedOneWithoutTenantInput
   logs?: Prisma.ConversationLogUncheckedCreateNestedManyWithoutTenantInput
+  messengerChannel?: Prisma.MessengerChannelUncheckedCreateNestedOneWithoutTenantInput
 }
 
 export type TenantCreateOrConnectWithoutDomainsInput = {
@@ -621,6 +648,7 @@ export type TenantUpdateWithoutDomainsInput = {
   apiKeys?: Prisma.ApiKeyUpdateManyWithoutTenantNestedInput
   widgetConfig?: Prisma.WidgetConfigUpdateOneWithoutTenantNestedInput
   logs?: Prisma.ConversationLogUpdateManyWithoutTenantNestedInput
+  messengerChannel?: Prisma.MessengerChannelUpdateOneWithoutTenantNestedInput
 }
 
 export type TenantUncheckedUpdateWithoutDomainsInput = {
@@ -636,6 +664,7 @@ export type TenantUncheckedUpdateWithoutDomainsInput = {
   apiKeys?: Prisma.ApiKeyUncheckedUpdateManyWithoutTenantNestedInput
   widgetConfig?: Prisma.WidgetConfigUncheckedUpdateOneWithoutTenantNestedInput
   logs?: Prisma.ConversationLogUncheckedUpdateManyWithoutTenantNestedInput
+  messengerChannel?: Prisma.MessengerChannelUncheckedUpdateOneWithoutTenantNestedInput
 }
 
 export type TenantCreateWithoutWidgetConfigInput = {
@@ -651,6 +680,7 @@ export type TenantCreateWithoutWidgetConfigInput = {
   apiKeys?: Prisma.ApiKeyCreateNestedManyWithoutTenantInput
   domains?: Prisma.DomainWhitelistCreateNestedManyWithoutTenantInput
   logs?: Prisma.ConversationLogCreateNestedManyWithoutTenantInput
+  messengerChannel?: Prisma.MessengerChannelCreateNestedOneWithoutTenantInput
 }
 
 export type TenantUncheckedCreateWithoutWidgetConfigInput = {
@@ -666,6 +696,7 @@ export type TenantUncheckedCreateWithoutWidgetConfigInput = {
   apiKeys?: Prisma.ApiKeyUncheckedCreateNestedManyWithoutTenantInput
   domains?: Prisma.DomainWhitelistUncheckedCreateNestedManyWithoutTenantInput
   logs?: Prisma.ConversationLogUncheckedCreateNestedManyWithoutTenantInput
+  messengerChannel?: Prisma.MessengerChannelUncheckedCreateNestedOneWithoutTenantInput
 }
 
 export type TenantCreateOrConnectWithoutWidgetConfigInput = {
@@ -697,6 +728,7 @@ export type TenantUpdateWithoutWidgetConfigInput = {
   apiKeys?: Prisma.ApiKeyUpdateManyWithoutTenantNestedInput
   domains?: Prisma.DomainWhitelistUpdateManyWithoutTenantNestedInput
   logs?: Prisma.ConversationLogUpdateManyWithoutTenantNestedInput
+  messengerChannel?: Prisma.MessengerChannelUpdateOneWithoutTenantNestedInput
 }
 
 export type TenantUncheckedUpdateWithoutWidgetConfigInput = {
@@ -712,6 +744,7 @@ export type TenantUncheckedUpdateWithoutWidgetConfigInput = {
   apiKeys?: Prisma.ApiKeyUncheckedUpdateManyWithoutTenantNestedInput
   domains?: Prisma.DomainWhitelistUncheckedUpdateManyWithoutTenantNestedInput
   logs?: Prisma.ConversationLogUncheckedUpdateManyWithoutTenantNestedInput
+  messengerChannel?: Prisma.MessengerChannelUncheckedUpdateOneWithoutTenantNestedInput
 }
 
 export type TenantCreateWithoutLogsInput = {
@@ -727,6 +760,7 @@ export type TenantCreateWithoutLogsInput = {
   apiKeys?: Prisma.ApiKeyCreateNestedManyWithoutTenantInput
   domains?: Prisma.DomainWhitelistCreateNestedManyWithoutTenantInput
   widgetConfig?: Prisma.WidgetConfigCreateNestedOneWithoutTenantInput
+  messengerChannel?: Prisma.MessengerChannelCreateNestedOneWithoutTenantInput
 }
 
 export type TenantUncheckedCreateWithoutLogsInput = {
@@ -742,6 +776,7 @@ export type TenantUncheckedCreateWithoutLogsInput = {
   apiKeys?: Prisma.ApiKeyUncheckedCreateNestedManyWithoutTenantInput
   domains?: Prisma.DomainWhitelistUncheckedCreateNestedManyWithoutTenantInput
   widgetConfig?: Prisma.WidgetConfigUncheckedCreateNestedOneWithoutTenantInput
+  messengerChannel?: Prisma.MessengerChannelUncheckedCreateNestedOneWithoutTenantInput
 }
 
 export type TenantCreateOrConnectWithoutLogsInput = {
@@ -773,6 +808,7 @@ export type TenantUpdateWithoutLogsInput = {
   apiKeys?: Prisma.ApiKeyUpdateManyWithoutTenantNestedInput
   domains?: Prisma.DomainWhitelistUpdateManyWithoutTenantNestedInput
   widgetConfig?: Prisma.WidgetConfigUpdateOneWithoutTenantNestedInput
+  messengerChannel?: Prisma.MessengerChannelUpdateOneWithoutTenantNestedInput
 }
 
 export type TenantUncheckedUpdateWithoutLogsInput = {
@@ -788,6 +824,87 @@ export type TenantUncheckedUpdateWithoutLogsInput = {
   apiKeys?: Prisma.ApiKeyUncheckedUpdateManyWithoutTenantNestedInput
   domains?: Prisma.DomainWhitelistUncheckedUpdateManyWithoutTenantNestedInput
   widgetConfig?: Prisma.WidgetConfigUncheckedUpdateOneWithoutTenantNestedInput
+  messengerChannel?: Prisma.MessengerChannelUncheckedUpdateOneWithoutTenantNestedInput
+}
+
+export type TenantCreateWithoutMessengerChannelInput = {
+  id?: string
+  name: string
+  slug: string
+  status?: $Enums.TenantStatus
+  difyAppId: string
+  difyApiKeyEncrypted: string
+  difyApiBaseUrl?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  apiKeys?: Prisma.ApiKeyCreateNestedManyWithoutTenantInput
+  domains?: Prisma.DomainWhitelistCreateNestedManyWithoutTenantInput
+  widgetConfig?: Prisma.WidgetConfigCreateNestedOneWithoutTenantInput
+  logs?: Prisma.ConversationLogCreateNestedManyWithoutTenantInput
+}
+
+export type TenantUncheckedCreateWithoutMessengerChannelInput = {
+  id?: string
+  name: string
+  slug: string
+  status?: $Enums.TenantStatus
+  difyAppId: string
+  difyApiKeyEncrypted: string
+  difyApiBaseUrl?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  apiKeys?: Prisma.ApiKeyUncheckedCreateNestedManyWithoutTenantInput
+  domains?: Prisma.DomainWhitelistUncheckedCreateNestedManyWithoutTenantInput
+  widgetConfig?: Prisma.WidgetConfigUncheckedCreateNestedOneWithoutTenantInput
+  logs?: Prisma.ConversationLogUncheckedCreateNestedManyWithoutTenantInput
+}
+
+export type TenantCreateOrConnectWithoutMessengerChannelInput = {
+  where: Prisma.TenantWhereUniqueInput
+  create: Prisma.XOR<Prisma.TenantCreateWithoutMessengerChannelInput, Prisma.TenantUncheckedCreateWithoutMessengerChannelInput>
+}
+
+export type TenantUpsertWithoutMessengerChannelInput = {
+  update: Prisma.XOR<Prisma.TenantUpdateWithoutMessengerChannelInput, Prisma.TenantUncheckedUpdateWithoutMessengerChannelInput>
+  create: Prisma.XOR<Prisma.TenantCreateWithoutMessengerChannelInput, Prisma.TenantUncheckedCreateWithoutMessengerChannelInput>
+  where?: Prisma.TenantWhereInput
+}
+
+export type TenantUpdateToOneWithWhereWithoutMessengerChannelInput = {
+  where?: Prisma.TenantWhereInput
+  data: Prisma.XOR<Prisma.TenantUpdateWithoutMessengerChannelInput, Prisma.TenantUncheckedUpdateWithoutMessengerChannelInput>
+}
+
+export type TenantUpdateWithoutMessengerChannelInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumTenantStatusFieldUpdateOperationsInput | $Enums.TenantStatus
+  difyAppId?: Prisma.StringFieldUpdateOperationsInput | string
+  difyApiKeyEncrypted?: Prisma.StringFieldUpdateOperationsInput | string
+  difyApiBaseUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  apiKeys?: Prisma.ApiKeyUpdateManyWithoutTenantNestedInput
+  domains?: Prisma.DomainWhitelistUpdateManyWithoutTenantNestedInput
+  widgetConfig?: Prisma.WidgetConfigUpdateOneWithoutTenantNestedInput
+  logs?: Prisma.ConversationLogUpdateManyWithoutTenantNestedInput
+}
+
+export type TenantUncheckedUpdateWithoutMessengerChannelInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumTenantStatusFieldUpdateOperationsInput | $Enums.TenantStatus
+  difyAppId?: Prisma.StringFieldUpdateOperationsInput | string
+  difyApiKeyEncrypted?: Prisma.StringFieldUpdateOperationsInput | string
+  difyApiBaseUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  apiKeys?: Prisma.ApiKeyUncheckedUpdateManyWithoutTenantNestedInput
+  domains?: Prisma.DomainWhitelistUncheckedUpdateManyWithoutTenantNestedInput
+  widgetConfig?: Prisma.WidgetConfigUncheckedUpdateOneWithoutTenantNestedInput
+  logs?: Prisma.ConversationLogUncheckedUpdateManyWithoutTenantNestedInput
 }
 
 
@@ -853,6 +970,7 @@ export type TenantSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs =
   domains?: boolean | Prisma.Tenant$domainsArgs<ExtArgs>
   widgetConfig?: boolean | Prisma.Tenant$widgetConfigArgs<ExtArgs>
   logs?: boolean | Prisma.Tenant$logsArgs<ExtArgs>
+  messengerChannel?: boolean | Prisma.Tenant$messengerChannelArgs<ExtArgs>
   _count?: boolean | Prisma.TenantCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["tenant"]>
 
@@ -898,6 +1016,7 @@ export type TenantInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   domains?: boolean | Prisma.Tenant$domainsArgs<ExtArgs>
   widgetConfig?: boolean | Prisma.Tenant$widgetConfigArgs<ExtArgs>
   logs?: boolean | Prisma.Tenant$logsArgs<ExtArgs>
+  messengerChannel?: boolean | Prisma.Tenant$messengerChannelArgs<ExtArgs>
   _count?: boolean | Prisma.TenantCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type TenantIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
@@ -910,6 +1029,7 @@ export type $TenantPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs
     domains: Prisma.$DomainWhitelistPayload<ExtArgs>[]
     widgetConfig: Prisma.$WidgetConfigPayload<ExtArgs> | null
     logs: Prisma.$ConversationLogPayload<ExtArgs>[]
+    messengerChannel: Prisma.$MessengerChannelPayload<ExtArgs> | null
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1325,6 +1445,7 @@ export interface Prisma__TenantClient<T, Null = never, ExtArgs extends runtime.T
   domains<T extends Prisma.Tenant$domainsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Tenant$domainsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$DomainWhitelistPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   widgetConfig<T extends Prisma.Tenant$widgetConfigArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Tenant$widgetConfigArgs<ExtArgs>>): Prisma.Prisma__WidgetConfigClient<runtime.Types.Result.GetResult<Prisma.$WidgetConfigPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   logs<T extends Prisma.Tenant$logsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Tenant$logsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ConversationLogPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  messengerChannel<T extends Prisma.Tenant$messengerChannelArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Tenant$messengerChannelArgs<ExtArgs>>): Prisma.Prisma__MessengerChannelClient<runtime.Types.Result.GetResult<Prisma.$MessengerChannelPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1844,6 +1965,25 @@ export type Tenant$logsArgs<ExtArgs extends runtime.Types.Extensions.InternalArg
   take?: number
   skip?: number
   distinct?: Prisma.ConversationLogScalarFieldEnum | Prisma.ConversationLogScalarFieldEnum[]
+}
+
+/**
+ * Tenant.messengerChannel
+ */
+export type Tenant$messengerChannelArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the MessengerChannel
+   */
+  select?: Prisma.MessengerChannelSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the MessengerChannel
+   */
+  omit?: Prisma.MessengerChannelOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.MessengerChannelInclude<ExtArgs> | null
+  where?: Prisma.MessengerChannelWhereInput
 }
 
 /**

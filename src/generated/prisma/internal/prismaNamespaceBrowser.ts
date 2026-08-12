@@ -56,7 +56,9 @@ export const ModelName = {
   ApiKey: 'ApiKey',
   DomainWhitelist: 'DomainWhitelist',
   WidgetConfig: 'WidgetConfig',
-  ConversationLog: 'ConversationLog'
+  ConversationLog: 'ConversationLog',
+  MessengerChannel: 'MessengerChannel',
+  MessengerConversation: 'MessengerConversation'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -156,6 +158,32 @@ export const ConversationLogScalarFieldEnum = {
 } as const
 
 export type ConversationLogScalarFieldEnum = (typeof ConversationLogScalarFieldEnum)[keyof typeof ConversationLogScalarFieldEnum]
+
+
+export const MessengerChannelScalarFieldEnum = {
+  id: 'id',
+  tenantId: 'tenantId',
+  pageId: 'pageId',
+  pageName: 'pageName',
+  pageAccessTokenEncrypted: 'pageAccessTokenEncrypted',
+  isActive: 'isActive',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type MessengerChannelScalarFieldEnum = (typeof MessengerChannelScalarFieldEnum)[keyof typeof MessengerChannelScalarFieldEnum]
+
+
+export const MessengerConversationScalarFieldEnum = {
+  id: 'id',
+  channelId: 'channelId',
+  psid: 'psid',
+  difyConversationId: 'difyConversationId',
+  lastMessageAt: 'lastMessageAt',
+  createdAt: 'createdAt'
+} as const
+
+export type MessengerConversationScalarFieldEnum = (typeof MessengerConversationScalarFieldEnum)[keyof typeof MessengerConversationScalarFieldEnum]
 
 
 export const SortOrder = {
