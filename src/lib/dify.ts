@@ -1,6 +1,6 @@
 import "server-only";
 
-import { aggregateDifyStream } from "@/lib/dify-stream";
+import { aggregateDifyStream, stripReasoningBlocks } from "@/lib/dify-stream";
 import { env } from "@/lib/env";
 
 export type DifyChatRequest = {
@@ -98,7 +98,7 @@ export async function sendDifyChatMessage(
     }
 
     return {
-      answer: stream.answer,
+      answer: stripReasoningBlocks(stream.answer),
       conversationId: stream.conversationId,
       messageId: stream.messageId,
     };

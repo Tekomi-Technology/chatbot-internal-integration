@@ -22,6 +22,13 @@ type DifyStreamEvent = {
   message?: string;
 };
 
+export function stripReasoningBlocks(answer: string): string {
+  return answer
+    .replace(/<\s*think(?:ing)?\s*>[\s\S]*?<\s*\/\s*think(?:ing)?\s*>/gi, "")
+    .replace(/<\s*think(?:ing)?\s*>[\s\S]*$/gi, "")
+    .trim();
+}
+
 export async function aggregateDifyStream(
   body: ReadableStream<Uint8Array>,
 ): Promise<DifyStreamResult> {
