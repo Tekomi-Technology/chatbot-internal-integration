@@ -843,23 +843,12 @@ export type $WidgetConfigPayload<ExtArgs extends runtime.Types.Extensions.Intern
     welcomeMessage: string
     inputPlaceholder: string
     position: $Enums.WidgetPosition
-    /**
-     * Bật thì khách phải điền họ tên + SĐT mới gõ được tin nhắn. Mặc định tắt để
-     * tenant đang chạy không đột ngột bị chặn khi migrate.
-     */
     leadFormEnabled: boolean
     leadFormTitle: string
     leadFormDescription: string
     leadFormSubmitLabel: string
-    /**
-     * Hai trường lõi luôn có mặt, chỉ đổi được nhãn hiển thị.
-     */
     leadFormNameLabel: string
     leadFormPhoneLabel: string
-    /**
-     * Trường phụ do admin tự thêm: [{ key, label, type, required }].
-     * Xem src/lib/lead-fields.ts để biết cấu trúc và cách validate.
-     */
     leadFormFields: runtime.JsonValue
     createdAt: Date
     updatedAt: Date

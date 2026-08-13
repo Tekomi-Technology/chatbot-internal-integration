@@ -2,10 +2,9 @@ import "server-only";
 
 import { createHmac, timingSafeEqual } from "node:crypto";
 
+import { chunkMessage } from "@/lib/channel-utils";
 import { env } from "@/lib/env";
 
-/** Giới hạn cứng của Send API. Câu trả lời dài hơn phải cắt thành nhiều tin. */
-const MAX_MESSAGE_LENGTH = 2000;
 const SEND_TIMEOUT_MS = 15_000;
 
 export class MessengerError extends Error {
@@ -113,31 +112,6 @@ export function collectTextEvents(payload: unknown): MessengerTextEvent[] {
   return events;
 }
 
-// --- Chống xử lý trùng ------------------------------------------------------
-
-const MID_TTL_MS = 10 * 60_000;
-const seenMids = new Map<string, number>();
-
-/**
- * Đánh dấu một `mid` là đã xử lý, trả `true` nếu trước đó đã gặp.
- *
- * GIỚI HẠN ĐÃ BIẾT: lưu trong bộ nhớ tiến trình nên chỉ đúng với 1 instance.
- * Chấp nhận được vì webhook đã ack 200 ngay lập tức, Meta hầu như không retry.
- * Khi scale nhiều instance, thay bằng Redis SETNX — giữ nguyên chữ ký hàm.
- */
-export function markMidSeen(mid: string | null): boolean {
-  if (!mid) return false;
-
-  const now = Date.now();
-  for (const [key, expiresAt] of seenMids) {
-    if (expiresAt <= now) seenMids.delete(key);
-  }
-
-  if (seenMids.has(mid)) return true;
-  seenMids.set(mid, now + MID_TTL_MS);
-  return false;
-}
-
 // --- Send API ---------------------------------------------------------------
 
 function graphUrl(path: string): string {
@@ -187,25 +161,6 @@ async function callSendApi(
       detail,
     );
   }
-}
-
-/** Cắt câu trả lời dài thành nhiều tin nhắn, ưu tiên cắt ở ranh giới dòng/khoảng trắng. */
-export function chunkMessage(text: string, limit = MAX_MESSAGE_LENGTH): string[] {
-  if (text.length <= limit) return [text];
-
-  const chunks: string[] = [];
-  let rest = text;
-
-  while (rest.length > limit) {
-    const window = rest.slice(0, limit);
-    const breakAt = Math.max(window.lastIndexOf("\n"), window.lastIndexOf(" "));
-    const cut = breakAt > limit * 0.6 ? breakAt : limit;
-    chunks.push(rest.slice(0, cut).trim());
-    rest = rest.slice(cut).trim();
-  }
-
-  if (rest) chunks.push(rest);
-  return chunks;
 }
 
 /** Gửi text về cho người dùng Messenger, tự cắt nếu vượt 2000 ký tự. */

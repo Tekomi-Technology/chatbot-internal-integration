@@ -16,7 +16,6 @@ const bodySchema = z.object({
   phone: z.string().trim().min(1).max(20),
   sessionId: z.string().trim().min(1).max(100),
   pageUrl: z.string().trim().max(2000).nullish(),
-  // Giá trị trường phụ; nội dung được kiểm theo cấu hình của tenant bên dưới.
   extra: z.record(z.string(), z.unknown()).nullish(),
   apiKey: z.string().trim().max(100).optional(),
 });

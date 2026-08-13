@@ -1,9 +1,6 @@
-
-
 import type * as runtime from "@prisma/client/runtime/client"
 import type * as $Enums from "../enums"
 import type * as Prisma from "../internal/prismaNamespace"
-
 
 export type LeadModel = runtime.Types.Result.DefaultSelection<Prisma.$LeadPayload>
 
@@ -79,13 +76,21 @@ export type LeadCountAggregateInputType = {
 }
 
 export type LeadAggregateArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+
   where?: Prisma.LeadWhereInput
+
   orderBy?: Prisma.LeadOrderByWithRelationInput | Prisma.LeadOrderByWithRelationInput[]
+
   cursor?: Prisma.LeadWhereUniqueInput
+
   take?: number
+
   skip?: number
+
   _count?: true | LeadCountAggregateInputType
+
   _min?: LeadMinAggregateInputType
+
   _max?: LeadMaxAggregateInputType
 }
 
@@ -563,21 +568,48 @@ export type LeadCountArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs 
 
 export interface LeadDelegate<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> {
   [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['Lead'], meta: { name: 'Lead' } }
+
   findUnique<T extends LeadFindUniqueArgs>(args: Prisma.SelectSubset<T, LeadFindUniqueArgs<ExtArgs>>): Prisma.Prisma__LeadClient<runtime.Types.Result.GetResult<Prisma.$LeadPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+
   findUniqueOrThrow<T extends LeadFindUniqueOrThrowArgs>(args: Prisma.SelectSubset<T, LeadFindUniqueOrThrowArgs<ExtArgs>>): Prisma.Prisma__LeadClient<runtime.Types.Result.GetResult<Prisma.$LeadPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
+
   findFirst<T extends LeadFindFirstArgs>(args?: Prisma.SelectSubset<T, LeadFindFirstArgs<ExtArgs>>): Prisma.Prisma__LeadClient<runtime.Types.Result.GetResult<Prisma.$LeadPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+
   findFirstOrThrow<T extends LeadFindFirstOrThrowArgs>(args?: Prisma.SelectSubset<T, LeadFindFirstOrThrowArgs<ExtArgs>>): Prisma.Prisma__LeadClient<runtime.Types.Result.GetResult<Prisma.$LeadPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+ 
   findMany<T extends LeadFindManyArgs>(args?: Prisma.SelectSubset<T, LeadFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$LeadPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+
   create<T extends LeadCreateArgs>(args: Prisma.SelectSubset<T, LeadCreateArgs<ExtArgs>>): Prisma.Prisma__LeadClient<runtime.Types.Result.GetResult<Prisma.$LeadPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
   createMany<T extends LeadCreateManyArgs>(args?: Prisma.SelectSubset<T, LeadCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<Prisma.BatchPayload>
+
+
   createManyAndReturn<T extends LeadCreateManyAndReturnArgs>(args?: Prisma.SelectSubset<T, LeadCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$LeadPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+
   delete<T extends LeadDeleteArgs>(args: Prisma.SelectSubset<T, LeadDeleteArgs<ExtArgs>>): Prisma.Prisma__LeadClient<runtime.Types.Result.GetResult<Prisma.$LeadPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
   update<T extends LeadUpdateArgs>(args: Prisma.SelectSubset<T, LeadUpdateArgs<ExtArgs>>): Prisma.Prisma__LeadClient<runtime.Types.Result.GetResult<Prisma.$LeadPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
   deleteMany<T extends LeadDeleteManyArgs>(args?: Prisma.SelectSubset<T, LeadDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<Prisma.BatchPayload>
+
+
   updateMany<T extends LeadUpdateManyArgs>(args: Prisma.SelectSubset<T, LeadUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<Prisma.BatchPayload>
+
   updateManyAndReturn<T extends LeadUpdateManyAndReturnArgs>(args: Prisma.SelectSubset<T, LeadUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$LeadPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+
   upsert<T extends LeadUpsertArgs>(args: Prisma.SelectSubset<T, LeadUpsertArgs<ExtArgs>>): Prisma.Prisma__LeadClient<runtime.Types.Result.GetResult<Prisma.$LeadPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
   count<T extends LeadCountArgs>(
     args?: Prisma.Subset<T, LeadCountArgs>,
   ): Prisma.PrismaPromise<
@@ -587,7 +619,10 @@ export interface LeadDelegate<ExtArgs extends runtime.Types.Extensions.InternalA
         : Prisma.GetScalarType<T['select'], LeadCountAggregateOutputType>
       : number
   >
+
   aggregate<T extends LeadAggregateArgs>(args: Prisma.Subset<T, LeadAggregateArgs>): Prisma.PrismaPromise<GetLeadAggregateType<T>>
+
+
   groupBy<
     T extends LeadGroupByArgs,
     HasSelectOrTake extends Prisma.Or<
@@ -659,7 +694,6 @@ export interface Prisma__LeadClient<T, Null = never, ExtArgs extends runtime.Typ
   finally(onfinally?: (() => void) | undefined | null): runtime.Types.Utils.JsPromise<T>
 }
 
-
 export interface LeadFieldRefs {
   readonly id: Prisma.FieldRef<"Lead", 'String'>
   readonly tenantId: Prisma.FieldRef<"Lead", 'String'>
@@ -672,43 +706,70 @@ export interface LeadFieldRefs {
 }
     
 
-
 export type LeadFindUniqueArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+
   select?: Prisma.LeadSelect<ExtArgs> | null
+
   omit?: Prisma.LeadOmit<ExtArgs> | null
+
   include?: Prisma.LeadInclude<ExtArgs> | null
+
   where: Prisma.LeadWhereUniqueInput
 }
+
 
 export type LeadFindUniqueOrThrowArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+
   select?: Prisma.LeadSelect<ExtArgs> | null
+
   omit?: Prisma.LeadOmit<ExtArgs> | null
+
   include?: Prisma.LeadInclude<ExtArgs> | null
+
   where: Prisma.LeadWhereUniqueInput
 }
 
+
 export type LeadFindFirstArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+
   select?: Prisma.LeadSelect<ExtArgs> | null
+
   omit?: Prisma.LeadOmit<ExtArgs> | null
+ 
   include?: Prisma.LeadInclude<ExtArgs> | null
+
   where?: Prisma.LeadWhereInput
+
   orderBy?: Prisma.LeadOrderByWithRelationInput | Prisma.LeadOrderByWithRelationInput[]
+
   cursor?: Prisma.LeadWhereUniqueInput
+
   take?: number
+
   skip?: number
+
   distinct?: Prisma.LeadScalarFieldEnum | Prisma.LeadScalarFieldEnum[]
 }
 
 
 export type LeadFindFirstOrThrowArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+
   select?: Prisma.LeadSelect<ExtArgs> | null
+
   omit?: Prisma.LeadOmit<ExtArgs> | null
+
   include?: Prisma.LeadInclude<ExtArgs> | null
+
   where?: Prisma.LeadWhereInput
+
   orderBy?: Prisma.LeadOrderByWithRelationInput | Prisma.LeadOrderByWithRelationInput[]
+
   cursor?: Prisma.LeadWhereUniqueInput
+
   take?: number
+
   skip?: number
+
   distinct?: Prisma.LeadScalarFieldEnum | Prisma.LeadScalarFieldEnum[]
 }
 
@@ -716,86 +777,138 @@ export type LeadFindFirstOrThrowArgs<ExtArgs extends runtime.Types.Extensions.In
 export type LeadFindManyArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
 
   select?: Prisma.LeadSelect<ExtArgs> | null
+
   omit?: Prisma.LeadOmit<ExtArgs> | null
+
   include?: Prisma.LeadInclude<ExtArgs> | null
+
   where?: Prisma.LeadWhereInput
+
   orderBy?: Prisma.LeadOrderByWithRelationInput | Prisma.LeadOrderByWithRelationInput[]
+
   cursor?: Prisma.LeadWhereUniqueInput
+
   take?: number
+
   skip?: number
+
   distinct?: Prisma.LeadScalarFieldEnum | Prisma.LeadScalarFieldEnum[]
 }
 
+
 export type LeadCreateArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+
   select?: Prisma.LeadSelect<ExtArgs> | null
+
   omit?: Prisma.LeadOmit<ExtArgs> | null
+
   include?: Prisma.LeadInclude<ExtArgs> | null
+
   data: Prisma.XOR<Prisma.LeadCreateInput, Prisma.LeadUncheckedCreateInput>
 }
 
+
 export type LeadCreateManyArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+
   data: Prisma.LeadCreateManyInput | Prisma.LeadCreateManyInput[]
   skipDuplicates?: boolean
 }
 
+
 export type LeadCreateManyAndReturnArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+
   select?: Prisma.LeadSelectCreateManyAndReturn<ExtArgs> | null
+
   omit?: Prisma.LeadOmit<ExtArgs> | null
+
   data: Prisma.LeadCreateManyInput | Prisma.LeadCreateManyInput[]
   skipDuplicates?: boolean
+
   include?: Prisma.LeadIncludeCreateManyAndReturn<ExtArgs> | null
 }
 
 
 export type LeadUpdateArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+
   select?: Prisma.LeadSelect<ExtArgs> | null
+
   omit?: Prisma.LeadOmit<ExtArgs> | null
+
   include?: Prisma.LeadInclude<ExtArgs> | null
+
   data: Prisma.XOR<Prisma.LeadUpdateInput, Prisma.LeadUncheckedUpdateInput>
+
   where: Prisma.LeadWhereUniqueInput
 }
 
 
 export type LeadUpdateManyArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+
   data: Prisma.XOR<Prisma.LeadUpdateManyMutationInput, Prisma.LeadUncheckedUpdateManyInput>
+
   where?: Prisma.LeadWhereInput
+
   limit?: number
 }
 
+
 export type LeadUpdateManyAndReturnArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+
   select?: Prisma.LeadSelectUpdateManyAndReturn<ExtArgs> | null
+
   omit?: Prisma.LeadOmit<ExtArgs> | null
+
   data: Prisma.XOR<Prisma.LeadUpdateManyMutationInput, Prisma.LeadUncheckedUpdateManyInput>
+
   where?: Prisma.LeadWhereInput
+
   limit?: number
+
   include?: Prisma.LeadIncludeUpdateManyAndReturn<ExtArgs> | null
 }
 
 
 export type LeadUpsertArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+
   select?: Prisma.LeadSelect<ExtArgs> | null
+
   omit?: Prisma.LeadOmit<ExtArgs> | null
+
   include?: Prisma.LeadInclude<ExtArgs> | null
+
   where: Prisma.LeadWhereUniqueInput
+
   create: Prisma.XOR<Prisma.LeadCreateInput, Prisma.LeadUncheckedCreateInput>
+
   update: Prisma.XOR<Prisma.LeadUpdateInput, Prisma.LeadUncheckedUpdateInput>
 }
 
+
 export type LeadDeleteArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+
   select?: Prisma.LeadSelect<ExtArgs> | null
+
   omit?: Prisma.LeadOmit<ExtArgs> | null
+
   include?: Prisma.LeadInclude<ExtArgs> | null
 
   where: Prisma.LeadWhereUniqueInput
 }
 
+
 export type LeadDeleteManyArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+
   where?: Prisma.LeadWhereInput
+
   limit?: number
 }
 
+
 export type LeadDefaultArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+
   select?: Prisma.LeadSelect<ExtArgs> | null
+
   omit?: Prisma.LeadOmit<ExtArgs> | null
+
   include?: Prisma.LeadInclude<ExtArgs> | null
 }

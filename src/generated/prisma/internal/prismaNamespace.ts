@@ -405,7 +405,9 @@ export const ModelName = {
   Lead: 'Lead',
   ConversationLog: 'ConversationLog',
   MessengerChannel: 'MessengerChannel',
-  MessengerConversation: 'MessengerConversation'
+  MessengerConversation: 'MessengerConversation',
+  ZaloChannel: 'ZaloChannel',
+  ZaloConversation: 'ZaloConversation'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -421,7 +423,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "admin" | "tenant" | "apiKey" | "domainWhitelist" | "widgetConfig" | "lead" | "conversationLog" | "messengerChannel" | "messengerConversation"
+    modelProps: "admin" | "tenant" | "apiKey" | "domainWhitelist" | "widgetConfig" | "lead" | "conversationLog" | "messengerChannel" | "messengerConversation" | "zaloChannel" | "zaloConversation"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -1091,6 +1093,154 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    ZaloChannel: {
+      payload: Prisma.$ZaloChannelPayload<ExtArgs>
+      fields: Prisma.ZaloChannelFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.ZaloChannelFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ZaloChannelPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.ZaloChannelFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ZaloChannelPayload>
+        }
+        findFirst: {
+          args: Prisma.ZaloChannelFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ZaloChannelPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.ZaloChannelFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ZaloChannelPayload>
+        }
+        findMany: {
+          args: Prisma.ZaloChannelFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ZaloChannelPayload>[]
+        }
+        create: {
+          args: Prisma.ZaloChannelCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ZaloChannelPayload>
+        }
+        createMany: {
+          args: Prisma.ZaloChannelCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.ZaloChannelCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ZaloChannelPayload>[]
+        }
+        delete: {
+          args: Prisma.ZaloChannelDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ZaloChannelPayload>
+        }
+        update: {
+          args: Prisma.ZaloChannelUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ZaloChannelPayload>
+        }
+        deleteMany: {
+          args: Prisma.ZaloChannelDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.ZaloChannelUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.ZaloChannelUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ZaloChannelPayload>[]
+        }
+        upsert: {
+          args: Prisma.ZaloChannelUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ZaloChannelPayload>
+        }
+        aggregate: {
+          args: Prisma.ZaloChannelAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateZaloChannel>
+        }
+        groupBy: {
+          args: Prisma.ZaloChannelGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ZaloChannelGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.ZaloChannelCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ZaloChannelCountAggregateOutputType> | number
+        }
+      }
+    }
+    ZaloConversation: {
+      payload: Prisma.$ZaloConversationPayload<ExtArgs>
+      fields: Prisma.ZaloConversationFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.ZaloConversationFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ZaloConversationPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.ZaloConversationFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ZaloConversationPayload>
+        }
+        findFirst: {
+          args: Prisma.ZaloConversationFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ZaloConversationPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.ZaloConversationFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ZaloConversationPayload>
+        }
+        findMany: {
+          args: Prisma.ZaloConversationFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ZaloConversationPayload>[]
+        }
+        create: {
+          args: Prisma.ZaloConversationCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ZaloConversationPayload>
+        }
+        createMany: {
+          args: Prisma.ZaloConversationCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.ZaloConversationCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ZaloConversationPayload>[]
+        }
+        delete: {
+          args: Prisma.ZaloConversationDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ZaloConversationPayload>
+        }
+        update: {
+          args: Prisma.ZaloConversationUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ZaloConversationPayload>
+        }
+        deleteMany: {
+          args: Prisma.ZaloConversationDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.ZaloConversationUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.ZaloConversationUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ZaloConversationPayload>[]
+        }
+        upsert: {
+          args: Prisma.ZaloConversationUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ZaloConversationPayload>
+        }
+        aggregate: {
+          args: Prisma.ZaloConversationAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateZaloConversation>
+        }
+        groupBy: {
+          args: Prisma.ZaloConversationGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ZaloConversationGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.ZaloConversationCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ZaloConversationCountAggregateOutputType> | number
+        }
+      }
+    }
   }
 } & {
   other: {
@@ -1258,6 +1408,37 @@ export const MessengerConversationScalarFieldEnum = {
 } as const
 
 export type MessengerConversationScalarFieldEnum = (typeof MessengerConversationScalarFieldEnum)[keyof typeof MessengerConversationScalarFieldEnum]
+
+
+export const ZaloChannelScalarFieldEnum = {
+  id: 'id',
+  tenantId: 'tenantId',
+  oaId: 'oaId',
+  oaName: 'oaName',
+  accessTokenEncrypted: 'accessTokenEncrypted',
+  accessTokenExpiresAt: 'accessTokenExpiresAt',
+  refreshTokenEncrypted: 'refreshTokenEncrypted',
+  refreshTokenUpdatedAt: 'refreshTokenUpdatedAt',
+  lastRefreshError: 'lastRefreshError',
+  isActive: 'isActive',
+  lastEventAt: 'lastEventAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type ZaloChannelScalarFieldEnum = (typeof ZaloChannelScalarFieldEnum)[keyof typeof ZaloChannelScalarFieldEnum]
+
+
+export const ZaloConversationScalarFieldEnum = {
+  id: 'id',
+  channelId: 'channelId',
+  zaloUserId: 'zaloUserId',
+  difyConversationId: 'difyConversationId',
+  lastMessageAt: 'lastMessageAt',
+  createdAt: 'createdAt'
+} as const
+
+export type ZaloConversationScalarFieldEnum = (typeof ZaloConversationScalarFieldEnum)[keyof typeof ZaloConversationScalarFieldEnum]
 
 
 export const SortOrder = {
@@ -1598,6 +1779,8 @@ export type GlobalOmitConfig = {
   conversationLog?: Prisma.ConversationLogOmit
   messengerChannel?: Prisma.MessengerChannelOmit
   messengerConversation?: Prisma.MessengerConversationOmit
+  zaloChannel?: Prisma.ZaloChannelOmit
+  zaloConversation?: Prisma.ZaloConversationOmit
 }
 
 /* Types for Logging */

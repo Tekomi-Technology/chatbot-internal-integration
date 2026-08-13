@@ -59,7 +59,9 @@ export const ModelName = {
   Lead: 'Lead',
   ConversationLog: 'ConversationLog',
   MessengerChannel: 'MessengerChannel',
-  MessengerConversation: 'MessengerConversation'
+  MessengerConversation: 'MessengerConversation',
+  ZaloChannel: 'ZaloChannel',
+  ZaloConversation: 'ZaloConversation'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -206,6 +208,37 @@ export const MessengerConversationScalarFieldEnum = {
 } as const
 
 export type MessengerConversationScalarFieldEnum = (typeof MessengerConversationScalarFieldEnum)[keyof typeof MessengerConversationScalarFieldEnum]
+
+
+export const ZaloChannelScalarFieldEnum = {
+  id: 'id',
+  tenantId: 'tenantId',
+  oaId: 'oaId',
+  oaName: 'oaName',
+  accessTokenEncrypted: 'accessTokenEncrypted',
+  accessTokenExpiresAt: 'accessTokenExpiresAt',
+  refreshTokenEncrypted: 'refreshTokenEncrypted',
+  refreshTokenUpdatedAt: 'refreshTokenUpdatedAt',
+  lastRefreshError: 'lastRefreshError',
+  isActive: 'isActive',
+  lastEventAt: 'lastEventAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type ZaloChannelScalarFieldEnum = (typeof ZaloChannelScalarFieldEnum)[keyof typeof ZaloChannelScalarFieldEnum]
+
+
+export const ZaloConversationScalarFieldEnum = {
+  id: 'id',
+  channelId: 'channelId',
+  zaloUserId: 'zaloUserId',
+  difyConversationId: 'difyConversationId',
+  lastMessageAt: 'lastMessageAt',
+  createdAt: 'createdAt'
+} as const
+
+export type ZaloConversationScalarFieldEnum = (typeof ZaloConversationScalarFieldEnum)[keyof typeof ZaloConversationScalarFieldEnum]
 
 
 export const SortOrder = {

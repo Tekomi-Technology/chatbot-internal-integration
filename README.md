@@ -75,6 +75,9 @@ openssl rand -hex 32      # -> ENCRYPTION_KEY (bắt buộc 32 byte)
 | `WIDGET_RATE_LIMIT` | | Số request `/api/widget/chat` mỗi cửa sổ (mặc định 20) |
 | `WIDGET_RATE_LIMIT_WINDOW_MS` | | Độ dài cửa sổ, ms (mặc định 60000) |
 | `ENABLE_CONVERSATION_LOG` | | `true` để ghi bảng `conversation_logs` (mặc định tắt) |
+| `ZALO_APP_ID` | nếu dùng kênh Zalo | App ID trong Zalo For Developers |
+| `ZALO_APP_SECRET` | nếu dùng kênh Zalo | Secret Key của app, dùng cho cả OAuth lẫn xác thực chữ ký webhook |
+| `CRON_SECRET` | nếu dùng kênh Zalo | Bearer token bảo vệ `/api/cron/zalo-refresh`; thiếu thì endpoint trả 503 vĩnh viễn và token của các OA im lặng sẽ chết sau 3 tháng |
 
 `APP_URL` cố tình **không** dùng tiền tố `NEXT_PUBLIC_`: biến có tiền tố đó bị
 Next.js thay bằng hằng số lúc build, đổi origin sẽ phải build lại.
@@ -201,6 +204,20 @@ Vài quyết định đáng lưu ý:
 - Nội dung trả về từ Dify luôn render bằng `textContent`, không bao giờ dựng HTML.
 - `/api/widget/config` cache 60 giây phía browser, nên cấu hình mới có hiệu lực
   chậm nhất sau 1 phút.
+
+## Kênh Zalo OA
+
+Webhook URL điền vào app Zalo: `https://<APP_URL>/api/channels/zalo`
+
+Token của Zalo hết hạn sau 1 giờ và refresh token chỉ dùng được một lần, nên phải
+có job refresh định kỳ. Thêm dòng sau vào crontab trên host:
+
+```
+*/30 * * * * curl -fsS -X POST -H "Authorization: Bearer $CRON_SECRET" https://<APP_URL>/api/cron/zalo-refresh >> /var/log/zalo-refresh.log 2>&1
+```
+
+Không chạy job này thì OA nào không có tin nhắn trong 3 tháng sẽ mất kết nối và
+phải cấp quyền lại bằng tay.
 
 ## Bảo mật
 

@@ -63,6 +63,13 @@ export const messengerChannelSchema = z.object({
   isActive: z.enum(["ACTIVE", "INACTIVE"]),
 });
 
+export const zaloChannelSchema = z.object({
+  oaId: z.string().trim().min(1, "Bắt buộc nhập OA ID.").max(64),
+  oaName: z.string().trim().max(120).optional().default(""),
+  refreshToken: z.string().trim().max(2000).optional().default(""),
+  isActive: z.enum(["ACTIVE", "INACTIVE"]),
+});
+
 const HEX_COLOR = /^#(?:[0-9a-fA-F]{3}|[0-9a-fA-F]{6})$/;
 
 export const widgetConfigSchema = z.object({

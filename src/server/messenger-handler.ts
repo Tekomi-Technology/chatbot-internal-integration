@@ -1,10 +1,10 @@
 import "server-only";
 
+import { markIdSeen } from "@/lib/channel-utils";
 import { decryptSecret } from "@/lib/crypto";
 import { DifyError, sendDifyChatMessage } from "@/lib/dify";
 import { env } from "@/lib/env";
 import {
-  markMidSeen,
   sendMessengerText,
   sendSenderAction,
   type MessengerTextEvent,
@@ -30,7 +30,7 @@ export async function handleMessengerEvents(
 }
 
 async function handleOne(event: MessengerTextEvent): Promise<void> {
-  if (markMidSeen(event.mid)) return;
+  if (markIdSeen(event.mid)) return;
 
   const channel = await prisma.messengerChannel.findUnique({
     where: { pageId: event.pageId },

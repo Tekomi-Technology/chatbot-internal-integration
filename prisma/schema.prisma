@@ -44,6 +44,7 @@ model Tenant {
   logs         ConversationLog[]
   leads        Lead[]
   messengerChannel MessengerChannel?
+  zaloChannel      ZaloChannel?
 
   @@map("tenants")
 }
@@ -194,4 +195,47 @@ model MessengerConversation {
 
   @@unique([channelId, psid])
   @@map("messenger_conversations")
+}
+
+model ZaloChannel {
+  id       String @id @default(cuid())
+  tenantId String @unique @map("tenant_id")
+  tenant   Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  oaId   String  @unique @map("oa_id")
+  oaName String? @map("oa_name")
+
+  accessTokenEncrypted String?   @map("access_token_encrypted")
+  accessTokenExpiresAt DateTime? @map("access_token_expires_at")
+
+  refreshTokenEncrypted String   @map("refresh_token_encrypted")
+  refreshTokenUpdatedAt DateTime @map("refresh_token_updated_at")
+
+  lastRefreshError String? @map("last_refresh_error")
+
+  isActive    Boolean   @default(true) @map("is_active")
+  lastEventAt DateTime? @map("last_event_at")
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  conversations ZaloConversation[]
+
+  @@map("zalo_channels")
+}
+
+model ZaloConversation {
+  id        String      @id @default(cuid())
+  channelId String      @map("channel_id")
+  channel   ZaloChannel @relation(fields: [channelId], references: [id], onDelete: Cascade)
+
+  zaloUserId String @map("zalo_user_id")
+
+  difyConversationId String?  @map("dify_conversation_id")
+  lastMessageAt      DateTime @default(now()) @map("last_message_at")
+  createdAt          DateTime @default(now()) @map("created_at")
+
+  @@unique([channelId, zaloUserId])
+  @@index([channelId])
+  @@map("zalo_conversations")
 }

@@ -59,6 +59,22 @@ export const env = {
       graphApiVersion: process.env.MESSENGER_API_VERSION?.trim() || "v21.0",
     };
   },
+  /**
+   * Cấu hình app Zalo dùng chung cho mọi tenant.
+   *
+   * Cố tình trả `null` thay vì throw khi thiếu — cùng lý do với `messenger`:
+   * tab Zalo phải hiện được cảnh báo chứ không được làm sập trang tenant.
+   */
+  get zalo() {
+    return {
+      appId: process.env.ZALO_APP_ID?.trim() || null,
+      secretKey: process.env.ZALO_APP_SECRET?.trim() || null,
+    };
+  },
+  /** Bí mật bảo vệ các endpoint cron. Trả `null` khi thiếu để route trả 503 thay vì mở toang. */
+  get cronSecret() {
+    return process.env.CRON_SECRET?.trim() || null;
+  },
   get widgetRateLimit() {
     return {
       /** Số request tối đa cho mỗi cửa sổ. */

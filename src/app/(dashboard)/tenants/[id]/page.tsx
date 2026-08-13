@@ -12,6 +12,7 @@ import { MetaTab } from "@/components/tenants/meta-tab";
 import { PluginTab } from "@/components/tenants/plugin-tab";
 import { TenantDetailTabs } from "@/components/tenants/tenant-detail-tabs";
 import { WidgetConfigTab } from "@/components/tenants/widget-config-tab";
+import { ZaloTab } from "@/components/tenants/zalo-tab";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { decryptSecret, maskSecret } from "@/lib/crypto";
@@ -25,6 +26,10 @@ import {
 } from "@/server/actions/messenger";
 import { deleteTenantAction, updateTenantAction } from "@/server/actions/tenants";
 import { updateWidgetConfigAction } from "@/server/actions/widget-config";
+import {
+  disconnectZaloChannelAction,
+  updateZaloChannelAction,
+} from "@/server/actions/zalo";
 
 type PageProps = {
   params: Promise<{ id: string }>;
@@ -71,6 +76,7 @@ export default async function TenantDetailPage({ params, searchParams }: PagePro
       domains: { orderBy: { domain: "asc" } },
       widgetConfig: true,
       messengerChannel: true,
+      zaloChannel: true,
     },
   });
 
@@ -96,6 +102,19 @@ export default async function TenantDetailPage({ params, searchParams }: PagePro
       pageAccessTokenMasked = UNDECRYPTABLE;
     }
   }
+
+  const zaloChannel = tenant.zaloChannel;
+  let refreshTokenMasked = "";
+  if (zaloChannel) {
+    try {
+      refreshTokenMasked = maskSecret(decryptSecret(zaloChannel.refreshTokenEncrypted));
+    } catch {
+      refreshTokenMasked = UNDECRYPTABLE;
+    }
+  }
+
+  const dateLabel = (value: Date | null) =>
+    value?.toLocaleString("vi-VN", { timeZone: "Asia/Ho_Chi_Minh" }) ?? null;
 
   const widgetConfig = tenant.widgetConfig ?? DEFAULT_WIDGET_CONFIG;
   const embedKey = tenant.apiKeys.find(
@@ -240,6 +259,30 @@ export default async function TenantDetailPage({ params, searchParams }: PagePro
               null,
               tenant.id,
             )}
+          />
+        }
+        zalo={
+          <ZaloTab
+            channel={
+              zaloChannel
+                ? {
+                    oaId: zaloChannel.oaId,
+                    oaName: zaloChannel.oaName,
+                    isActive: zaloChannel.isActive,
+                    refreshTokenMasked,
+                    refreshTokenUpdatedAtLabel:
+                      dateLabel(zaloChannel.refreshTokenUpdatedAt) ?? "—",
+                    accessTokenExpiresAtLabel: dateLabel(
+                      zaloChannel.accessTokenExpiresAt,
+                    ),
+                    lastRefreshError: zaloChannel.lastRefreshError,
+                  }
+                : null
+            }
+            webhookUrl={`${env.publicAppUrl}/api/channels/zalo`}
+            appConfigured={Boolean(env.zalo.appId && env.zalo.secretKey)}
+            action={updateZaloChannelAction.bind(null, tenant.id)}
+            disconnectAction={disconnectZaloChannelAction.bind(null, tenant.id)}
           />
         }
         plugin={<PluginTab />}

@@ -533,9 +533,6 @@ export type $MessengerConversationPayload<ExtArgs extends runtime.Types.Extensio
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
     channelId: string
-    /**
-     * Page-Scoped ID: chỉ có ý nghĩa trong phạm vi đúng page đó.
-     */
     psid: string
     difyConversationId: string | null
     lastMessageAt: Date
