@@ -1,6 +1,7 @@
 import { z } from "zod";
 
 import { normalizeDomain } from "@/lib/domain";
+import { leadFieldsSchema } from "@/lib/lead-fields";
 
 export const tenantCreateSchema = z.object({
   name: z.string().trim().min(2, "Tên tenant tối thiểu 2 ký tự.").max(120),
@@ -14,7 +15,6 @@ export const tenantCreateSchema = z.object({
 
 export const tenantUpdateSchema = tenantCreateSchema
   .extend({
-    // Để trống nghĩa là giữ nguyên key cũ — không ghi đè bằng chuỗi rỗng.
     difyApiKey: z.string().trim().max(500).optional(),
     status: z.enum(["ACTIVE", "INACTIVE"]),
   })
@@ -59,7 +59,6 @@ export const messengerChannelSchema = z.object({
     .max(120)
     .optional()
     .transform((value) => (value ? value : null)),
-  // Để trống nghĩa là giữ nguyên token cũ — không ghi đè bằng chuỗi rỗng.
   pageAccessToken: z.string().trim().max(500).optional(),
   isActive: z.enum(["ACTIVE", "INACTIVE"]),
 });
@@ -79,7 +78,6 @@ export const widgetConfigSchema = z.object({
     .transform((value) => (value ? value : null)),
   welcomeMessage: z.string().trim().min(1, "Bắt buộc nhập tin nhắn chào.").max(500),
   inputPlaceholder: z.string().trim().min(1).max(120),
-  // Checkbox không gửi gì khi bỏ tick, nên coi mọi giá trị khác "on" là tắt.
   leadFormEnabled: z.unknown().transform((value) => value === "on"),
   leadFormTitle: z
     .string()
@@ -96,9 +94,29 @@ export const widgetConfigSchema = z.object({
     .trim()
     .min(1, "Bắt buộc nhập nhãn nút gửi.")
     .max(40),
+  leadFormNameLabel: z
+    .string()
+    .trim()
+    .min(1, "Bắt buộc nhập nhãn ô họ tên.")
+    .max(60),
+  leadFormPhoneLabel: z
+    .string()
+    .trim()
+    .min(1, "Bắt buộc nhập nhãn ô số điện thoại.")
+    .max(60),
+  leadFormFields: z
+    .string()
+    .transform((value, ctx) => {
+      try {
+        return JSON.parse(value || "[]") as unknown;
+      } catch {
+        ctx.addIssue({ code: "custom", message: "Danh sách trường không hợp lệ." });
+        return z.NEVER;
+      }
+    })
+    .pipe(leadFieldsSchema),
 });
 
-/** Gom lỗi Zod thành map field -> thông báo đầu tiên, để render cạnh input. */
 export function fieldErrors(error: z.ZodError): Record<string, string> {
   const result: Record<string, string> = {};
   for (const issue of error.issues) {

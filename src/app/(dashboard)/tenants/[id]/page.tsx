@@ -16,6 +16,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { decryptSecret, maskSecret } from "@/lib/crypto";
 import { env } from "@/lib/env";
+import { parseLeadFields, readLeadExtra } from "@/lib/lead-fields";
 import { prisma } from "@/lib/prisma";
 import { buildEmbedSnippet } from "@/server/embed-script";
 import {
@@ -52,6 +53,9 @@ const DEFAULT_WIDGET_CONFIG = {
   leadFormDescription:
     "Vui lòng để lại thông tin để chúng tôi tư vấn chính xác hơn.",
   leadFormSubmitLabel: "Bắt đầu chat",
+  leadFormNameLabel: "Họ và tên",
+  leadFormPhoneLabel: "Số điện thoại",
+  leadFormFields: [],
 } as const;
 
 const LEADS_PER_PAGE = 50;
@@ -118,8 +122,15 @@ export default async function TenantDetailPage({ params, searchParams }: PagePro
       phone: true,
       pageUrl: true,
       createdAt: true,
+      extra: true,
     },
   });
+
+  const leadFields = parseLeadFields(widgetConfig.leadFormFields);
+  const leadRows = leads.map((lead) => ({
+    ...lead,
+    extra: readLeadExtra(lead.extra),
+  }));
 
   return (
     <div className="flex flex-col gap-6">
@@ -189,6 +200,9 @@ export default async function TenantDetailPage({ params, searchParams }: PagePro
               leadFormTitle: widgetConfig.leadFormTitle,
               leadFormDescription: widgetConfig.leadFormDescription,
               leadFormSubmitLabel: widgetConfig.leadFormSubmitLabel,
+              leadFormNameLabel: widgetConfig.leadFormNameLabel,
+              leadFormPhoneLabel: widgetConfig.leadFormPhoneLabel,
+              leadFormFields: leadFields,
             }}
             action={updateWidgetConfigAction.bind(null, tenant.id)}
           />
@@ -196,11 +210,15 @@ export default async function TenantDetailPage({ params, searchParams }: PagePro
         leads={
           <LeadsTab
             tenantId={tenant.id}
-            leads={leads}
+            leads={leadRows}
             total={leadTotal}
             page={currentLeadPage}
             pageCount={leadPageCount}
             leadFormEnabled={widgetConfig.leadFormEnabled}
+            extraColumns={leadFields.map((field) => ({
+              key: field.key,
+              label: field.label,
+            }))}
           />
         }
         meta={

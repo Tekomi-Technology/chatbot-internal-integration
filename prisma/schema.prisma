@@ -113,12 +113,15 @@ model WidgetConfig {
   inputPlaceholder String       @default("Nhập câu hỏi của bạn...") @map("input_placeholder")
   position       WidgetPosition @default(BOTTOM_RIGHT)
 
-  /// Bật thì khách phải điền họ tên + SĐT mới gõ được tin nhắn. Mặc định tắt để
-  /// tenant đang chạy không đột ngột bị chặn khi migrate.
   leadFormEnabled     Boolean @default(false) @map("lead_form_enabled")
   leadFormTitle       String  @default("Trước khi bắt đầu") @map("lead_form_title")
   leadFormDescription String  @default("Vui lòng để lại thông tin để chúng tôi tư vấn chính xác hơn.") @map("lead_form_description")
   leadFormSubmitLabel String  @default("Bắt đầu chat") @map("lead_form_submit_label")
+
+  leadFormNameLabel  String @default("Họ và tên") @map("lead_form_name_label")
+  leadFormPhoneLabel String @default("Số điện thoại") @map("lead_form_phone_label")
+
+  leadFormFields Json @default("[]") @map("lead_form_fields")
 
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
@@ -126,22 +129,20 @@ model WidgetConfig {
   @@map("widget_configs")
 }
 
-/// Thông tin khách để lại ở form trước khi chat.
 model Lead {
   id       String @id @default(cuid())
   tenantId String @map("tenant_id")
   tenant   Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
 
   fullName String @map("full_name")
-  /// Đã chuẩn hoá về dạng 0xxxxxxxxx trước khi lưu.
   phone    String
-  /// Trùng sessionId widget gửi kèm khi chat, để nối lead với hội thoại.
   sessionId String  @map("session_id")
   pageUrl   String? @map("page_url")
 
+  extra Json @default("{}")
+
   createdAt DateTime @default(now()) @map("created_at")
 
-  // Một phiên chỉ tạo một lead; gửi lại thì ghi đè thay vì sinh dòng rác.
   @@unique([tenantId, sessionId])
   @@index([tenantId, createdAt])
   @@map("leads")
@@ -186,7 +187,6 @@ model MessengerConversation {
   channelId String           @map("channel_id")
   channel   MessengerChannel @relation(fields: [channelId], references: [id], onDelete: Cascade)
 
-  /// Page-Scoped ID: chỉ có ý nghĩa trong phạm vi đúng page đó.
   psid               String
   difyConversationId String?  @map("dify_conversation_id")
   lastMessageAt      DateTime @default(now()) @map("last_message_at")

@@ -6,13 +6,6 @@ export type EmbedSnippetInput = {
   mode: WidgetMode;
 };
 
-/**
- * Sinh đoạn `<script>` để tenant dán vào website của họ.
- *
- * `data-mode` ở đây chỉ là giá trị mặc định lúc tải trang; widget vẫn gọi
- * `/api/widget/config` và ưu tiên mode lưu trong dashboard, nên admin đổi mode
- * mà không cần tenant dán lại script.
- */
 export function buildEmbedSnippet({
   appUrl,
   apiKey,

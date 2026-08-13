@@ -1,4 +1,5 @@
 import { auth } from "@/lib/auth";
+import { parseLeadFields, readLeadExtra } from "@/lib/lead-fields";
 import { prisma } from "@/lib/prisma";
 
 export const runtime = "nodejs";
@@ -7,9 +8,6 @@ export const dynamic = "force-dynamic";
 function csvCell(value: string): string {
   return `"${value.replace(/"/g, '""')}"`;
 }
-
-const HEADER = ["Họ và tên", "Số điện thoại", "Thời gian", "Trang", "Session"];
-
 
 export async function GET(
   _request: Request,
@@ -24,7 +22,10 @@ export async function GET(
 
   const tenant = await prisma.tenant.findUnique({
     where: { id },
-    select: { slug: true },
+    select: {
+      slug: true,
+      widgetConfig: { select: { leadFormFields: true } },
+    },
   });
   if (!tenant) {
     return Response.json({ error: "tenant_not_found" }, { status: 404 });
@@ -39,6 +40,7 @@ export async function GET(
       createdAt: true,
       pageUrl: true,
       sessionId: true,
+      extra: true,
     },
   });
 
@@ -48,17 +50,42 @@ export async function GET(
     timeZone: "Asia/Ho_Chi_Minh",
   });
 
-  const rows = leads.map((lead) =>
+  const extras = leads.map((lead) => readLeadExtra(lead.extra));
+
+  const columns = parseLeadFields(tenant.widgetConfig?.leadFormFields).map(
+    (field) => ({ key: field.key, label: field.label }),
+  );
+  const known = new Set(columns.map((column) => column.key));
+
+  for (const extra of extras) {
+    for (const key of Object.keys(extra)) {
+      if (known.has(key)) continue;
+      known.add(key);
+      columns.push({ key, label: `${key} (đã gỡ)` });
+    }
+  }
+
+  const rows = leads.map((lead, index) =>
     [
       csvCell(lead.fullName),
       csvCell(`="${lead.phone}"`),
+      ...columns.map((column) => csvCell(extras[index][column.key] ?? "")),
       csvCell(formatter.format(lead.createdAt)),
       csvCell(lead.pageUrl ?? ""),
       csvCell(lead.sessionId),
     ].join(","),
   );
 
-  const body = `﻿${[HEADER.map(csvCell).join(","), ...rows].join("\r\n")}\r\n`;
+  const header = [
+    "Họ và tên",
+    "Số điện thoại",
+    ...columns.map((column) => column.label),
+    "Thời gian", 
+    "Trang",
+    "Session",
+  ];
+
+  const body = `﻿${[header.map(csvCell).join(","), ...rows].join("\r\n")}\r\n`;
   const filename = `leads-${tenant.slug}-${new Date().toISOString().slice(0, 10)}.csv`;
 
   return new Response(body, {

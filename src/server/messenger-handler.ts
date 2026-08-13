@@ -14,12 +14,6 @@ import { prisma } from "@/lib/prisma";
 const FALLBACK_MESSAGE =
   "Xin lỗi, trợ lý đang bận. Bạn vui lòng nhắn lại sau ít phút nhé.";
 
-/**
- * Xử lý các sự tin nhắn Messenger sau khi webhook đã trả 200.
- *
- * Chạy trong `after()` nên KHÔNG được ném lỗi ra ngoài: một tin lỗi không được
- * làm hỏng những tin còn lại trong cùng batch.
- */
 export async function handleMessengerEvents(
   events: MessengerTextEvent[],
 ): Promise<void> {
@@ -55,7 +49,6 @@ async function handleOne(event: MessengerTextEvent): Promise<void> {
     },
   });
 
-  // Page lạ hoặc tenant đã tắt: im lặng bỏ qua. Meta vẫn nhận 200 nên không retry.
   if (!channel || !channel.isActive || channel.tenant.status !== "ACTIVE") {
     console.warn("messenger -> bỏ qua sự kiện", {
       pageId: event.pageId,
@@ -66,7 +59,6 @@ async function handleOne(event: MessengerTextEvent): Promise<void> {
 
   const pageAccessToken = decryptSecret(channel.pageAccessTokenEncrypted);
 
-  // Best-effort: hiện chấm "đang soạn tin" trong lúc chờ Dify.
   await sendSenderAction({
     pageAccessToken,
     psid: event.psid,
@@ -144,12 +136,6 @@ async function handleOne(event: MessengerTextEvent): Promise<void> {
   }
 }
 
-/**
- * Gọi Dify, tự thử lại một lần khi hội thoại cũ đã bị xoá bên Dify.
- *
- * Dify trả 404 nếu `conversation_id` không còn tồn tại (ví dụ app bị reset).
- * Không xử lý thì người dùng sẽ kẹt vĩnh viễn ở lỗi này vì id hỏng vẫn nằm trong DB.
- */
 async function askDify(options: {
   tenant: { difyApiKeyEncrypted: string; difyApiBaseUrl: string | null };
   query: string;

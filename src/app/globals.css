@@ -1,11 +1,6 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 
-/*
- * Bảng màu: Indigo #4F46E5 làm primary duy nhất, còn lại là thang xám trung
- * tính. Chỉ dùng thêm màu khi mang nghĩa trạng thái (success/destructive).
- * Dashboard cố định light mode — Phase 1 chưa cần dark mode.
- */
 :root {
   --background: #f8fafc;
   --foreground: #0f172a;

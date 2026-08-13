@@ -13,10 +13,8 @@ import {
 } from "@/server/action-state";
 import { fieldErrors, messengerChannelSchema } from "@/server/validation";
 
-/** Field được echo lại khi lỗi. Cố tình loại `pageAccessToken` — không giữ secret. */
 const META_ECHO_FIELDS = ["pageId", "pageName", "isActive"] as const;
 
-/** Prisma báo trùng unique — ở đây chỉ có thể là `page_id` đã thuộc tenant khác. */
 function isUniqueViolation(error: unknown): boolean {
   return (
     typeof error === "object" &&
@@ -55,7 +53,6 @@ export async function updateMessengerChannelAction(
     select: { id: true },
   });
 
-  // Lần kết nối đầu tiên bắt buộc phải có token; các lần sau để trống = giữ nguyên.
   if (!existing && !pageAccessToken) {
     return errorState(
       "Vui lòng kiểm tra lại thông tin kết nối.",
@@ -82,7 +79,6 @@ export async function updateMessengerChannelAction(
           pageId,
           pageName,
           isActive: isActive === "ACTIVE",
-          // Bỏ trống ô token nghĩa là giữ nguyên token đang lưu.
           ...(pageAccessToken
             ? { pageAccessTokenEncrypted: encryptSecret(pageAccessToken) }
             : {}),
@@ -110,7 +106,6 @@ export async function updateMessengerChannelAction(
   return successState("Đã lưu kết nối Meta.");
 }
 
-/** Ngắt kết nối Page. Xoá luôn ánh xạ hội thoại — kết nối lại sẽ bắt đầu ngữ cảnh mới. */
 export async function disconnectMessengerChannelAction(
   tenantId: string,
 ): Promise<void> {

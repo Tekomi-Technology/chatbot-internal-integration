@@ -6,12 +6,6 @@ import { buildEmbedSnippet } from "@/server/embed-script";
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
-/**
- * GET /api/admin/tenants/:id/embed-script[?keyId=...]
- *
- * Trả snippet dạng JSON để dashboard hiển thị và cho phép copy. Route này nằm
- * sau middleware auth, nhưng vẫn tự kiểm tra session để an toàn khi matcher đổi.
- */
 export async function GET(
   request: Request,
   { params }: { params: Promise<{ id: string }> },

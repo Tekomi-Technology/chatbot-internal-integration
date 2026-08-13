@@ -23,13 +23,6 @@ export async function OPTIONS(request: NextRequest) {
   return preflightResponse(request.headers.get("origin"));
 }
 
-/**
- * POST /api/widget/chat — proxy từ widget sang app Dify của tenant.
- *
- * Thứ tự kiểm tra: API key -> domain whitelist -> rate limit -> forward.
- * Mọi phản hồi (kể cả lỗi) đều echo lại Origin để widget đọc được nội dung lỗi
- * thay vì chỉ thấy "CORS error" mơ hồ.
- */
 export async function POST(request: NextRequest) {
   const origin = request.headers.get("origin");
 
@@ -60,7 +53,6 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  // --- (a) API key hợp lệ và đang active -----------------------------------
   const apiKey = await prisma.apiKey.findUnique({
     where: { keyValue },
     select: {
@@ -87,9 +79,6 @@ export async function POST(request: NextRequest) {
 
   const tenant = apiKey.tenant;
 
-  // --- (b) Domain whitelist -------------------------------------------------
-  // Origin là nguồn tin cậy hơn; Referer chỉ dùng dự phòng khi browser không
-  // gửi Origin. Không có cả hai -> từ chối, vì không xác thực được nguồn gọi.
   const callerHost =
     hostnameFromHeader(origin) ?? hostnameFromHeader(request.headers.get("referer"));
 
@@ -104,7 +93,6 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  // --- Rate limit -----------------------------------------------------------
   const rate = checkRateLimit(`${apiKey.id}:${clientIpFrom(request.headers)}`);
   const rateHeaders = {
     "X-RateLimit-Limit": String(rate.limit),
@@ -126,7 +114,6 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  // --- (c) Forward sang Dify ------------------------------------------------
   const startedAt = Date.now();
   let result;
   try {
@@ -138,8 +125,6 @@ export async function POST(request: NextRequest) {
       conversationId: parsed.data.conversationId ?? null,
     });
   } catch (error) {
-    // Log đầy đủ ở server, nhưng không trả chi tiết upstream về widget để tránh
-    // lộ cấu trúc hệ thống Dify nội bộ.
     console.error("widget/chat -> dify", {
       tenantId: tenant.id,
       error: error instanceof DifyError ? { status: error.status, detail: error.detail } : error,
@@ -154,7 +139,6 @@ export async function POST(request: NextRequest) {
 
   const latencyMs = Date.now() - startedAt;
 
-  // Cập nhật lastUsedAt và ghi log là việc phụ — không để chúng làm hỏng response.
   void prisma.apiKey
     .update({ where: { id: apiKey.id }, data: { lastUsedAt: new Date() } })
     .catch((error) => console.error("widget/chat -> lastUsedAt", error));

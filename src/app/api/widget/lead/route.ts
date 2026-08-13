@@ -3,6 +3,7 @@ import { z } from "zod";
 
 import { jsonWithCors, preflightResponse } from "@/lib/cors";
 import { hostnameFromHeader, isDomainAllowed } from "@/lib/domain";
+import { parseLeadFields, validateLeadExtra } from "@/lib/lead-fields";
 import { normalizeVnPhone } from "@/lib/phone";
 import { prisma } from "@/lib/prisma";
 import { checkRateLimit, clientIpFrom } from "@/lib/rate-limit";
@@ -15,6 +16,8 @@ const bodySchema = z.object({
   phone: z.string().trim().min(1).max(20),
   sessionId: z.string().trim().min(1).max(100),
   pageUrl: z.string().trim().max(2000).nullish(),
+  // Giá trị trường phụ; nội dung được kiểm theo cấu hình của tenant bên dưới.
+  extra: z.record(z.string(), z.unknown()).nullish(),
   apiKey: z.string().trim().max(100).optional(),
 });
 
@@ -22,13 +25,6 @@ export async function OPTIONS(request: NextRequest) {
   return preflightResponse(request.headers.get("origin"));
 }
 
-/**
- * POST /api/widget/lead — nhận họ tên + SĐT khách điền ở form trước khi chat.
- *
- * Chuỗi kiểm tra giống hệt /api/widget/chat (API key -> domain whitelist -> rate
- * limit) vì đây cũng là endpoint công khai gọi từ website tenant. Rate limit
- * dùng bucket riêng để một trận spam form không làm khách khác mất quyền chat.
- */
 export async function POST(request: NextRequest) {
   const origin = request.headers.get("origin");
 
@@ -77,6 +73,7 @@ export async function POST(request: NextRequest) {
           id: true,
           status: true,
           domains: { select: { domain: true } },
+          widgetConfig: { select: { leadFormFields: true } },
         },
       },
     },
@@ -117,14 +114,23 @@ export async function POST(request: NextRequest) {
     );
   }
 
+  const fields = parseLeadFields(tenant.widgetConfig?.leadFormFields);
+  const extra = validateLeadExtra(fields, parsed.data.extra);
+  if (!extra.ok) {
+    return jsonWithCors(
+      { error: "invalid_extra", message: extra.message },
+      { status: 400, origin },
+    );
+  }
+
   const data = {
     fullName: parsed.data.fullName,
     phone,
     pageUrl: parsed.data.pageUrl || null,
+    extra: extra.value,
   };
 
   try {
-    // upsert theo phiên: khách bấm gửi hai lần chỉ cập nhật một dòng.
     await prisma.lead.upsert({
       where: {
         tenantId_sessionId: { tenantId: tenant.id, sessionId: parsed.data.sessionId },

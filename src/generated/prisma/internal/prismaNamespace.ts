@@ -1196,6 +1196,9 @@ export const WidgetConfigScalarFieldEnum = {
   leadFormTitle: 'leadFormTitle',
   leadFormDescription: 'leadFormDescription',
   leadFormSubmitLabel: 'leadFormSubmitLabel',
+  leadFormNameLabel: 'leadFormNameLabel',
+  leadFormPhoneLabel: 'leadFormPhoneLabel',
+  leadFormFields: 'leadFormFields',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
@@ -1210,6 +1213,7 @@ export const LeadScalarFieldEnum = {
   phone: 'phone',
   sessionId: 'sessionId',
   pageUrl: 'pageUrl',
+  extra: 'extra',
   createdAt: 'createdAt'
 } as const
 

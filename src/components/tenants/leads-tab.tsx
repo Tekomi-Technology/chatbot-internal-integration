@@ -25,7 +25,10 @@ export type LeadRow = {
   phone: string;
   pageUrl: string | null;
   createdAt: Date;
+  extra: Record<string, string>;
 };
+
+export type LeadExtraColumn = { key: string; label: string };
 
 export function LeadsTab({
   tenantId,
@@ -34,6 +37,7 @@ export function LeadsTab({
   page,
   pageCount,
   leadFormEnabled,
+  extraColumns,
 }: {
   tenantId: string;
   leads: LeadRow[];
@@ -41,6 +45,7 @@ export function LeadsTab({
   page: number;
   pageCount: number;
   leadFormEnabled: boolean;
+  extraColumns: LeadExtraColumn[];
 }) {
   return (
     <Card>
@@ -73,12 +78,15 @@ export function LeadsTab({
           </p>
         ) : (
           <>
-            <div className="rounded-md border border-border">
+            <div className="overflow-x-auto rounded-md border border-border">
               <Table>
                 <TableHeader>
                   <TableRow>
                     <TableHead>Họ và tên</TableHead>
                     <TableHead>Số điện thoại</TableHead>
+                    {extraColumns.map((column) => (
+                      <TableHead key={column.key}>{column.label}</TableHead>
+                    ))}
                     <TableHead>Thời gian</TableHead>
                     <TableHead>Trang</TableHead>
                   </TableRow>
@@ -95,7 +103,12 @@ export function LeadsTab({
                           {lead.phone}
                         </a>
                       </TableCell>
-                      <TableCell className="text-xs text-muted-foreground">
+                      {extraColumns.map((column) => (
+                        <TableCell key={column.key} className="text-sm">
+                          {lead.extra[column.key] || "—"}
+                        </TableCell>
+                      ))}
+                      <TableCell className="whitespace-nowrap text-xs text-muted-foreground">
                         {formatDateTime(lead.createdAt)}
                       </TableCell>
                       <TableCell className="max-w-[18rem] truncate text-xs text-muted-foreground">
@@ -147,10 +160,7 @@ export function LeadsTab({
   );
 }
 
-/**
- * Phân trang bằng link chứ không phải state: giữ được vị trí khi tải lại trang.
- * `tab=leads` là bắt buộc, nếu không điều hướng sẽ rơi về tab mặc định.
- */
+
 function PageLink({
   tenantId,
   page,

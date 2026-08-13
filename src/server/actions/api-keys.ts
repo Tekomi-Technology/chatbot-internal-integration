@@ -46,8 +46,6 @@ export async function createApiKeyAction(
   }
 
   revalidatePath(`/tenants/${tenantId}`);
-  // Key public nên hiển thị lại được bất cứ lúc nào; trả về đây để UI highlight
-  // dòng vừa tạo.
   return successState("Đã tạo API key mới.", { keyValue });
 }
 
@@ -98,7 +96,6 @@ export async function addDomainAction(
       data: { tenantId, domain: parsed.data.domain },
     });
   } catch (error) {
-    // P2002 = unique constraint (tenantId, domain).
     if ((error as { code?: string }).code === "P2002") {
       return errorState("Domain này đã có trong whitelist.", {
         domain: "Đã tồn tại.",

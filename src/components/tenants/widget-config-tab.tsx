@@ -15,7 +15,9 @@ import {
 import { Input } from "@/components/ui/input";
 import { Select } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
+import { LeadFieldEditor } from "@/components/tenants/lead-field-editor";
 import { WidgetPreview } from "@/components/tenants/widget-preview";
+import type { LeadField } from "@/lib/lead-fields";
 import { idleState, type ActionState } from "@/server/action-state";
 
 export type WidgetConfigValues = {
@@ -30,6 +32,9 @@ export type WidgetConfigValues = {
   leadFormTitle: string;
   leadFormDescription: string;
   leadFormSubmitLabel: string;
+  leadFormNameLabel: string;
+  leadFormPhoneLabel: string;
+  leadFormFields: LeadField[];
 };
 
 export function WidgetConfigTab({
@@ -41,8 +46,6 @@ export function WidgetConfigTab({
 }) {
   const [state, formAction] = useActionState(action, idleState);
 
-  // Mọi field ảnh hưởng tới giao diện đều là input kiểm soát, để khung xem trước
-  // bên phải cập nhật ngay theo từng ký tự chứ không phải đợi lưu.
   const [draft, setDraft] = useState<WidgetConfigValues>({
     ...config,
     logoUrl: config.logoUrl ?? "",
@@ -67,7 +70,6 @@ export function WidgetConfigTab({
         </CardHeader>
 
         <CardContent>
-          {/* Xem chú thích ở new-tenant-form: remount để giữ giá trị khi lỗi. */}
           <form
             key={state.stamp ?? "init"}
             action={formAction}
@@ -109,8 +111,6 @@ export function WidgetConfigTab({
                 </Select>
               </FormField>
             ) : (
-              // Mode inline không dùng position, nhưng vẫn phải gửi giá trị để
-              // schema validate được và cấu hình cũ không bị mất.
               <input type="hidden" name="position" value={draft.position} />
             )}
 
@@ -261,10 +261,48 @@ export function WidgetConfigTab({
                       required
                     />
                   </FormField>
+
+                  <div className="grid gap-4 sm:grid-cols-2">
+                    <FormField
+                      name="leadFormNameLabel"
+                      label="Nhãn ô họ tên"
+                      error={state.errors?.leadFormNameLabel}
+                    >
+                      <Input
+                        id="leadFormNameLabel"
+                        name="leadFormNameLabel"
+                        value={draft.leadFormNameLabel}
+                        onChange={(event) =>
+                          set("leadFormNameLabel", event.target.value)
+                        }
+                        required
+                      />
+                    </FormField>
+
+                    <FormField
+                      name="leadFormPhoneLabel"
+                      label="Nhãn ô số điện thoại"
+                      error={state.errors?.leadFormPhoneLabel}
+                    >
+                      <Input
+                        id="leadFormPhoneLabel"
+                        name="leadFormPhoneLabel"
+                        value={draft.leadFormPhoneLabel}
+                        onChange={(event) =>
+                          set("leadFormPhoneLabel", event.target.value)
+                        }
+                        required
+                      />
+                    </FormField>
+                  </div>
+
+                  <LeadFieldEditor
+                    fields={draft.leadFormFields}
+                    onChange={(fields) => set("leadFormFields", fields)}
+                    error={state.errors?.leadFormFields}
+                  />
                 </>
               ) : (
-                // Form tắt thì ẩn 3 ô cho gọn, nhưng vẫn phải gửi giá trị lên —
-                // schema bắt buộc chúng và nội dung cũ không nên bị xoá.
                 <>
                   <input type="hidden" name="leadFormTitle" value={draft.leadFormTitle} />
                   <input
@@ -276,6 +314,21 @@ export function WidgetConfigTab({
                     type="hidden"
                     name="leadFormSubmitLabel"
                     value={draft.leadFormSubmitLabel}
+                  />
+                  <input
+                    type="hidden"
+                    name="leadFormNameLabel"
+                    value={draft.leadFormNameLabel}
+                  />
+                  <input
+                    type="hidden"
+                    name="leadFormPhoneLabel"
+                    value={draft.leadFormPhoneLabel}
+                  />
+                  <input
+                    type="hidden"
+                    name="leadFormFields"
+                    value={JSON.stringify(draft.leadFormFields)}
                   />
                 </>
               )}

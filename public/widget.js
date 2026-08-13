@@ -14,7 +14,6 @@
     return;
   }
 
-  // Base URL suy ra từ chính src của script, nên tenant không phải cấu hình thêm.
   var origin = new URL(script.src, window.location.href).origin;
   var fallbackMode = (script.getAttribute("data-mode") || "bubble").toLowerCase();
   var targetSelector = script.getAttribute("data-target") || "#chatbot-container";
@@ -81,7 +80,7 @@
     return VN_MOBILE.test(value.replace(/[\s.\-()]/g, ""));
   }
 
-  // -------------------------------------------------------------------- styles
+  var EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 
   function buildStyles(config) {
     return [
@@ -147,6 +146,7 @@
       ".messages {",
       "  flex: 1; overflow-y: auto; padding: 16px; display: flex;",
       "  flex-direction: column; gap: 10px; background: #f8fafc;",
+      "  min-height: 56px;",
       "}",
       ".msg { max-width: 82%; padding: 9px 12px; border-radius: 12px; white-space: pre-wrap; word-wrap: break-word; }",
       ".msg--bot { align-self: flex-start; background: #fff; border: 1px solid #e2e8f0; border-bottom-left-radius: 4px; }",
@@ -182,11 +182,13 @@
 
       ".leadform {",
       "  display: flex; flex-direction: column; gap: 8px; padding: 14px;",
-      "  border-top: 1px solid #e2e8f0; background: #fff; flex-shrink: 0;",
+      "  border-top: 1px solid #e2e8f0; background: #fff;",
+      "  overflow-y: auto;",
       "}",
       ".leadform__title { font-weight: 600; }",
       ".leadform__desc { margin: 0; font-size: 13px; color: #64748b; }",
       ".leadform label { font-size: 13px; font-weight: 500; }",
+      ".leadform__req { color: #dc2626; }",
       ".leadform input {",
       "  border: 1px solid #cbd5e1; border-radius: 10px; padding: 9px 11px;",
       "  font: inherit; color: inherit; outline: none; width: 100%;",
@@ -204,7 +206,6 @@
     ].join("\n");
   }
 
-  // ------------------------------------------------------------------- helpers
 
   var ICON_CHAT =
     '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>';
@@ -225,7 +226,7 @@
   }
 
   function buildLeadForm(leadForm) {
-    var form = el("form", "leadform");
+    var form = el("form", "leadform", { novalidate: "novalidate" });
 
     var title = el("div", "leadform__title");
     title.textContent = leadForm.title || "Trước khi bắt đầu";
@@ -239,26 +240,62 @@
 
     var fields = {};
 
-    [
-      { name: "fullName", label: "Họ và tên", type: "text", autocomplete: "name" },
-      { name: "phone", label: "Số điện thoại", type: "tel", autocomplete: "tel" },
-    ].forEach(function (spec) {
+    function addInput(spec) {
       var id = "leadform-" + spec.name;
       var label = el("label", null, { for: id });
       label.textContent = spec.label;
+      if (spec.required) {
+        var mark = el("span", "leadform__req");
+        mark.textContent = " *";
+        label.appendChild(mark);
+      }
 
-      var field = el("input", null, {
-        id: id,
-        name: spec.name,
-        type: spec.type,
-        autocomplete: spec.autocomplete,
-        required: "required",
-      });
-      if (spec.name === "phone") field.setAttribute("inputmode", "tel");
+      var attrs = { id: id, name: spec.name, type: spec.type };
+      if (spec.autocomplete) attrs.autocomplete = spec.autocomplete;
+      var field = el("input", null, attrs);
+      if (spec.required) field.setAttribute("aria-required", "true");
+      if (spec.type === "tel") field.setAttribute("inputmode", "tel");
 
       form.appendChild(label);
       form.appendChild(field);
-      fields[spec.name] = field;
+      return field;
+    }
+
+    fields.fullName = addInput({
+      name: "fullName",
+      label: leadForm.nameLabel || "Họ và tên",
+      type: "text",
+      autocomplete: "name",
+      required: true,
+    });
+
+    fields.phone = addInput({
+      name: "phone",
+      label: leadForm.phoneLabel || "Số điện thoại",
+      type: "tel",
+      autocomplete: "tel",
+      required: true,
+    });
+
+    var extra = [];
+    var extraSpecs = Array.isArray(leadForm.fields) ? leadForm.fields : [];
+
+    extraSpecs.forEach(function (spec, index) {
+      if (!spec || !spec.key || !spec.label) return;
+      var type = spec.type === "email" ? "email" : "text";
+      extra.push({
+        key: spec.key,
+        label: spec.label,
+        type: type,
+        required: Boolean(spec.required),
+        input: addInput({
+          name: "extra" + index,
+          label: spec.label,
+          type: type,
+          autocomplete: type === "email" ? "email" : null,
+          required: Boolean(spec.required),
+        }),
+      });
     });
 
     var errorEl = el("p", "leadform__error", { role: "alert" });
@@ -270,6 +307,7 @@
     form.appendChild(submitBtn);
 
     form.fields = fields;
+    form.extra = extra;
     form.errorEl = errorEl;
     form.submitBtn = submitBtn;
     return form;
@@ -323,7 +361,6 @@
     var root = el("div", "root" + (mode === "inline" ? " root--inline" : ""));
     shadow.appendChild(root);
 
-    // --- khung chat ---------------------------------------------------------
     var panel = el(
       "div",
       "panel " + (mode === "inline" ? "panel--inline" : "panel--floating"),
@@ -440,6 +477,41 @@
       leadEl.errorEl.hidden = true;
       leadEl.fields.fullName.removeAttribute("aria-invalid");
       leadEl.fields.phone.removeAttribute("aria-invalid");
+      leadEl.extra.forEach(function (entry) {
+        entry.input.removeAttribute("aria-invalid");
+      });
+    }
+
+    function collectExtra() {
+      var values = {};
+
+      for (var i = 0; i < leadEl.extra.length; i += 1) {
+        var entry = leadEl.extra[i];
+        var text = entry.input.value.trim();
+
+        if (!text) {
+          if (entry.required) {
+            showLeadError(
+              "Vui lòng nhập " + entry.label.toLowerCase() + ".",
+              entry.input,
+            );
+            return null;
+          }
+          continue;
+        }
+
+        if (entry.type === "email" && !EMAIL.test(text)) {
+          showLeadError(
+            entry.label + " chưa đúng định dạng. Ví dụ: ten@congty.com.",
+            entry.input,
+          );
+          return null;
+        }
+
+        values[entry.key] = text;
+      }
+
+      return values;
     }
 
     function unlockComposer(fullName) {
@@ -470,6 +542,9 @@
         return;
       }
 
+      var extraValues = collectExtra();
+      if (!extraValues) return;
+
       sendingLead = true;
       leadEl.submitBtn.disabled = true;
 
@@ -485,6 +560,7 @@
           phone: phone,
           sessionId: sessionId,
           pageUrl: window.location.href,
+          extra: extraValues,
         }),
       })
         .then(function (response) {
@@ -523,6 +599,9 @@
       });
       leadEl.fields.fullName.addEventListener("input", clearLeadError);
       leadEl.fields.phone.addEventListener("input", clearLeadError);
+      leadEl.extra.forEach(function (entry) {
+        entry.input.addEventListener("input", clearLeadError);
+      });
     }
 
 

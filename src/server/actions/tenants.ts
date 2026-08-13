@@ -20,10 +20,8 @@ import {
   tenantUpdateSchema,
 } from "@/server/validation";
 
-/** Field được echo lại khi lỗi. Cố tình loại `difyApiKey` — không giữ secret. */
 const TENANT_ECHO_FIELDS = ["name", "difyAppId", "difyApiBaseUrl", "status"] as const;
 
-/** Thêm hậu tố khi slug đã bị chiếm, để tên tenant trùng nhau vẫn tạo được. */
 async function uniqueSlug(name: string): Promise<string> {
   const base = slugify(name);
   for (let attempt = 0; attempt < 20; attempt += 1) {
@@ -62,8 +60,6 @@ export async function createTenantAction(
 
   let tenantId: string;
   try {
-    // Tạo tenant kèm sẵn 1 public key và widget config mặc định — admin dán được
-    // script nhúng ngay mà không phải thao tác thêm.
     const tenant = await prisma.tenant.create({
       data: {
         name,
@@ -125,7 +121,6 @@ export async function updateTenantAction(
         difyAppId,
         difyApiBaseUrl,
         status,
-        // Bỏ trống ô key nghĩa là giữ nguyên key đang lưu.
         ...(difyApiKey ? { difyApiKeyEncrypted: encryptSecret(difyApiKey) } : {}),
       },
     });
@@ -158,7 +153,6 @@ export async function setTenantStatusAction(
 export async function deleteTenantAction(tenantId: string) {
   await requireAdmin();
 
-  // Cascade ở schema sẽ dọn api_keys / domains / widget_config / logs.
   await prisma.tenant.delete({ where: { id: tenantId } });
 
   revalidatePath("/tenants");

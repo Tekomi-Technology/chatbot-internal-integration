@@ -82,7 +82,7 @@ function ChatPanel({
         {showClose ? <X className="size-4 shrink-0 opacity-85" /> : null}
       </div>
 
-      <div className="flex flex-1 flex-col gap-2.5 overflow-hidden bg-slate-50 p-4">
+      <div className="flex min-h-14 flex-1 flex-col gap-2.5 overflow-hidden bg-slate-50 p-4">
         {config.welcomeMessage.trim() ? (
           <p className="max-w-[82%] self-start whitespace-pre-wrap rounded-xl rounded-bl-sm border border-slate-200 bg-white px-3 py-2 text-[13px] leading-snug text-slate-900">
             {config.welcomeMessage}
@@ -130,7 +130,8 @@ function ChatPanel({
 /** Khớp với khối .leadform trong public/widget.js. */
 function LeadFormPreview({ config }: { config: WidgetConfigValues }) {
   return (
-    <div className="flex shrink-0 flex-col gap-2 border-t border-slate-200 bg-white p-3.5">
+    // Khớp với .leadform của widget thật: nhiều trường thì form tự cuộn.
+    <div className="flex flex-col gap-2 overflow-y-auto border-t border-slate-200 bg-white p-3.5">
       <p className="text-[13px] font-semibold text-slate-900">
         {config.leadFormTitle.trim() || "Trước khi bắt đầu"}
       </p>
@@ -139,9 +140,24 @@ function LeadFormPreview({ config }: { config: WidgetConfigValues }) {
           "Vui lòng để lại thông tin để chúng tôi tư vấn chính xác hơn."}
       </p>
 
-      {["Họ và tên", "Số điện thoại"].map((label) => (
-        <div key={label} className="flex flex-col gap-1">
-          <span className="text-xs font-medium text-slate-900">{label}</span>
+      {[
+        { key: "__name", label: config.leadFormNameLabel.trim() || "Họ và tên", required: true },
+        {
+          key: "__phone",
+          label: config.leadFormPhoneLabel.trim() || "Số điện thoại",
+          required: true,
+        },
+        ...config.leadFormFields.map((field) => ({
+          key: field.key,
+          label: field.label.trim() || "(chưa đặt nhãn)",
+          required: field.required,
+        })),
+      ].map((field) => (
+        <div key={field.key} className="flex flex-col gap-1">
+          <span className="text-xs font-medium text-slate-900">
+            {field.label}
+            {field.required ? <span className="text-red-600"> *</span> : null}
+          </span>
           <div className="h-8 rounded-[10px] border border-slate-300" />
         </div>
       ))}
