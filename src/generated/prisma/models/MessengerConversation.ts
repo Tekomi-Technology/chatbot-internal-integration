@@ -14,8 +14,7 @@ import type * as Prisma from "../internal/prismaNamespace"
 
 /**
  * Model MessengerConversation
- * Ánh xạ một người dùng Messenger (PSID) tới hội thoại Dify của họ, để bot
- * nhớ được ngữ cảnh giữa các tin nhắn.
+ * 
  */
 export type MessengerConversationModel = runtime.Types.Result.DefaultSelection<Prisma.$MessengerConversationPayload>
 

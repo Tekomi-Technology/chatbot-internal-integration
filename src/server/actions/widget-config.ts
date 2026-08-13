@@ -21,6 +21,9 @@ const WIDGET_ECHO_FIELDS = [
   "logoUrl",
   "welcomeMessage",
   "inputPlaceholder",
+  "leadFormTitle",
+  "leadFormDescription",
+  "leadFormSubmitLabel",
 ] as const;
 
 export async function updateWidgetConfigAction(
@@ -38,6 +41,10 @@ export async function updateWidgetConfigAction(
     logoUrl: formData.get("logoUrl") ?? "",
     welcomeMessage: formData.get("welcomeMessage"),
     inputPlaceholder: formData.get("inputPlaceholder"),
+    leadFormEnabled: formData.get("leadFormEnabled"),
+    leadFormTitle: formData.get("leadFormTitle"),
+    leadFormDescription: formData.get("leadFormDescription"),
+    leadFormSubmitLabel: formData.get("leadFormSubmitLabel"),
   });
 
   if (!parsed.success) {

@@ -7,6 +7,7 @@ import { ConfirmActionButton } from "@/components/confirm-action-button";
 import { ApiKeysTab } from "@/components/tenants/api-keys-tab";
 import { EmbedTab } from "@/components/tenants/embed-tab";
 import { GeneralTab } from "@/components/tenants/general-tab";
+import { LeadsTab } from "@/components/tenants/leads-tab";
 import { MetaTab } from "@/components/tenants/meta-tab";
 import { PluginTab } from "@/components/tenants/plugin-tab";
 import { TenantDetailTabs } from "@/components/tenants/tenant-detail-tabs";
@@ -24,7 +25,10 @@ import {
 import { deleteTenantAction, updateTenantAction } from "@/server/actions/tenants";
 import { updateWidgetConfigAction } from "@/server/actions/widget-config";
 
-type PageProps = { params: Promise<{ id: string }> };
+type PageProps = {
+  params: Promise<{ id: string }>;
+  searchParams: Promise<{ tab?: string; leadPage?: string }>;
+};
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { id } = await params;
@@ -43,10 +47,18 @@ const DEFAULT_WIDGET_CONFIG = {
   primaryColor: "#4F46E5",
   welcomeMessage: "Xin chào! Tôi có thể giúp gì cho bạn?",
   inputPlaceholder: "Nhập câu hỏi của bạn...",
+  leadFormEnabled: false,
+  leadFormTitle: "Trước khi bắt đầu",
+  leadFormDescription:
+    "Vui lòng để lại thông tin để chúng tôi tư vấn chính xác hơn.",
+  leadFormSubmitLabel: "Bắt đầu chat",
 } as const;
 
-export default async function TenantDetailPage({ params }: PageProps) {
+const LEADS_PER_PAGE = 50;
+
+export default async function TenantDetailPage({ params, searchParams }: PageProps) {
   const { id } = await params;
+  const { tab, leadPage } = await searchParams;
 
   const tenant = await prisma.tenant.findUnique({
     where: { id },
@@ -86,6 +98,29 @@ export default async function TenantDetailPage({ params }: PageProps) {
     (key) => key.type === "PUBLIC" && key.isActive,
   )?.keyValue;
 
+  // Lead có thể lên tới hàng nghìn dòng nên phải phân trang; đếm trước để biết
+  // số trang, rồi kẹp trang yêu cầu vào khoảng hợp lệ trước khi truy vấn.
+  const leadTotal = await prisma.lead.count({ where: { tenantId: tenant.id } });
+  const leadPageCount = Math.max(1, Math.ceil(leadTotal / LEADS_PER_PAGE));
+  const currentLeadPage = Math.min(
+    Math.max(1, Number.parseInt(leadPage ?? "1", 10) || 1),
+    leadPageCount,
+  );
+
+  const leads = await prisma.lead.findMany({
+    where: { tenantId: tenant.id },
+    orderBy: { createdAt: "desc" },
+    skip: (currentLeadPage - 1) * LEADS_PER_PAGE,
+    take: LEADS_PER_PAGE,
+    select: {
+      id: true,
+      fullName: true,
+      phone: true,
+      pageUrl: true,
+      createdAt: true,
+    },
+  });
+
   return (
     <div className="flex flex-col gap-6">
       <div>
@@ -119,6 +154,7 @@ export default async function TenantDetailPage({ params }: PageProps) {
       </div>
 
       <TenantDetailTabs
+        defaultTab={tab}
         general={
           <GeneralTab
             tenant={{
@@ -149,8 +185,22 @@ export default async function TenantDetailPage({ params }: PageProps) {
               primaryColor: widgetConfig.primaryColor,
               welcomeMessage: widgetConfig.welcomeMessage,
               inputPlaceholder: widgetConfig.inputPlaceholder,
+              leadFormEnabled: widgetConfig.leadFormEnabled,
+              leadFormTitle: widgetConfig.leadFormTitle,
+              leadFormDescription: widgetConfig.leadFormDescription,
+              leadFormSubmitLabel: widgetConfig.leadFormSubmitLabel,
             }}
             action={updateWidgetConfigAction.bind(null, tenant.id)}
+          />
+        }
+        leads={
+          <LeadsTab
+            tenantId={tenant.id}
+            leads={leads}
+            total={leadTotal}
+            page={currentLeadPage}
+            pageCount={leadPageCount}
+            leadFormEnabled={widgetConfig.leadFormEnabled}
           />
         }
         meta={

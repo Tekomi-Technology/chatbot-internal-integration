@@ -56,6 +56,7 @@ export const ModelName = {
   ApiKey: 'ApiKey',
   DomainWhitelist: 'DomainWhitelist',
   WidgetConfig: 'WidgetConfig',
+  Lead: 'Lead',
   ConversationLog: 'ConversationLog',
   MessengerChannel: 'MessengerChannel',
   MessengerConversation: 'MessengerConversation'
@@ -139,11 +140,28 @@ export const WidgetConfigScalarFieldEnum = {
   welcomeMessage: 'welcomeMessage',
   inputPlaceholder: 'inputPlaceholder',
   position: 'position',
+  leadFormEnabled: 'leadFormEnabled',
+  leadFormTitle: 'leadFormTitle',
+  leadFormDescription: 'leadFormDescription',
+  leadFormSubmitLabel: 'leadFormSubmitLabel',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
 
 export type WidgetConfigScalarFieldEnum = (typeof WidgetConfigScalarFieldEnum)[keyof typeof WidgetConfigScalarFieldEnum]
+
+
+export const LeadScalarFieldEnum = {
+  id: 'id',
+  tenantId: 'tenantId',
+  fullName: 'fullName',
+  phone: 'phone',
+  sessionId: 'sessionId',
+  pageUrl: 'pageUrl',
+  createdAt: 'createdAt'
+} as const
+
+export type LeadScalarFieldEnum = (typeof LeadScalarFieldEnum)[keyof typeof LeadScalarFieldEnum]
 
 
 export const ConversationLogScalarFieldEnum = {

@@ -14,7 +14,7 @@ import type * as Prisma from "../internal/prismaNamespace"
 
 /**
  * Model ConversationLog
- * Phase 2. Chỉ ghi khi ENABLE_CONVERSATION_LOG=true; chưa có UI đọc.
+ * 
  */
 export type ConversationLogModel = runtime.Types.Result.DefaultSelection<Prisma.$ConversationLogPayload>
 

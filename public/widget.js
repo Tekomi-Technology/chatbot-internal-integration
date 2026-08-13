@@ -1,19 +1,4 @@
-/**
- * Widget chatbot nhúng — vanilla JS, không phụ thuộc thư viện nào.
- *
- * File này KHÔNG đi qua bundler của Next.js: nó nằm trong /public và được serve
- * nguyên văn dưới dạng file tĩnh. Vì vậy chỉ dùng cú pháp chạy thẳng được trên
- * trình duyệt hiện đại — không import/export, không build step.
- *
- * Cách dùng:
- *   <script src="https://dashboard.example.com/widget.js"
- *           data-api-key="pk_xxx"
- *           data-mode="bubble"
- *           defer></script>
- *
- * Toàn bộ UI nằm trong Shadow DOM để CSS của website chủ nhà không ảnh hưởng
- * tới widget và ngược lại.
- */
+
 (function () {
   "use strict";
 
@@ -36,16 +21,12 @@
 
   var STORAGE_PREFIX = "chatbot:" + apiKey + ":";
 
-  // ---------------------------------------------------------------- phiên chat
-
-  /** sessionId sống theo tab; dùng làm `user` khi gọi Dify. */
   function getSessionId() {
     var key = STORAGE_PREFIX + "session";
     var value = null;
     try {
       value = window.sessionStorage.getItem(key);
     } catch {
-      // Trình duyệt chặn storage (chế độ ẩn danh, cookie bị khoá) — dùng id tạm.
     }
     if (!value) {
       value =
@@ -66,7 +47,6 @@
   try {
     conversationId = window.sessionStorage.getItem(STORAGE_PREFIX + "conversation");
   } catch {
-    /* bỏ qua */
   }
 
   function rememberConversation(id) {
@@ -77,6 +57,28 @@
     } catch {
       /* bỏ qua */
     }
+  }
+
+  function hasSubmittedLead() {
+    try {
+      return window.sessionStorage.getItem(STORAGE_PREFIX + "lead") === "1";
+    } catch {
+      return false;
+    }
+  }
+
+  function rememberLead() {
+    try {
+      window.sessionStorage.setItem(STORAGE_PREFIX + "lead", "1");
+    } catch {
+      /* bỏ qua */
+    }
+  }
+
+  var VN_MOBILE = /^(?:0|\+84)(?:3|5|7|8|9)\d{8}$/;
+
+  function isValidPhone(value) {
+    return VN_MOBILE.test(value.replace(/[\s.\-()]/g, ""));
   }
 
   // -------------------------------------------------------------------- styles
@@ -90,11 +92,8 @@
       "  font-size: 14px; line-height: 1.5; color: #0f172a;",
       "  --primary: " + config.primaryColor + ";",
       "}",
-      // Inline: chuỗi height:100% phải liên tục từ host xuống panel, nếu không
-      // panel sẽ co lại về min-height và để hở đáy container.
       ".root--inline { display: block; height: 100%; }",
 
-      /* --- bong bóng --- */
       ".launcher {",
       "  position: fixed; bottom: 20px; z-index: 2147483000;",
       "  width: 56px; height: 56px; border: 0; border-radius: 9999px; cursor: pointer;",
@@ -108,7 +107,6 @@
       ".launcher[data-position='bottom-right'] { right: 20px; }",
       ".launcher svg { width: 26px; height: 26px; }",
 
-      /* --- khung chat --- */
       ".panel {",
       "  display: flex; flex-direction: column; overflow: hidden;",
       "  background: #fff; border: 1px solid #e2e8f0; border-radius: 14px;",
@@ -127,7 +125,6 @@
       "  .panel--floating { width: calc(100vw - 24px); right: 12px; left: 12px; bottom: 84px; }",
       "}",
 
-      /* --- header --- */
       ".header {",
       "  display: flex; align-items: center; gap: 10px; padding: 12px 14px;",
       "  background: var(--primary); color: #fff; flex-shrink: 0;",
@@ -147,7 +144,6 @@
       ".close:hover { opacity: 1; background: rgba(255, 255, 255, .16); }",
       ".close svg { width: 18px; height: 18px; }",
 
-      /* --- danh sách tin nhắn --- */
       ".messages {",
       "  flex: 1; overflow-y: auto; padding: 16px; display: flex;",
       "  flex-direction: column; gap: 10px; background: #f8fafc;",
@@ -166,7 +162,6 @@
       ".typing i:nth-child(3) { animation-delay: .4s; }",
       "@keyframes blink { 0%, 60%, 100% { opacity: .25; } 30% { opacity: 1; } }",
 
-      /* --- ô nhập --- */
       ".composer {",
       "  display: flex; gap: 8px; padding: 12px; border-top: 1px solid #e2e8f0;",
       "  background: #fff; flex-shrink: 0;",
@@ -184,6 +179,28 @@
       "}",
       ".send:disabled { opacity: .5; cursor: not-allowed; }",
       ".send svg { width: 18px; height: 18px; }",
+
+      ".leadform {",
+      "  display: flex; flex-direction: column; gap: 8px; padding: 14px;",
+      "  border-top: 1px solid #e2e8f0; background: #fff; flex-shrink: 0;",
+      "}",
+      ".leadform__title { font-weight: 600; }",
+      ".leadform__desc { margin: 0; font-size: 13px; color: #64748b; }",
+      ".leadform label { font-size: 13px; font-weight: 500; }",
+      ".leadform input {",
+      "  border: 1px solid #cbd5e1; border-radius: 10px; padding: 9px 11px;",
+      "  font: inherit; color: inherit; outline: none; width: 100%;",
+      "}",
+      ".leadform input:focus { border-color: var(--primary); }",
+      ".leadform input[aria-invalid='true'] { border-color: #dc2626; }",
+      ".leadform__error { margin: 0; font-size: 13px; color: #b91c1c; }",
+      ".leadform__error[hidden] { display: none; }",
+      ".leadform__submit {",
+      "  margin-top: 2px; border: 0; border-radius: 10px; padding: 10px 12px;",
+      "  background: var(--primary); color: #fff; font: inherit; font-weight: 600;",
+      "  cursor: pointer;",
+      "}",
+      ".leadform__submit:disabled { opacity: .6; cursor: not-allowed; }",
     ].join("\n");
   }
 
@@ -207,7 +224,57 @@
     return node;
   }
 
-  // ---------------------------------------------------------------------- init
+  function buildLeadForm(leadForm) {
+    var form = el("form", "leadform");
+
+    var title = el("div", "leadform__title");
+    title.textContent = leadForm.title || "Trước khi bắt đầu";
+    form.appendChild(title);
+
+    var desc = el("p", "leadform__desc");
+    desc.textContent =
+      leadForm.description ||
+      "Vui lòng để lại thông tin để chúng tôi tư vấn chính xác hơn.";
+    form.appendChild(desc);
+
+    var fields = {};
+
+    [
+      { name: "fullName", label: "Họ và tên", type: "text", autocomplete: "name" },
+      { name: "phone", label: "Số điện thoại", type: "tel", autocomplete: "tel" },
+    ].forEach(function (spec) {
+      var id = "leadform-" + spec.name;
+      var label = el("label", null, { for: id });
+      label.textContent = spec.label;
+
+      var field = el("input", null, {
+        id: id,
+        name: spec.name,
+        type: spec.type,
+        autocomplete: spec.autocomplete,
+        required: "required",
+      });
+      if (spec.name === "phone") field.setAttribute("inputmode", "tel");
+
+      form.appendChild(label);
+      form.appendChild(field);
+      fields[spec.name] = field;
+    });
+
+    var errorEl = el("p", "leadform__error", { role: "alert" });
+    errorEl.hidden = true;
+    form.appendChild(errorEl);
+
+    var submitBtn = el("button", "leadform__submit", { type: "submit" });
+    submitBtn.textContent = leadForm.submitLabel || "Bắt đầu chat";
+    form.appendChild(submitBtn);
+
+    form.fields = fields;
+    form.errorEl = errorEl;
+    form.submitBtn = submitBtn;
+    return form;
+  }
+
 
   fetch(origin + "/api/widget/config?key=" + encodeURIComponent(apiKey), {
     method: "GET",
@@ -221,18 +288,12 @@
       mount(payload.widget);
     })
     .catch(function (error) {
-      // Không render gì cả: website chủ nhà không nên hiện widget hỏng.
       console.error("[chatbot] Không tải được cấu hình widget.", error);
     });
 
   function mount(config) {
-    // Mode lấy từ dashboard là nguồn chính (admin đổi mode không cần tenant dán
-    // lại script); data-mode chỉ dùng khi config không nói gì.
     var mode = (config.mode || fallbackMode) === "inline" ? "inline" : "bubble";
 
-    // Inline cần một phần tử chứa. Nếu trang chủ nhà không có nó — thường vì
-    // admin vừa đổi sang inline mà tenant chưa cập nhật mã nhúng — thì hạ cấp
-    // xuống bubble thay vì để widget biến mất không dấu vết.
     var inlineTarget = mode === "inline" ? document.querySelector(targetSelector) : null;
     if (mode === "inline" && !inlineTarget) {
       console.warn(
@@ -312,11 +373,20 @@
     sendBtn.innerHTML = ICON_SEND;
     composer.appendChild(input);
     composer.appendChild(sendBtn);
-    panel.appendChild(composer);
+
+    var leadForm = config.leadForm || {};
+    var leadGateOn = Boolean(leadForm.enabled) && !hasSubmittedLead();
+    var leadEl = leadGateOn ? buildLeadForm(leadForm) : null;
+
+    panel.appendChild(leadEl || composer);
 
     root.appendChild(panel);
 
-    // --- nút bong bóng ------------------------------------------------------
+    function focusFirstField() {
+      if (leadEl) leadEl.fields.fullName.focus();
+      else input.focus();
+    }
+
     if (mode === "bubble") {
       var launcher = el("button", "launcher", {
         type: "button",
@@ -326,18 +396,15 @@
       launcher.innerHTML = ICON_CHAT;
       launcher.addEventListener("click", function () {
         panel.hidden = !panel.hidden;
-        if (!panel.hidden) input.focus();
+        if (!panel.hidden) focusFirstField();
       });
       root.appendChild(launcher);
     }
-
-    // --- render tin nhắn ----------------------------------------------------
 
     function scrollToEnd() {
       messages.scrollTop = messages.scrollHeight;
     }
 
-    /** Luôn dùng textContent — nội dung từ Dify không bao giờ được coi là HTML. */
     function addMessage(text, variant) {
       var bubble = el("div", "msg msg--" + variant);
       bubble.textContent = text;
@@ -358,7 +425,106 @@
 
     if (config.welcomeMessage) addMessage(config.welcomeMessage, "bot");
 
-    // --- gửi tin nhắn -------------------------------------------------------
+    var sendingLead = false;
+
+    function showLeadError(message, invalidField) {
+      leadEl.errorEl.textContent = message;
+      leadEl.errorEl.hidden = false;
+      if (invalidField) {
+        invalidField.setAttribute("aria-invalid", "true");
+        invalidField.focus();
+      }
+    }
+
+    function clearLeadError() {
+      leadEl.errorEl.hidden = true;
+      leadEl.fields.fullName.removeAttribute("aria-invalid");
+      leadEl.fields.phone.removeAttribute("aria-invalid");
+    }
+
+    function unlockComposer(fullName) {
+      rememberLead();
+      leadEl.remove();
+      leadEl = null;
+      panel.appendChild(composer);
+      addMessage("Cảm ơn " + fullName + "! Bạn cần tư vấn về vấn đề gì ạ?", "bot");
+      input.focus();
+    }
+
+    function submitLead() {
+      if (sendingLead) return;
+      clearLeadError();
+
+      var fullName = leadEl.fields.fullName.value.trim();
+      var phone = leadEl.fields.phone.value.trim();
+
+      if (fullName.length < 2) {
+        showLeadError("Vui lòng nhập họ tên của bạn.", leadEl.fields.fullName);
+        return;
+      }
+      if (!isValidPhone(phone)) {
+        showLeadError(
+          "Số điện thoại không hợp lệ. Ví dụ: 0912345678.",
+          leadEl.fields.phone,
+        );
+        return;
+      }
+
+      sendingLead = true;
+      leadEl.submitBtn.disabled = true;
+
+      fetch(origin + "/api/widget/lead", {
+        method: "POST",
+        credentials: "omit",
+        headers: {
+          "Content-Type": "application/json",
+          "X-Api-Key": apiKey,
+        },
+        body: JSON.stringify({
+          fullName: fullName,
+          phone: phone,
+          sessionId: sessionId,
+          pageUrl: window.location.href,
+        }),
+      })
+        .then(function (response) {
+          return response
+            .json()
+            .catch(function () {
+              return {};
+            })
+            .then(function (payload) {
+              return { ok: response.ok, payload: payload };
+            });
+        })
+        .then(function (result) {
+          if (!result.ok) {
+            showLeadError(
+              result.payload.message || "Không gửi được thông tin, vui lòng thử lại.",
+            );
+            return;
+          }
+          unlockComposer(fullName);
+        })
+        .catch(function (error) {
+          console.error("[chatbot] Gửi thông tin liên hệ thất bại.", error);
+          showLeadError("Không kết nối được tới máy chủ. Vui lòng thử lại.");
+        })
+        .finally(function () {
+          sendingLead = false;
+          if (leadEl) leadEl.submitBtn.disabled = false;
+        });
+    }
+
+    if (leadEl) {
+      leadEl.addEventListener("submit", function (event) {
+        event.preventDefault();
+        submitLead();
+      });
+      leadEl.fields.fullName.addEventListener("input", clearLeadError);
+      leadEl.fields.phone.addEventListener("input", clearLeadError);
+    }
+
 
     var sending = false;
 
@@ -431,7 +597,6 @@
       send(text);
     });
 
-    // Enter gửi, Shift+Enter xuống dòng — quy ước quen thuộc của ứng dụng chat.
     input.addEventListener("keydown", function (event) {
       if (event.key === "Enter" && !event.shiftKey) {
         event.preventDefault();

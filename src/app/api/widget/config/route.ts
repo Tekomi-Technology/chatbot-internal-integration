@@ -6,12 +6,7 @@ import { prisma } from "@/lib/prisma";
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
-/**
- * GET /api/widget/config?key=pk_xxx
- *
- * Chỉ trả cấu hình hiển thị (không có secret nào của tenant) nên không kiểm tra
- * domain whitelist — widget cần config này trước cả khi người dùng chat.
- */
+
 export async function GET(request: NextRequest) {
   const origin = request.headers.get("origin");
   const key = request.nextUrl.searchParams.get("key")?.trim();
@@ -40,6 +35,10 @@ export async function GET(request: NextRequest) {
               welcomeMessage: true,
               inputPlaceholder: true,
               position: true,
+              leadFormEnabled: true,
+              leadFormTitle: true,
+              leadFormDescription: true,
+              leadFormSubmitLabel: true,
             },
           },
         },
@@ -47,8 +46,6 @@ export async function GET(request: NextRequest) {
     },
   });
 
-  // Cùng một thông báo cho key sai / key bị thu hồi / tenant tắt: không tiết lộ
-  // trạng thái nội bộ cho người gọi ẩn danh.
   if (!apiKey?.isActive || apiKey.tenant.status !== "ACTIVE") {
     return jsonWithCors(
       { error: "invalid_api_key", message: "API key không hợp lệ hoặc đã bị vô hiệu hoá." },
@@ -70,12 +67,18 @@ export async function GET(request: NextRequest) {
         welcomeMessage:
           config?.welcomeMessage ?? "Xin chào! Tôi có thể giúp gì cho bạn?",
         inputPlaceholder: config?.inputPlaceholder ?? "Nhập câu hỏi của bạn...",
+        leadForm: {
+          enabled: config?.leadFormEnabled ?? false,
+          title: config?.leadFormTitle ?? "Trước khi bắt đầu",
+          description:
+            config?.leadFormDescription ??
+            "Vui lòng để lại thông tin để chúng tôi tư vấn chính xác hơn.",
+          submitLabel: config?.leadFormSubmitLabel ?? "Bắt đầu chat",
+        },
       },
     },
     {
       origin,
-      // Cấu hình đổi không thường xuyên; cache ngắn phía browser để widget khởi
-      // động nhanh hơn ở lần tải trang sau.
       extraHeaders: { "Cache-Control": "public, max-age=60" },
     },
   );

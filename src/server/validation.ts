@@ -79,6 +79,23 @@ export const widgetConfigSchema = z.object({
     .transform((value) => (value ? value : null)),
   welcomeMessage: z.string().trim().min(1, "Bắt buộc nhập tin nhắn chào.").max(500),
   inputPlaceholder: z.string().trim().min(1).max(120),
+  // Checkbox không gửi gì khi bỏ tick, nên coi mọi giá trị khác "on" là tắt.
+  leadFormEnabled: z.unknown().transform((value) => value === "on"),
+  leadFormTitle: z
+    .string()
+    .trim()
+    .min(1, "Bắt buộc nhập tiêu đề form.")
+    .max(80),
+  leadFormDescription: z
+    .string()
+    .trim()
+    .min(1, "Bắt buộc nhập mô tả form.")
+    .max(300),
+  leadFormSubmitLabel: z
+    .string()
+    .trim()
+    .min(1, "Bắt buộc nhập nhãn nút gửi.")
+    .max(40),
 });
 
 /** Gom lỗi Zod thành map field -> thông báo đầu tiên, để render cạnh input. */

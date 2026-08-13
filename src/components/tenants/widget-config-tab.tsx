@@ -26,6 +26,10 @@ export type WidgetConfigValues = {
   primaryColor: string;
   welcomeMessage: string;
   inputPlaceholder: string;
+  leadFormEnabled: boolean;
+  leadFormTitle: string;
+  leadFormDescription: string;
+  leadFormSubmitLabel: string;
 };
 
 export function WidgetConfigTab({
@@ -185,6 +189,97 @@ export function WidgetConfigTab({
                 required
               />
             </FormField>
+
+            <fieldset className="flex flex-col gap-4 rounded-lg border border-border p-4">
+              <legend className="px-1 text-sm font-medium">
+                Form thu thập thông tin
+              </legend>
+
+              <label className="flex items-start gap-3">
+                <input
+                  type="checkbox"
+                  name="leadFormEnabled"
+                  checked={draft.leadFormEnabled}
+                  onChange={(event) =>
+                    set("leadFormEnabled", event.target.checked)
+                  }
+                  className="mt-0.5 size-4 cursor-pointer accent-primary"
+                />
+                <span className="text-sm">
+                  Bắt khách điền họ tên và số điện thoại trước khi chat
+                  <span className="mt-1 block text-xs text-muted-foreground">
+                    Khách mở widget sẽ thấy form thay cho ô nhập, điền xong mới
+                    gửi được tin nhắn. Thông tin hiện ở tab “Khách hàng”.
+                  </span>
+                </span>
+              </label>
+
+              {draft.leadFormEnabled ? (
+                <>
+                  <FormField
+                    name="leadFormTitle"
+                    label="Tiêu đề form"
+                    error={state.errors?.leadFormTitle}
+                  >
+                    <Input
+                      id="leadFormTitle"
+                      name="leadFormTitle"
+                      value={draft.leadFormTitle}
+                      onChange={(event) => set("leadFormTitle", event.target.value)}
+                      required
+                    />
+                  </FormField>
+
+                  <FormField
+                    name="leadFormDescription"
+                    label="Mô tả form"
+                    error={state.errors?.leadFormDescription}
+                  >
+                    <Textarea
+                      id="leadFormDescription"
+                      name="leadFormDescription"
+                      value={draft.leadFormDescription}
+                      onChange={(event) =>
+                        set("leadFormDescription", event.target.value)
+                      }
+                      required
+                    />
+                  </FormField>
+
+                  <FormField
+                    name="leadFormSubmitLabel"
+                    label="Nhãn nút gửi"
+                    error={state.errors?.leadFormSubmitLabel}
+                  >
+                    <Input
+                      id="leadFormSubmitLabel"
+                      name="leadFormSubmitLabel"
+                      value={draft.leadFormSubmitLabel}
+                      onChange={(event) =>
+                        set("leadFormSubmitLabel", event.target.value)
+                      }
+                      required
+                    />
+                  </FormField>
+                </>
+              ) : (
+                // Form tắt thì ẩn 3 ô cho gọn, nhưng vẫn phải gửi giá trị lên —
+                // schema bắt buộc chúng và nội dung cũ không nên bị xoá.
+                <>
+                  <input type="hidden" name="leadFormTitle" value={draft.leadFormTitle} />
+                  <input
+                    type="hidden"
+                    name="leadFormDescription"
+                    value={draft.leadFormDescription}
+                  />
+                  <input
+                    type="hidden"
+                    name="leadFormSubmitLabel"
+                    value={draft.leadFormSubmitLabel}
+                  />
+                </>
+              )}
+            </fieldset>
 
             {state.status !== "idle" && state.message ? (
               <p

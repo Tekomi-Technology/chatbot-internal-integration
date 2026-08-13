@@ -14,7 +14,7 @@ import type * as Prisma from "../internal/prismaNamespace"
 
 /**
  * Model Admin
- * Tài khoản quản trị dashboard. Phase 1 chỉ có 1 loại tài khoản, không phân quyền.
+ * 
  */
 export type AdminModel = runtime.Types.Result.DefaultSelection<Prisma.$AdminPayload>
 

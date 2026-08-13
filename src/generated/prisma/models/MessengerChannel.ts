@@ -14,11 +14,7 @@ import type * as Prisma from "../internal/prismaNamespace"
 
 /**
  * Model MessengerChannel
- * Kết nối một Facebook Page của tenant vào Meta App dùng chung của hệ thống.
  * 
- * Chỉ có MỘT callback URL cho mọi tenant (`/api/channels/messenger`), nên
- * `pageId` chính là khoá định tuyến: webhook đọc `entry[].id` rồi tra ngược ra
- * tenant qua bảng này.
  */
 export type MessengerChannelModel = runtime.Types.Result.DefaultSelection<Prisma.$MessengerChannelPayload>
 
@@ -662,14 +658,8 @@ export type $MessengerChannelPayload<ExtArgs extends runtime.Types.Extensions.In
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
     tenantId: string
-    /**
-     * Unique toàn hệ thống: một Page không thể trỏ về hai tenant.
-     */
     pageId: string
     pageName: string | null
-    /**
-     * Ciphertext AES-256-GCM, không bao giờ lưu plaintext. Xem src/lib/crypto.ts.
-     */
     pageAccessTokenEncrypted: string
     isActive: boolean
     createdAt: Date

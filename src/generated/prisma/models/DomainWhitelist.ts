@@ -14,7 +14,7 @@ import type * as Prisma from "../internal/prismaNamespace"
 
 /**
  * Model DomainWhitelist
- * Domain được phép gọi /api/widget/chat bằng key của tenant này.
+ * 
  */
 export type DomainWhitelistModel = runtime.Types.Result.DefaultSelection<Prisma.$DomainWhitelistPayload>
 
@@ -467,9 +467,6 @@ export type $DomainWhitelistPayload<ExtArgs extends runtime.Types.Extensions.Int
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
     tenantId: string
-    /**
-     * Hostname đã chuẩn hoá, lowercase, không scheme/port. Hỗ trợ wildcard "*.example.com".
-     */
     domain: string
     createdAt: Date
   }, ExtArgs["result"]["domainWhitelist"]>

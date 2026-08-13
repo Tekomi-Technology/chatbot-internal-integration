@@ -14,7 +14,7 @@ import type * as Prisma from "../internal/prismaNamespace"
 
 /**
  * Model Tenant
- * Một đơn vị/công ty sử dụng chatbot. Mỗi tenant map tới đúng 1 app bên Dify.ai.
+ * 
  */
 export type TenantModel = runtime.Types.Result.DefaultSelection<Prisma.$TenantPayload>
 
@@ -218,6 +218,7 @@ export type TenantWhereInput = {
   domains?: Prisma.DomainWhitelistListRelationFilter
   widgetConfig?: Prisma.XOR<Prisma.WidgetConfigNullableScalarRelationFilter, Prisma.WidgetConfigWhereInput> | null
   logs?: Prisma.ConversationLogListRelationFilter
+  leads?: Prisma.LeadListRelationFilter
   messengerChannel?: Prisma.XOR<Prisma.MessengerChannelNullableScalarRelationFilter, Prisma.MessengerChannelWhereInput> | null
 }
 
@@ -235,6 +236,7 @@ export type TenantOrderByWithRelationInput = {
   domains?: Prisma.DomainWhitelistOrderByRelationAggregateInput
   widgetConfig?: Prisma.WidgetConfigOrderByWithRelationInput
   logs?: Prisma.ConversationLogOrderByRelationAggregateInput
+  leads?: Prisma.LeadOrderByRelationAggregateInput
   messengerChannel?: Prisma.MessengerChannelOrderByWithRelationInput
 }
 
@@ -255,6 +257,7 @@ export type TenantWhereUniqueInput = Prisma.AtLeast<{
   domains?: Prisma.DomainWhitelistListRelationFilter
   widgetConfig?: Prisma.XOR<Prisma.WidgetConfigNullableScalarRelationFilter, Prisma.WidgetConfigWhereInput> | null
   logs?: Prisma.ConversationLogListRelationFilter
+  leads?: Prisma.LeadListRelationFilter
   messengerChannel?: Prisma.XOR<Prisma.MessengerChannelNullableScalarRelationFilter, Prisma.MessengerChannelWhereInput> | null
 }, "id" | "slug">
 
@@ -302,6 +305,7 @@ export type TenantCreateInput = {
   domains?: Prisma.DomainWhitelistCreateNestedManyWithoutTenantInput
   widgetConfig?: Prisma.WidgetConfigCreateNestedOneWithoutTenantInput
   logs?: Prisma.ConversationLogCreateNestedManyWithoutTenantInput
+  leads?: Prisma.LeadCreateNestedManyWithoutTenantInput
   messengerChannel?: Prisma.MessengerChannelCreateNestedOneWithoutTenantInput
 }
 
@@ -319,6 +323,7 @@ export type TenantUncheckedCreateInput = {
   domains?: Prisma.DomainWhitelistUncheckedCreateNestedManyWithoutTenantInput
   widgetConfig?: Prisma.WidgetConfigUncheckedCreateNestedOneWithoutTenantInput
   logs?: Prisma.ConversationLogUncheckedCreateNestedManyWithoutTenantInput
+  leads?: Prisma.LeadUncheckedCreateNestedManyWithoutTenantInput
   messengerChannel?: Prisma.MessengerChannelUncheckedCreateNestedOneWithoutTenantInput
 }
 
@@ -336,6 +341,7 @@ export type TenantUpdateInput = {
   domains?: Prisma.DomainWhitelistUpdateManyWithoutTenantNestedInput
   widgetConfig?: Prisma.WidgetConfigUpdateOneWithoutTenantNestedInput
   logs?: Prisma.ConversationLogUpdateManyWithoutTenantNestedInput
+  leads?: Prisma.LeadUpdateManyWithoutTenantNestedInput
   messengerChannel?: Prisma.MessengerChannelUpdateOneWithoutTenantNestedInput
 }
 
@@ -353,6 +359,7 @@ export type TenantUncheckedUpdateInput = {
   domains?: Prisma.DomainWhitelistUncheckedUpdateManyWithoutTenantNestedInput
   widgetConfig?: Prisma.WidgetConfigUncheckedUpdateOneWithoutTenantNestedInput
   logs?: Prisma.ConversationLogUncheckedUpdateManyWithoutTenantNestedInput
+  leads?: Prisma.LeadUncheckedUpdateManyWithoutTenantNestedInput
   messengerChannel?: Prisma.MessengerChannelUncheckedUpdateOneWithoutTenantNestedInput
 }
 
@@ -479,6 +486,20 @@ export type TenantUpdateOneRequiredWithoutWidgetConfigNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.TenantUpdateToOneWithWhereWithoutWidgetConfigInput, Prisma.TenantUpdateWithoutWidgetConfigInput>, Prisma.TenantUncheckedUpdateWithoutWidgetConfigInput>
 }
 
+export type TenantCreateNestedOneWithoutLeadsInput = {
+  create?: Prisma.XOR<Prisma.TenantCreateWithoutLeadsInput, Prisma.TenantUncheckedCreateWithoutLeadsInput>
+  connectOrCreate?: Prisma.TenantCreateOrConnectWithoutLeadsInput
+  connect?: Prisma.TenantWhereUniqueInput
+}
+
+export type TenantUpdateOneRequiredWithoutLeadsNestedInput = {
+  create?: Prisma.XOR<Prisma.TenantCreateWithoutLeadsInput, Prisma.TenantUncheckedCreateWithoutLeadsInput>
+  connectOrCreate?: Prisma.TenantCreateOrConnectWithoutLeadsInput
+  upsert?: Prisma.TenantUpsertWithoutLeadsInput
+  connect?: Prisma.TenantWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.TenantUpdateToOneWithWhereWithoutLeadsInput, Prisma.TenantUpdateWithoutLeadsInput>, Prisma.TenantUncheckedUpdateWithoutLeadsInput>
+}
+
 export type TenantCreateNestedOneWithoutLogsInput = {
   create?: Prisma.XOR<Prisma.TenantCreateWithoutLogsInput, Prisma.TenantUncheckedCreateWithoutLogsInput>
   connectOrCreate?: Prisma.TenantCreateOrConnectWithoutLogsInput
@@ -520,6 +541,7 @@ export type TenantCreateWithoutApiKeysInput = {
   domains?: Prisma.DomainWhitelistCreateNestedManyWithoutTenantInput
   widgetConfig?: Prisma.WidgetConfigCreateNestedOneWithoutTenantInput
   logs?: Prisma.ConversationLogCreateNestedManyWithoutTenantInput
+  leads?: Prisma.LeadCreateNestedManyWithoutTenantInput
   messengerChannel?: Prisma.MessengerChannelCreateNestedOneWithoutTenantInput
 }
 
@@ -536,6 +558,7 @@ export type TenantUncheckedCreateWithoutApiKeysInput = {
   domains?: Prisma.DomainWhitelistUncheckedCreateNestedManyWithoutTenantInput
   widgetConfig?: Prisma.WidgetConfigUncheckedCreateNestedOneWithoutTenantInput
   logs?: Prisma.ConversationLogUncheckedCreateNestedManyWithoutTenantInput
+  leads?: Prisma.LeadUncheckedCreateNestedManyWithoutTenantInput
   messengerChannel?: Prisma.MessengerChannelUncheckedCreateNestedOneWithoutTenantInput
 }
 
@@ -568,6 +591,7 @@ export type TenantUpdateWithoutApiKeysInput = {
   domains?: Prisma.DomainWhitelistUpdateManyWithoutTenantNestedInput
   widgetConfig?: Prisma.WidgetConfigUpdateOneWithoutTenantNestedInput
   logs?: Prisma.ConversationLogUpdateManyWithoutTenantNestedInput
+  leads?: Prisma.LeadUpdateManyWithoutTenantNestedInput
   messengerChannel?: Prisma.MessengerChannelUpdateOneWithoutTenantNestedInput
 }
 
@@ -584,6 +608,7 @@ export type TenantUncheckedUpdateWithoutApiKeysInput = {
   domains?: Prisma.DomainWhitelistUncheckedUpdateManyWithoutTenantNestedInput
   widgetConfig?: Prisma.WidgetConfigUncheckedUpdateOneWithoutTenantNestedInput
   logs?: Prisma.ConversationLogUncheckedUpdateManyWithoutTenantNestedInput
+  leads?: Prisma.LeadUncheckedUpdateManyWithoutTenantNestedInput
   messengerChannel?: Prisma.MessengerChannelUncheckedUpdateOneWithoutTenantNestedInput
 }
 
@@ -600,6 +625,7 @@ export type TenantCreateWithoutDomainsInput = {
   apiKeys?: Prisma.ApiKeyCreateNestedManyWithoutTenantInput
   widgetConfig?: Prisma.WidgetConfigCreateNestedOneWithoutTenantInput
   logs?: Prisma.ConversationLogCreateNestedManyWithoutTenantInput
+  leads?: Prisma.LeadCreateNestedManyWithoutTenantInput
   messengerChannel?: Prisma.MessengerChannelCreateNestedOneWithoutTenantInput
 }
 
@@ -616,6 +642,7 @@ export type TenantUncheckedCreateWithoutDomainsInput = {
   apiKeys?: Prisma.ApiKeyUncheckedCreateNestedManyWithoutTenantInput
   widgetConfig?: Prisma.WidgetConfigUncheckedCreateNestedOneWithoutTenantInput
   logs?: Prisma.ConversationLogUncheckedCreateNestedManyWithoutTenantInput
+  leads?: Prisma.LeadUncheckedCreateNestedManyWithoutTenantInput
   messengerChannel?: Prisma.MessengerChannelUncheckedCreateNestedOneWithoutTenantInput
 }
 
@@ -648,6 +675,7 @@ export type TenantUpdateWithoutDomainsInput = {
   apiKeys?: Prisma.ApiKeyUpdateManyWithoutTenantNestedInput
   widgetConfig?: Prisma.WidgetConfigUpdateOneWithoutTenantNestedInput
   logs?: Prisma.ConversationLogUpdateManyWithoutTenantNestedInput
+  leads?: Prisma.LeadUpdateManyWithoutTenantNestedInput
   messengerChannel?: Prisma.MessengerChannelUpdateOneWithoutTenantNestedInput
 }
 
@@ -664,6 +692,7 @@ export type TenantUncheckedUpdateWithoutDomainsInput = {
   apiKeys?: Prisma.ApiKeyUncheckedUpdateManyWithoutTenantNestedInput
   widgetConfig?: Prisma.WidgetConfigUncheckedUpdateOneWithoutTenantNestedInput
   logs?: Prisma.ConversationLogUncheckedUpdateManyWithoutTenantNestedInput
+  leads?: Prisma.LeadUncheckedUpdateManyWithoutTenantNestedInput
   messengerChannel?: Prisma.MessengerChannelUncheckedUpdateOneWithoutTenantNestedInput
 }
 
@@ -680,6 +709,7 @@ export type TenantCreateWithoutWidgetConfigInput = {
   apiKeys?: Prisma.ApiKeyCreateNestedManyWithoutTenantInput
   domains?: Prisma.DomainWhitelistCreateNestedManyWithoutTenantInput
   logs?: Prisma.ConversationLogCreateNestedManyWithoutTenantInput
+  leads?: Prisma.LeadCreateNestedManyWithoutTenantInput
   messengerChannel?: Prisma.MessengerChannelCreateNestedOneWithoutTenantInput
 }
 
@@ -696,6 +726,7 @@ export type TenantUncheckedCreateWithoutWidgetConfigInput = {
   apiKeys?: Prisma.ApiKeyUncheckedCreateNestedManyWithoutTenantInput
   domains?: Prisma.DomainWhitelistUncheckedCreateNestedManyWithoutTenantInput
   logs?: Prisma.ConversationLogUncheckedCreateNestedManyWithoutTenantInput
+  leads?: Prisma.LeadUncheckedCreateNestedManyWithoutTenantInput
   messengerChannel?: Prisma.MessengerChannelUncheckedCreateNestedOneWithoutTenantInput
 }
 
@@ -728,6 +759,7 @@ export type TenantUpdateWithoutWidgetConfigInput = {
   apiKeys?: Prisma.ApiKeyUpdateManyWithoutTenantNestedInput
   domains?: Prisma.DomainWhitelistUpdateManyWithoutTenantNestedInput
   logs?: Prisma.ConversationLogUpdateManyWithoutTenantNestedInput
+  leads?: Prisma.LeadUpdateManyWithoutTenantNestedInput
   messengerChannel?: Prisma.MessengerChannelUpdateOneWithoutTenantNestedInput
 }
 
@@ -743,6 +775,91 @@ export type TenantUncheckedUpdateWithoutWidgetConfigInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   apiKeys?: Prisma.ApiKeyUncheckedUpdateManyWithoutTenantNestedInput
   domains?: Prisma.DomainWhitelistUncheckedUpdateManyWithoutTenantNestedInput
+  logs?: Prisma.ConversationLogUncheckedUpdateManyWithoutTenantNestedInput
+  leads?: Prisma.LeadUncheckedUpdateManyWithoutTenantNestedInput
+  messengerChannel?: Prisma.MessengerChannelUncheckedUpdateOneWithoutTenantNestedInput
+}
+
+export type TenantCreateWithoutLeadsInput = {
+  id?: string
+  name: string
+  slug: string
+  status?: $Enums.TenantStatus
+  difyAppId: string
+  difyApiKeyEncrypted: string
+  difyApiBaseUrl?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  apiKeys?: Prisma.ApiKeyCreateNestedManyWithoutTenantInput
+  domains?: Prisma.DomainWhitelistCreateNestedManyWithoutTenantInput
+  widgetConfig?: Prisma.WidgetConfigCreateNestedOneWithoutTenantInput
+  logs?: Prisma.ConversationLogCreateNestedManyWithoutTenantInput
+  messengerChannel?: Prisma.MessengerChannelCreateNestedOneWithoutTenantInput
+}
+
+export type TenantUncheckedCreateWithoutLeadsInput = {
+  id?: string
+  name: string
+  slug: string
+  status?: $Enums.TenantStatus
+  difyAppId: string
+  difyApiKeyEncrypted: string
+  difyApiBaseUrl?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  apiKeys?: Prisma.ApiKeyUncheckedCreateNestedManyWithoutTenantInput
+  domains?: Prisma.DomainWhitelistUncheckedCreateNestedManyWithoutTenantInput
+  widgetConfig?: Prisma.WidgetConfigUncheckedCreateNestedOneWithoutTenantInput
+  logs?: Prisma.ConversationLogUncheckedCreateNestedManyWithoutTenantInput
+  messengerChannel?: Prisma.MessengerChannelUncheckedCreateNestedOneWithoutTenantInput
+}
+
+export type TenantCreateOrConnectWithoutLeadsInput = {
+  where: Prisma.TenantWhereUniqueInput
+  create: Prisma.XOR<Prisma.TenantCreateWithoutLeadsInput, Prisma.TenantUncheckedCreateWithoutLeadsInput>
+}
+
+export type TenantUpsertWithoutLeadsInput = {
+  update: Prisma.XOR<Prisma.TenantUpdateWithoutLeadsInput, Prisma.TenantUncheckedUpdateWithoutLeadsInput>
+  create: Prisma.XOR<Prisma.TenantCreateWithoutLeadsInput, Prisma.TenantUncheckedCreateWithoutLeadsInput>
+  where?: Prisma.TenantWhereInput
+}
+
+export type TenantUpdateToOneWithWhereWithoutLeadsInput = {
+  where?: Prisma.TenantWhereInput
+  data: Prisma.XOR<Prisma.TenantUpdateWithoutLeadsInput, Prisma.TenantUncheckedUpdateWithoutLeadsInput>
+}
+
+export type TenantUpdateWithoutLeadsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumTenantStatusFieldUpdateOperationsInput | $Enums.TenantStatus
+  difyAppId?: Prisma.StringFieldUpdateOperationsInput | string
+  difyApiKeyEncrypted?: Prisma.StringFieldUpdateOperationsInput | string
+  difyApiBaseUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  apiKeys?: Prisma.ApiKeyUpdateManyWithoutTenantNestedInput
+  domains?: Prisma.DomainWhitelistUpdateManyWithoutTenantNestedInput
+  widgetConfig?: Prisma.WidgetConfigUpdateOneWithoutTenantNestedInput
+  logs?: Prisma.ConversationLogUpdateManyWithoutTenantNestedInput
+  messengerChannel?: Prisma.MessengerChannelUpdateOneWithoutTenantNestedInput
+}
+
+export type TenantUncheckedUpdateWithoutLeadsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumTenantStatusFieldUpdateOperationsInput | $Enums.TenantStatus
+  difyAppId?: Prisma.StringFieldUpdateOperationsInput | string
+  difyApiKeyEncrypted?: Prisma.StringFieldUpdateOperationsInput | string
+  difyApiBaseUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  apiKeys?: Prisma.ApiKeyUncheckedUpdateManyWithoutTenantNestedInput
+  domains?: Prisma.DomainWhitelistUncheckedUpdateManyWithoutTenantNestedInput
+  widgetConfig?: Prisma.WidgetConfigUncheckedUpdateOneWithoutTenantNestedInput
   logs?: Prisma.ConversationLogUncheckedUpdateManyWithoutTenantNestedInput
   messengerChannel?: Prisma.MessengerChannelUncheckedUpdateOneWithoutTenantNestedInput
 }
@@ -760,6 +877,7 @@ export type TenantCreateWithoutLogsInput = {
   apiKeys?: Prisma.ApiKeyCreateNestedManyWithoutTenantInput
   domains?: Prisma.DomainWhitelistCreateNestedManyWithoutTenantInput
   widgetConfig?: Prisma.WidgetConfigCreateNestedOneWithoutTenantInput
+  leads?: Prisma.LeadCreateNestedManyWithoutTenantInput
   messengerChannel?: Prisma.MessengerChannelCreateNestedOneWithoutTenantInput
 }
 
@@ -776,6 +894,7 @@ export type TenantUncheckedCreateWithoutLogsInput = {
   apiKeys?: Prisma.ApiKeyUncheckedCreateNestedManyWithoutTenantInput
   domains?: Prisma.DomainWhitelistUncheckedCreateNestedManyWithoutTenantInput
   widgetConfig?: Prisma.WidgetConfigUncheckedCreateNestedOneWithoutTenantInput
+  leads?: Prisma.LeadUncheckedCreateNestedManyWithoutTenantInput
   messengerChannel?: Prisma.MessengerChannelUncheckedCreateNestedOneWithoutTenantInput
 }
 
@@ -808,6 +927,7 @@ export type TenantUpdateWithoutLogsInput = {
   apiKeys?: Prisma.ApiKeyUpdateManyWithoutTenantNestedInput
   domains?: Prisma.DomainWhitelistUpdateManyWithoutTenantNestedInput
   widgetConfig?: Prisma.WidgetConfigUpdateOneWithoutTenantNestedInput
+  leads?: Prisma.LeadUpdateManyWithoutTenantNestedInput
   messengerChannel?: Prisma.MessengerChannelUpdateOneWithoutTenantNestedInput
 }
 
@@ -824,6 +944,7 @@ export type TenantUncheckedUpdateWithoutLogsInput = {
   apiKeys?: Prisma.ApiKeyUncheckedUpdateManyWithoutTenantNestedInput
   domains?: Prisma.DomainWhitelistUncheckedUpdateManyWithoutTenantNestedInput
   widgetConfig?: Prisma.WidgetConfigUncheckedUpdateOneWithoutTenantNestedInput
+  leads?: Prisma.LeadUncheckedUpdateManyWithoutTenantNestedInput
   messengerChannel?: Prisma.MessengerChannelUncheckedUpdateOneWithoutTenantNestedInput
 }
 
@@ -841,6 +962,7 @@ export type TenantCreateWithoutMessengerChannelInput = {
   domains?: Prisma.DomainWhitelistCreateNestedManyWithoutTenantInput
   widgetConfig?: Prisma.WidgetConfigCreateNestedOneWithoutTenantInput
   logs?: Prisma.ConversationLogCreateNestedManyWithoutTenantInput
+  leads?: Prisma.LeadCreateNestedManyWithoutTenantInput
 }
 
 export type TenantUncheckedCreateWithoutMessengerChannelInput = {
@@ -857,6 +979,7 @@ export type TenantUncheckedCreateWithoutMessengerChannelInput = {
   domains?: Prisma.DomainWhitelistUncheckedCreateNestedManyWithoutTenantInput
   widgetConfig?: Prisma.WidgetConfigUncheckedCreateNestedOneWithoutTenantInput
   logs?: Prisma.ConversationLogUncheckedCreateNestedManyWithoutTenantInput
+  leads?: Prisma.LeadUncheckedCreateNestedManyWithoutTenantInput
 }
 
 export type TenantCreateOrConnectWithoutMessengerChannelInput = {
@@ -889,6 +1012,7 @@ export type TenantUpdateWithoutMessengerChannelInput = {
   domains?: Prisma.DomainWhitelistUpdateManyWithoutTenantNestedInput
   widgetConfig?: Prisma.WidgetConfigUpdateOneWithoutTenantNestedInput
   logs?: Prisma.ConversationLogUpdateManyWithoutTenantNestedInput
+  leads?: Prisma.LeadUpdateManyWithoutTenantNestedInput
 }
 
 export type TenantUncheckedUpdateWithoutMessengerChannelInput = {
@@ -905,6 +1029,7 @@ export type TenantUncheckedUpdateWithoutMessengerChannelInput = {
   domains?: Prisma.DomainWhitelistUncheckedUpdateManyWithoutTenantNestedInput
   widgetConfig?: Prisma.WidgetConfigUncheckedUpdateOneWithoutTenantNestedInput
   logs?: Prisma.ConversationLogUncheckedUpdateManyWithoutTenantNestedInput
+  leads?: Prisma.LeadUncheckedUpdateManyWithoutTenantNestedInput
 }
 
 
@@ -916,12 +1041,14 @@ export type TenantCountOutputType = {
   apiKeys: number
   domains: number
   logs: number
+  leads: number
 }
 
 export type TenantCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   apiKeys?: boolean | TenantCountOutputTypeCountApiKeysArgs
   domains?: boolean | TenantCountOutputTypeCountDomainsArgs
   logs?: boolean | TenantCountOutputTypeCountLogsArgs
+  leads?: boolean | TenantCountOutputTypeCountLeadsArgs
 }
 
 /**
@@ -955,6 +1082,13 @@ export type TenantCountOutputTypeCountLogsArgs<ExtArgs extends runtime.Types.Ext
   where?: Prisma.ConversationLogWhereInput
 }
 
+/**
+ * TenantCountOutputType without action
+ */
+export type TenantCountOutputTypeCountLeadsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.LeadWhereInput
+}
+
 
 export type TenantSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -970,6 +1104,7 @@ export type TenantSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs =
   domains?: boolean | Prisma.Tenant$domainsArgs<ExtArgs>
   widgetConfig?: boolean | Prisma.Tenant$widgetConfigArgs<ExtArgs>
   logs?: boolean | Prisma.Tenant$logsArgs<ExtArgs>
+  leads?: boolean | Prisma.Tenant$leadsArgs<ExtArgs>
   messengerChannel?: boolean | Prisma.Tenant$messengerChannelArgs<ExtArgs>
   _count?: boolean | Prisma.TenantCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["tenant"]>
@@ -1016,6 +1151,7 @@ export type TenantInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   domains?: boolean | Prisma.Tenant$domainsArgs<ExtArgs>
   widgetConfig?: boolean | Prisma.Tenant$widgetConfigArgs<ExtArgs>
   logs?: boolean | Prisma.Tenant$logsArgs<ExtArgs>
+  leads?: boolean | Prisma.Tenant$leadsArgs<ExtArgs>
   messengerChannel?: boolean | Prisma.Tenant$messengerChannelArgs<ExtArgs>
   _count?: boolean | Prisma.TenantCountOutputTypeDefaultArgs<ExtArgs>
 }
@@ -1029,6 +1165,7 @@ export type $TenantPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs
     domains: Prisma.$DomainWhitelistPayload<ExtArgs>[]
     widgetConfig: Prisma.$WidgetConfigPayload<ExtArgs> | null
     logs: Prisma.$ConversationLogPayload<ExtArgs>[]
+    leads: Prisma.$LeadPayload<ExtArgs>[]
     messengerChannel: Prisma.$MessengerChannelPayload<ExtArgs> | null
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
@@ -1037,13 +1174,7 @@ export type $TenantPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs
     slug: string
     status: $Enums.TenantStatus
     difyAppId: string
-    /**
-     * Ciphertext AES-256-GCM, không bao giờ lưu plaintext. Xem src/lib/crypto.ts.
-     */
     difyApiKeyEncrypted: string
-    /**
-     * Override base URL cho bản Dify self-hosted của riêng tenant. Null = dùng DIFY_API_BASE_URL.
-     */
     difyApiBaseUrl: string | null
     createdAt: Date
     updatedAt: Date
@@ -1445,6 +1576,7 @@ export interface Prisma__TenantClient<T, Null = never, ExtArgs extends runtime.T
   domains<T extends Prisma.Tenant$domainsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Tenant$domainsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$DomainWhitelistPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   widgetConfig<T extends Prisma.Tenant$widgetConfigArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Tenant$widgetConfigArgs<ExtArgs>>): Prisma.Prisma__WidgetConfigClient<runtime.Types.Result.GetResult<Prisma.$WidgetConfigPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   logs<T extends Prisma.Tenant$logsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Tenant$logsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ConversationLogPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  leads<T extends Prisma.Tenant$leadsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Tenant$leadsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$LeadPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   messengerChannel<T extends Prisma.Tenant$messengerChannelArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Tenant$messengerChannelArgs<ExtArgs>>): Prisma.Prisma__MessengerChannelClient<runtime.Types.Result.GetResult<Prisma.$MessengerChannelPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
@@ -1965,6 +2097,30 @@ export type Tenant$logsArgs<ExtArgs extends runtime.Types.Extensions.InternalArg
   take?: number
   skip?: number
   distinct?: Prisma.ConversationLogScalarFieldEnum | Prisma.ConversationLogScalarFieldEnum[]
+}
+
+/**
+ * Tenant.leads
+ */
+export type Tenant$leadsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Lead
+   */
+  select?: Prisma.LeadSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Lead
+   */
+  omit?: Prisma.LeadOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.LeadInclude<ExtArgs> | null
+  where?: Prisma.LeadWhereInput
+  orderBy?: Prisma.LeadOrderByWithRelationInput | Prisma.LeadOrderByWithRelationInput[]
+  cursor?: Prisma.LeadWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.LeadScalarFieldEnum | Prisma.LeadScalarFieldEnum[]
 }
 
 /**

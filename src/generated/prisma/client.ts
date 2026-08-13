@@ -43,22 +43,22 @@ export { Prisma }
 
 /**
  * Model Admin
- * Tài khoản quản trị dashboard. Phase 1 chỉ có 1 loại tài khoản, không phân quyền.
+ * 
  */
 export type Admin = Prisma.AdminModel
 /**
  * Model Tenant
- * Một đơn vị/công ty sử dụng chatbot. Mỗi tenant map tới đúng 1 app bên Dify.ai.
+ * 
  */
 export type Tenant = Prisma.TenantModel
 /**
  * Model ApiKey
- * Key public phát cho widget nhúng trên site của tenant.
+ * 
  */
 export type ApiKey = Prisma.ApiKeyModel
 /**
  * Model DomainWhitelist
- * Domain được phép gọi /api/widget/chat bằng key của tenant này.
+ * 
  */
 export type DomainWhitelist = Prisma.DomainWhitelistModel
 /**
@@ -67,22 +67,22 @@ export type DomainWhitelist = Prisma.DomainWhitelistModel
  */
 export type WidgetConfig = Prisma.WidgetConfigModel
 /**
+ * Model Lead
+ * Thông tin khách để lại ở form trước khi chat.
+ */
+export type Lead = Prisma.LeadModel
+/**
  * Model ConversationLog
- * Phase 2. Chỉ ghi khi ENABLE_CONVERSATION_LOG=true; chưa có UI đọc.
+ * 
  */
 export type ConversationLog = Prisma.ConversationLogModel
 /**
  * Model MessengerChannel
- * Kết nối một Facebook Page của tenant vào Meta App dùng chung của hệ thống.
  * 
- * Chỉ có MỘT callback URL cho mọi tenant (`/api/channels/messenger`), nên
- * `pageId` chính là khoá định tuyến: webhook đọc `entry[].id` rồi tra ngược ra
- * tenant qua bảng này.
  */
 export type MessengerChannel = Prisma.MessengerChannelModel
 /**
  * Model MessengerConversation
- * Ánh xạ một người dùng Messenger (PSID) tới hội thoại Dify của họ, để bot
- * nhớ được ngữ cảnh giữa các tin nhắn.
+ * 
  */
 export type MessengerConversation = Prisma.MessengerConversationModel
