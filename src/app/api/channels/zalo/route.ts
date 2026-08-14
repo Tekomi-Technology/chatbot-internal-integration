@@ -18,20 +18,22 @@ export async function POST(request: NextRequest) {
   const rawBody = await request.text();
 
   const signatureHeader = request.headers.get("x-zevent-signature");
+  const skipVerify = env.zaloSkipWebhookVerify;
 
   if (!verifyZaloSignature(rawBody, signatureHeader, appId, secretKey)) {
-    console.warn("zalo webhook: chữ ký không hợp lệ", {
-      coHeaderChuKy: signatureHeader !== null,
+    console.warn("zalo webhook: chữ ký không khớp", {
+      boQuaKiemTra: skipVerify,
       headerChuKy: signatureHeader,
-      body: rawBody.slice(0, 500),
-      cacHeaderNhanDuoc: [...request.headers.keys()].join(", "),
+      body: rawBody.slice(0, 1000),
     });
 
     if (signatureHeader === null) {
       return new Response("EVENT_RECEIVED", { status: 200 });
     }
 
-    return new Response("Invalid signature", { status: 403 });
+    if (!skipVerify) {
+      return new Response("Invalid signature", { status: 403 });
+    }
   }
 
   let payload: unknown;
