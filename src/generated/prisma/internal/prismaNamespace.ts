@@ -402,7 +402,6 @@ export const ModelName = {
   ApiKey: 'ApiKey',
   DomainWhitelist: 'DomainWhitelist',
   WidgetConfig: 'WidgetConfig',
-  Lead: 'Lead',
   ConversationLog: 'ConversationLog',
   MessengerChannel: 'MessengerChannel',
   MessengerConversation: 'MessengerConversation',
@@ -423,7 +422,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "admin" | "tenant" | "apiKey" | "domainWhitelist" | "widgetConfig" | "lead" | "conversationLog" | "messengerChannel" | "messengerConversation" | "zaloChannel" | "zaloConversation"
+    modelProps: "admin" | "tenant" | "apiKey" | "domainWhitelist" | "widgetConfig" | "conversationLog" | "messengerChannel" | "messengerConversation" | "zaloChannel" | "zaloConversation"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -794,80 +793,6 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         count: {
           args: Prisma.WidgetConfigCountArgs<ExtArgs>
           result: runtime.Types.Utils.Optional<Prisma.WidgetConfigCountAggregateOutputType> | number
-        }
-      }
-    }
-    Lead: {
-      payload: Prisma.$LeadPayload<ExtArgs>
-      fields: Prisma.LeadFieldRefs
-      operations: {
-        findUnique: {
-          args: Prisma.LeadFindUniqueArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$LeadPayload> | null
-        }
-        findUniqueOrThrow: {
-          args: Prisma.LeadFindUniqueOrThrowArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$LeadPayload>
-        }
-        findFirst: {
-          args: Prisma.LeadFindFirstArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$LeadPayload> | null
-        }
-        findFirstOrThrow: {
-          args: Prisma.LeadFindFirstOrThrowArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$LeadPayload>
-        }
-        findMany: {
-          args: Prisma.LeadFindManyArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$LeadPayload>[]
-        }
-        create: {
-          args: Prisma.LeadCreateArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$LeadPayload>
-        }
-        createMany: {
-          args: Prisma.LeadCreateManyArgs<ExtArgs>
-          result: BatchPayload
-        }
-        createManyAndReturn: {
-          args: Prisma.LeadCreateManyAndReturnArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$LeadPayload>[]
-        }
-        delete: {
-          args: Prisma.LeadDeleteArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$LeadPayload>
-        }
-        update: {
-          args: Prisma.LeadUpdateArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$LeadPayload>
-        }
-        deleteMany: {
-          args: Prisma.LeadDeleteManyArgs<ExtArgs>
-          result: BatchPayload
-        }
-        updateMany: {
-          args: Prisma.LeadUpdateManyArgs<ExtArgs>
-          result: BatchPayload
-        }
-        updateManyAndReturn: {
-          args: Prisma.LeadUpdateManyAndReturnArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$LeadPayload>[]
-        }
-        upsert: {
-          args: Prisma.LeadUpsertArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$LeadPayload>
-        }
-        aggregate: {
-          args: Prisma.LeadAggregateArgs<ExtArgs>
-          result: runtime.Types.Utils.Optional<Prisma.AggregateLead>
-        }
-        groupBy: {
-          args: Prisma.LeadGroupByArgs<ExtArgs>
-          result: runtime.Types.Utils.Optional<Prisma.LeadGroupByOutputType>[]
-        }
-        count: {
-          args: Prisma.LeadCountArgs<ExtArgs>
-          result: runtime.Types.Utils.Optional<Prisma.LeadCountAggregateOutputType> | number
         }
       }
     }
@@ -1342,32 +1267,11 @@ export const WidgetConfigScalarFieldEnum = {
   welcomeMessage: 'welcomeMessage',
   inputPlaceholder: 'inputPlaceholder',
   position: 'position',
-  leadFormEnabled: 'leadFormEnabled',
-  leadFormTitle: 'leadFormTitle',
-  leadFormDescription: 'leadFormDescription',
-  leadFormSubmitLabel: 'leadFormSubmitLabel',
-  leadFormNameLabel: 'leadFormNameLabel',
-  leadFormPhoneLabel: 'leadFormPhoneLabel',
-  leadFormFields: 'leadFormFields',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
 
 export type WidgetConfigScalarFieldEnum = (typeof WidgetConfigScalarFieldEnum)[keyof typeof WidgetConfigScalarFieldEnum]
-
-
-export const LeadScalarFieldEnum = {
-  id: 'id',
-  tenantId: 'tenantId',
-  fullName: 'fullName',
-  phone: 'phone',
-  sessionId: 'sessionId',
-  pageUrl: 'pageUrl',
-  extra: 'extra',
-  createdAt: 'createdAt'
-} as const
-
-export type LeadScalarFieldEnum = (typeof LeadScalarFieldEnum)[keyof typeof LeadScalarFieldEnum]
 
 
 export const ConversationLogScalarFieldEnum = {
@@ -1776,7 +1680,6 @@ export type GlobalOmitConfig = {
   apiKey?: Prisma.ApiKeyOmit
   domainWhitelist?: Prisma.DomainWhitelistOmit
   widgetConfig?: Prisma.WidgetConfigOmit
-  lead?: Prisma.LeadOmit
   conversationLog?: Prisma.ConversationLogOmit
   messengerChannel?: Prisma.MessengerChannelOmit
   messengerConversation?: Prisma.MessengerConversationOmit

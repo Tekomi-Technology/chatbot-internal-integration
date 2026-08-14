@@ -15,9 +15,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Select } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import { LeadFieldEditor } from "@/components/tenants/lead-field-editor";
 import { WidgetPreview } from "@/components/tenants/widget-preview";
-import type { LeadField } from "@/lib/lead-fields";
 import { idleState, type ActionState } from "@/server/action-state";
 
 export type WidgetConfigValues = {
@@ -28,13 +26,6 @@ export type WidgetConfigValues = {
   primaryColor: string;
   welcomeMessage: string;
   inputPlaceholder: string;
-  leadFormEnabled: boolean;
-  leadFormTitle: string;
-  leadFormDescription: string;
-  leadFormSubmitLabel: string;
-  leadFormNameLabel: string;
-  leadFormPhoneLabel: string;
-  leadFormFields: LeadField[];
 };
 
 export function WidgetConfigTab({
@@ -189,150 +180,6 @@ export function WidgetConfigTab({
                 required
               />
             </FormField>
-
-            <fieldset className="flex flex-col gap-4 rounded-lg border border-border p-4">
-              <legend className="px-1 text-sm font-medium">
-                Form thu thập thông tin
-              </legend>
-
-              <label className="flex items-start gap-3">
-                <input
-                  type="checkbox"
-                  name="leadFormEnabled"
-                  checked={draft.leadFormEnabled}
-                  onChange={(event) =>
-                    set("leadFormEnabled", event.target.checked)
-                  }
-                  className="mt-0.5 size-4 cursor-pointer accent-primary"
-                />
-                <span className="text-sm">
-                  Bắt khách điền họ tên và số điện thoại trước khi chat
-                  <span className="mt-1 block text-xs text-muted-foreground">
-                    Khách mở widget sẽ thấy form thay cho ô nhập, điền xong mới
-                    gửi được tin nhắn. Thông tin hiện ở tab “Khách hàng”.
-                  </span>
-                </span>
-              </label>
-
-              {draft.leadFormEnabled ? (
-                <>
-                  <FormField
-                    name="leadFormTitle"
-                    label="Tiêu đề form"
-                    error={state.errors?.leadFormTitle}
-                  >
-                    <Input
-                      id="leadFormTitle"
-                      name="leadFormTitle"
-                      value={draft.leadFormTitle}
-                      onChange={(event) => set("leadFormTitle", event.target.value)}
-                      required
-                    />
-                  </FormField>
-
-                  <FormField
-                    name="leadFormDescription"
-                    label="Mô tả form"
-                    error={state.errors?.leadFormDescription}
-                  >
-                    <Textarea
-                      id="leadFormDescription"
-                      name="leadFormDescription"
-                      value={draft.leadFormDescription}
-                      onChange={(event) =>
-                        set("leadFormDescription", event.target.value)
-                      }
-                      required
-                    />
-                  </FormField>
-
-                  <FormField
-                    name="leadFormSubmitLabel"
-                    label="Nhãn nút gửi"
-                    error={state.errors?.leadFormSubmitLabel}
-                  >
-                    <Input
-                      id="leadFormSubmitLabel"
-                      name="leadFormSubmitLabel"
-                      value={draft.leadFormSubmitLabel}
-                      onChange={(event) =>
-                        set("leadFormSubmitLabel", event.target.value)
-                      }
-                      required
-                    />
-                  </FormField>
-
-                  <div className="grid gap-4 sm:grid-cols-2">
-                    <FormField
-                      name="leadFormNameLabel"
-                      label="Nhãn ô họ tên"
-                      error={state.errors?.leadFormNameLabel}
-                    >
-                      <Input
-                        id="leadFormNameLabel"
-                        name="leadFormNameLabel"
-                        value={draft.leadFormNameLabel}
-                        onChange={(event) =>
-                          set("leadFormNameLabel", event.target.value)
-                        }
-                        required
-                      />
-                    </FormField>
-
-                    <FormField
-                      name="leadFormPhoneLabel"
-                      label="Nhãn ô số điện thoại"
-                      error={state.errors?.leadFormPhoneLabel}
-                    >
-                      <Input
-                        id="leadFormPhoneLabel"
-                        name="leadFormPhoneLabel"
-                        value={draft.leadFormPhoneLabel}
-                        onChange={(event) =>
-                          set("leadFormPhoneLabel", event.target.value)
-                        }
-                        required
-                      />
-                    </FormField>
-                  </div>
-
-                  <LeadFieldEditor
-                    fields={draft.leadFormFields}
-                    onChange={(fields) => set("leadFormFields", fields)}
-                    error={state.errors?.leadFormFields}
-                  />
-                </>
-              ) : (
-                <>
-                  <input type="hidden" name="leadFormTitle" value={draft.leadFormTitle} />
-                  <input
-                    type="hidden"
-                    name="leadFormDescription"
-                    value={draft.leadFormDescription}
-                  />
-                  <input
-                    type="hidden"
-                    name="leadFormSubmitLabel"
-                    value={draft.leadFormSubmitLabel}
-                  />
-                  <input
-                    type="hidden"
-                    name="leadFormNameLabel"
-                    value={draft.leadFormNameLabel}
-                  />
-                  <input
-                    type="hidden"
-                    name="leadFormPhoneLabel"
-                    value={draft.leadFormPhoneLabel}
-                  />
-                  <input
-                    type="hidden"
-                    name="leadFormFields"
-                    value={JSON.stringify(draft.leadFormFields)}
-                  />
-                </>
-              )}
-            </fieldset>
 
             {state.status !== "idle" && state.message ? (
               <p

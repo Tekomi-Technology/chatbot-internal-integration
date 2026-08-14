@@ -89,84 +89,30 @@ function ChatPanel({
           </p>
         ) : null}
 
-        {/* Form bật thì khách chưa chat được gì, nên không mô phỏng hội thoại. */}
-        {config.leadFormEnabled ? null : (
-          <>
-            <p
-              className="max-w-[82%] self-end rounded-xl rounded-br-sm px-3 py-2 text-[13px] leading-snug text-white"
-              style={{ backgroundColor: config.primaryColor }}
-            >
-              Cho tôi xem bảng giá với.
-            </p>
+        <p
+          className="max-w-[82%] self-end rounded-xl rounded-br-sm px-3 py-2 text-[13px] leading-snug text-white"
+          style={{ backgroundColor: config.primaryColor }}
+        >
+          Cho tôi xem bảng giá với.
+        </p>
 
-            <div className="flex items-center gap-1 self-start rounded-xl rounded-bl-sm border border-slate-200 bg-white px-3 py-3">
-              <span className="size-1.5 rounded-full bg-slate-400" />
-              <span className="size-1.5 rounded-full bg-slate-300" />
-              <span className="size-1.5 rounded-full bg-slate-200" />
-            </div>
-          </>
-        )}
+        <div className="flex items-center gap-1 self-start rounded-xl rounded-bl-sm border border-slate-200 bg-white px-3 py-3">
+          <span className="size-1.5 rounded-full bg-slate-400" />
+          <span className="size-1.5 rounded-full bg-slate-300" />
+          <span className="size-1.5 rounded-full bg-slate-200" />
+        </div>
       </div>
 
-      {config.leadFormEnabled ? (
-        <LeadFormPreview config={config} />
-      ) : (
-        <div className="flex shrink-0 gap-2 border-t border-slate-200 bg-white p-3">
-          <div className="flex-1 truncate rounded-[10px] border border-slate-300 px-2.5 py-2 text-[13px] text-slate-400">
-            {config.inputPlaceholder.trim() || "Nhập câu hỏi của bạn..."}
-          </div>
-          <div
-            className="flex w-10 shrink-0 items-center justify-center rounded-[10px] text-white"
-            style={{ backgroundColor: config.primaryColor }}
-          >
-            <Send className="size-4" />
-          </div>
+      <div className="flex shrink-0 gap-2 border-t border-slate-200 bg-white p-3">
+        <div className="flex-1 truncate rounded-[10px] border border-slate-300 px-2.5 py-2 text-[13px] text-slate-400">
+          {config.inputPlaceholder.trim() || "Nhập câu hỏi của bạn..."}
         </div>
-      )}
-    </div>
-  );
-}
-
-/** Khớp với khối .leadform trong public/widget.js. */
-function LeadFormPreview({ config }: { config: WidgetConfigValues }) {
-  return (
-    // Khớp với .leadform của widget thật: nhiều trường thì form tự cuộn.
-    <div className="flex flex-col gap-2 overflow-y-auto border-t border-slate-200 bg-white p-3.5">
-      <p className="text-[13px] font-semibold text-slate-900">
-        {config.leadFormTitle.trim() || "Trước khi bắt đầu"}
-      </p>
-      <p className="text-xs text-slate-500">
-        {config.leadFormDescription.trim() ||
-          "Vui lòng để lại thông tin để chúng tôi tư vấn chính xác hơn."}
-      </p>
-
-      {[
-        { key: "__name", label: config.leadFormNameLabel.trim() || "Họ và tên", required: true },
-        {
-          key: "__phone",
-          label: config.leadFormPhoneLabel.trim() || "Số điện thoại",
-          required: true,
-        },
-        ...config.leadFormFields.map((field) => ({
-          key: field.key,
-          label: field.label.trim() || "(chưa đặt nhãn)",
-          required: field.required,
-        })),
-      ].map((field) => (
-        <div key={field.key} className="flex flex-col gap-1">
-          <span className="text-xs font-medium text-slate-900">
-            {field.label}
-            {field.required ? <span className="text-red-600"> *</span> : null}
-          </span>
-          <div className="h-8 rounded-[10px] border border-slate-300" />
+        <div
+          className="flex w-10 shrink-0 items-center justify-center rounded-[10px] text-white"
+          style={{ backgroundColor: config.primaryColor }}
+        >
+          <Send className="size-4" />
         </div>
-      ))}
-
-      <div
-        className="mt-0.5 rounded-[10px] px-3 py-2 text-center text-[13px] font-semibold text-white"
-        style={{ backgroundColor: config.primaryColor }}
-      >
-        {config.leadFormSubmitLabel.trim() || "Bắt đầu chat"}
       </div>
     </div>
   );

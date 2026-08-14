@@ -1,7 +1,6 @@
 import type { NextRequest } from "next/server";
 
 import { jsonWithCors, preflightResponse } from "@/lib/cors";
-import { parseLeadFields } from "@/lib/lead-fields";
 import { prisma } from "@/lib/prisma";
 
 export const runtime = "nodejs";
@@ -36,13 +35,6 @@ export async function GET(request: NextRequest) {
               welcomeMessage: true,
               inputPlaceholder: true,
               position: true,
-              leadFormEnabled: true,
-              leadFormTitle: true,
-              leadFormDescription: true,
-              leadFormSubmitLabel: true,
-              leadFormNameLabel: true,
-              leadFormPhoneLabel: true,
-              leadFormFields: true,
             },
           },
         },
@@ -71,17 +63,6 @@ export async function GET(request: NextRequest) {
         welcomeMessage:
           config?.welcomeMessage ?? "Xin chào! Tôi có thể giúp gì cho bạn?",
         inputPlaceholder: config?.inputPlaceholder ?? "Nhập câu hỏi của bạn...",
-        leadForm: {
-          enabled: config?.leadFormEnabled ?? false,
-          title: config?.leadFormTitle ?? "Trước khi bắt đầu",
-          description:
-            config?.leadFormDescription ??
-            "Vui lòng để lại thông tin để chúng tôi tư vấn chính xác hơn.",
-          submitLabel: config?.leadFormSubmitLabel ?? "Bắt đầu chat",
-          nameLabel: config?.leadFormNameLabel ?? "Họ và tên",
-          phoneLabel: config?.leadFormPhoneLabel ?? "Số điện thoại",
-          fields: parseLeadFields(config?.leadFormFields),
-        },
       },
     },
     {

@@ -8,7 +8,6 @@ export function TenantDetailTabs({
   general,
   apiKeys,
   widget,
-  leads,
   meta,
   zalo,
   plugin,
@@ -18,7 +17,6 @@ export function TenantDetailTabs({
   general: React.ReactNode;
   apiKeys: React.ReactNode;
   widget: React.ReactNode;
-  leads: React.ReactNode;
   meta: React.ReactNode;
   zalo: React.ReactNode;
   plugin: React.ReactNode;
@@ -30,7 +28,6 @@ export function TenantDetailTabs({
         <TabsTrigger value="general">Thông tin</TabsTrigger>
         <TabsTrigger value="api-keys">API key & Domain</TabsTrigger>
         <TabsTrigger value="widget">Cấu hình widget</TabsTrigger>
-        <TabsTrigger value="leads">Khách hàng</TabsTrigger>
         <TabsTrigger value="meta">Meta</TabsTrigger>
         <TabsTrigger value="zalo">Zalo</TabsTrigger>
         <TabsTrigger value="plugin">Plugin</TabsTrigger>
@@ -40,7 +37,6 @@ export function TenantDetailTabs({
       <TabsContent value="general">{general}</TabsContent>
       <TabsContent value="api-keys">{apiKeys}</TabsContent>
       <TabsContent value="widget">{widget}</TabsContent>
-      <TabsContent value="leads">{leads}</TabsContent>
       <TabsContent value="meta">{meta}</TabsContent>
       <TabsContent value="zalo">{zalo}</TabsContent>
       <TabsContent value="plugin">{plugin}</TabsContent>

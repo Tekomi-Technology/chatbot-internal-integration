@@ -34,12 +34,6 @@ export type WidgetConfigMinAggregateOutputType = {
   welcomeMessage: string | null
   inputPlaceholder: string | null
   position: $Enums.WidgetPosition | null
-  leadFormEnabled: boolean | null
-  leadFormTitle: string | null
-  leadFormDescription: string | null
-  leadFormSubmitLabel: string | null
-  leadFormNameLabel: string | null
-  leadFormPhoneLabel: string | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -54,12 +48,6 @@ export type WidgetConfigMaxAggregateOutputType = {
   welcomeMessage: string | null
   inputPlaceholder: string | null
   position: $Enums.WidgetPosition | null
-  leadFormEnabled: boolean | null
-  leadFormTitle: string | null
-  leadFormDescription: string | null
-  leadFormSubmitLabel: string | null
-  leadFormNameLabel: string | null
-  leadFormPhoneLabel: string | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -74,13 +62,6 @@ export type WidgetConfigCountAggregateOutputType = {
   welcomeMessage: number
   inputPlaceholder: number
   position: number
-  leadFormEnabled: number
-  leadFormTitle: number
-  leadFormDescription: number
-  leadFormSubmitLabel: number
-  leadFormNameLabel: number
-  leadFormPhoneLabel: number
-  leadFormFields: number
   createdAt: number
   updatedAt: number
   _all: number
@@ -97,12 +78,6 @@ export type WidgetConfigMinAggregateInputType = {
   welcomeMessage?: true
   inputPlaceholder?: true
   position?: true
-  leadFormEnabled?: true
-  leadFormTitle?: true
-  leadFormDescription?: true
-  leadFormSubmitLabel?: true
-  leadFormNameLabel?: true
-  leadFormPhoneLabel?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -117,12 +92,6 @@ export type WidgetConfigMaxAggregateInputType = {
   welcomeMessage?: true
   inputPlaceholder?: true
   position?: true
-  leadFormEnabled?: true
-  leadFormTitle?: true
-  leadFormDescription?: true
-  leadFormSubmitLabel?: true
-  leadFormNameLabel?: true
-  leadFormPhoneLabel?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -137,13 +106,6 @@ export type WidgetConfigCountAggregateInputType = {
   welcomeMessage?: true
   inputPlaceholder?: true
   position?: true
-  leadFormEnabled?: true
-  leadFormTitle?: true
-  leadFormDescription?: true
-  leadFormSubmitLabel?: true
-  leadFormNameLabel?: true
-  leadFormPhoneLabel?: true
-  leadFormFields?: true
   createdAt?: true
   updatedAt?: true
   _all?: true
@@ -231,13 +193,6 @@ export type WidgetConfigGroupByOutputType = {
   welcomeMessage: string
   inputPlaceholder: string
   position: $Enums.WidgetPosition
-  leadFormEnabled: boolean
-  leadFormTitle: string
-  leadFormDescription: string
-  leadFormSubmitLabel: string
-  leadFormNameLabel: string
-  leadFormPhoneLabel: string
-  leadFormFields: runtime.JsonValue
   createdAt: Date
   updatedAt: Date
   _count: WidgetConfigCountAggregateOutputType | null
@@ -273,13 +228,6 @@ export type WidgetConfigWhereInput = {
   welcomeMessage?: Prisma.StringFilter<"WidgetConfig"> | string
   inputPlaceholder?: Prisma.StringFilter<"WidgetConfig"> | string
   position?: Prisma.EnumWidgetPositionFilter<"WidgetConfig"> | $Enums.WidgetPosition
-  leadFormEnabled?: Prisma.BoolFilter<"WidgetConfig"> | boolean
-  leadFormTitle?: Prisma.StringFilter<"WidgetConfig"> | string
-  leadFormDescription?: Prisma.StringFilter<"WidgetConfig"> | string
-  leadFormSubmitLabel?: Prisma.StringFilter<"WidgetConfig"> | string
-  leadFormNameLabel?: Prisma.StringFilter<"WidgetConfig"> | string
-  leadFormPhoneLabel?: Prisma.StringFilter<"WidgetConfig"> | string
-  leadFormFields?: Prisma.JsonFilter<"WidgetConfig">
   createdAt?: Prisma.DateTimeFilter<"WidgetConfig"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"WidgetConfig"> | Date | string
   tenant?: Prisma.XOR<Prisma.TenantScalarRelationFilter, Prisma.TenantWhereInput>
@@ -295,13 +243,6 @@ export type WidgetConfigOrderByWithRelationInput = {
   welcomeMessage?: Prisma.SortOrder
   inputPlaceholder?: Prisma.SortOrder
   position?: Prisma.SortOrder
-  leadFormEnabled?: Prisma.SortOrder
-  leadFormTitle?: Prisma.SortOrder
-  leadFormDescription?: Prisma.SortOrder
-  leadFormSubmitLabel?: Prisma.SortOrder
-  leadFormNameLabel?: Prisma.SortOrder
-  leadFormPhoneLabel?: Prisma.SortOrder
-  leadFormFields?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   tenant?: Prisma.TenantOrderByWithRelationInput
@@ -320,13 +261,6 @@ export type WidgetConfigWhereUniqueInput = Prisma.AtLeast<{
   welcomeMessage?: Prisma.StringFilter<"WidgetConfig"> | string
   inputPlaceholder?: Prisma.StringFilter<"WidgetConfig"> | string
   position?: Prisma.EnumWidgetPositionFilter<"WidgetConfig"> | $Enums.WidgetPosition
-  leadFormEnabled?: Prisma.BoolFilter<"WidgetConfig"> | boolean
-  leadFormTitle?: Prisma.StringFilter<"WidgetConfig"> | string
-  leadFormDescription?: Prisma.StringFilter<"WidgetConfig"> | string
-  leadFormSubmitLabel?: Prisma.StringFilter<"WidgetConfig"> | string
-  leadFormNameLabel?: Prisma.StringFilter<"WidgetConfig"> | string
-  leadFormPhoneLabel?: Prisma.StringFilter<"WidgetConfig"> | string
-  leadFormFields?: Prisma.JsonFilter<"WidgetConfig">
   createdAt?: Prisma.DateTimeFilter<"WidgetConfig"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"WidgetConfig"> | Date | string
   tenant?: Prisma.XOR<Prisma.TenantScalarRelationFilter, Prisma.TenantWhereInput>
@@ -342,13 +276,6 @@ export type WidgetConfigOrderByWithAggregationInput = {
   welcomeMessage?: Prisma.SortOrder
   inputPlaceholder?: Prisma.SortOrder
   position?: Prisma.SortOrder
-  leadFormEnabled?: Prisma.SortOrder
-  leadFormTitle?: Prisma.SortOrder
-  leadFormDescription?: Prisma.SortOrder
-  leadFormSubmitLabel?: Prisma.SortOrder
-  leadFormNameLabel?: Prisma.SortOrder
-  leadFormPhoneLabel?: Prisma.SortOrder
-  leadFormFields?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   _count?: Prisma.WidgetConfigCountOrderByAggregateInput
@@ -369,13 +296,6 @@ export type WidgetConfigScalarWhereWithAggregatesInput = {
   welcomeMessage?: Prisma.StringWithAggregatesFilter<"WidgetConfig"> | string
   inputPlaceholder?: Prisma.StringWithAggregatesFilter<"WidgetConfig"> | string
   position?: Prisma.EnumWidgetPositionWithAggregatesFilter<"WidgetConfig"> | $Enums.WidgetPosition
-  leadFormEnabled?: Prisma.BoolWithAggregatesFilter<"WidgetConfig"> | boolean
-  leadFormTitle?: Prisma.StringWithAggregatesFilter<"WidgetConfig"> | string
-  leadFormDescription?: Prisma.StringWithAggregatesFilter<"WidgetConfig"> | string
-  leadFormSubmitLabel?: Prisma.StringWithAggregatesFilter<"WidgetConfig"> | string
-  leadFormNameLabel?: Prisma.StringWithAggregatesFilter<"WidgetConfig"> | string
-  leadFormPhoneLabel?: Prisma.StringWithAggregatesFilter<"WidgetConfig"> | string
-  leadFormFields?: Prisma.JsonWithAggregatesFilter<"WidgetConfig">
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"WidgetConfig"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"WidgetConfig"> | Date | string
 }
@@ -389,13 +309,6 @@ export type WidgetConfigCreateInput = {
   welcomeMessage?: string
   inputPlaceholder?: string
   position?: $Enums.WidgetPosition
-  leadFormEnabled?: boolean
-  leadFormTitle?: string
-  leadFormDescription?: string
-  leadFormSubmitLabel?: string
-  leadFormNameLabel?: string
-  leadFormPhoneLabel?: string
-  leadFormFields?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   createdAt?: Date | string
   updatedAt?: Date | string
   tenant: Prisma.TenantCreateNestedOneWithoutWidgetConfigInput
@@ -411,13 +324,6 @@ export type WidgetConfigUncheckedCreateInput = {
   welcomeMessage?: string
   inputPlaceholder?: string
   position?: $Enums.WidgetPosition
-  leadFormEnabled?: boolean
-  leadFormTitle?: string
-  leadFormDescription?: string
-  leadFormSubmitLabel?: string
-  leadFormNameLabel?: string
-  leadFormPhoneLabel?: string
-  leadFormFields?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -431,13 +337,6 @@ export type WidgetConfigUpdateInput = {
   welcomeMessage?: Prisma.StringFieldUpdateOperationsInput | string
   inputPlaceholder?: Prisma.StringFieldUpdateOperationsInput | string
   position?: Prisma.EnumWidgetPositionFieldUpdateOperationsInput | $Enums.WidgetPosition
-  leadFormEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  leadFormTitle?: Prisma.StringFieldUpdateOperationsInput | string
-  leadFormDescription?: Prisma.StringFieldUpdateOperationsInput | string
-  leadFormSubmitLabel?: Prisma.StringFieldUpdateOperationsInput | string
-  leadFormNameLabel?: Prisma.StringFieldUpdateOperationsInput | string
-  leadFormPhoneLabel?: Prisma.StringFieldUpdateOperationsInput | string
-  leadFormFields?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   tenant?: Prisma.TenantUpdateOneRequiredWithoutWidgetConfigNestedInput
@@ -453,13 +352,6 @@ export type WidgetConfigUncheckedUpdateInput = {
   welcomeMessage?: Prisma.StringFieldUpdateOperationsInput | string
   inputPlaceholder?: Prisma.StringFieldUpdateOperationsInput | string
   position?: Prisma.EnumWidgetPositionFieldUpdateOperationsInput | $Enums.WidgetPosition
-  leadFormEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  leadFormTitle?: Prisma.StringFieldUpdateOperationsInput | string
-  leadFormDescription?: Prisma.StringFieldUpdateOperationsInput | string
-  leadFormSubmitLabel?: Prisma.StringFieldUpdateOperationsInput | string
-  leadFormNameLabel?: Prisma.StringFieldUpdateOperationsInput | string
-  leadFormPhoneLabel?: Prisma.StringFieldUpdateOperationsInput | string
-  leadFormFields?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -474,13 +366,6 @@ export type WidgetConfigCreateManyInput = {
   welcomeMessage?: string
   inputPlaceholder?: string
   position?: $Enums.WidgetPosition
-  leadFormEnabled?: boolean
-  leadFormTitle?: string
-  leadFormDescription?: string
-  leadFormSubmitLabel?: string
-  leadFormNameLabel?: string
-  leadFormPhoneLabel?: string
-  leadFormFields?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -494,13 +379,6 @@ export type WidgetConfigUpdateManyMutationInput = {
   welcomeMessage?: Prisma.StringFieldUpdateOperationsInput | string
   inputPlaceholder?: Prisma.StringFieldUpdateOperationsInput | string
   position?: Prisma.EnumWidgetPositionFieldUpdateOperationsInput | $Enums.WidgetPosition
-  leadFormEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  leadFormTitle?: Prisma.StringFieldUpdateOperationsInput | string
-  leadFormDescription?: Prisma.StringFieldUpdateOperationsInput | string
-  leadFormSubmitLabel?: Prisma.StringFieldUpdateOperationsInput | string
-  leadFormNameLabel?: Prisma.StringFieldUpdateOperationsInput | string
-  leadFormPhoneLabel?: Prisma.StringFieldUpdateOperationsInput | string
-  leadFormFields?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -515,13 +393,6 @@ export type WidgetConfigUncheckedUpdateManyInput = {
   welcomeMessage?: Prisma.StringFieldUpdateOperationsInput | string
   inputPlaceholder?: Prisma.StringFieldUpdateOperationsInput | string
   position?: Prisma.EnumWidgetPositionFieldUpdateOperationsInput | $Enums.WidgetPosition
-  leadFormEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  leadFormTitle?: Prisma.StringFieldUpdateOperationsInput | string
-  leadFormDescription?: Prisma.StringFieldUpdateOperationsInput | string
-  leadFormSubmitLabel?: Prisma.StringFieldUpdateOperationsInput | string
-  leadFormNameLabel?: Prisma.StringFieldUpdateOperationsInput | string
-  leadFormPhoneLabel?: Prisma.StringFieldUpdateOperationsInput | string
-  leadFormFields?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -541,13 +412,6 @@ export type WidgetConfigCountOrderByAggregateInput = {
   welcomeMessage?: Prisma.SortOrder
   inputPlaceholder?: Prisma.SortOrder
   position?: Prisma.SortOrder
-  leadFormEnabled?: Prisma.SortOrder
-  leadFormTitle?: Prisma.SortOrder
-  leadFormDescription?: Prisma.SortOrder
-  leadFormSubmitLabel?: Prisma.SortOrder
-  leadFormNameLabel?: Prisma.SortOrder
-  leadFormPhoneLabel?: Prisma.SortOrder
-  leadFormFields?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -562,12 +426,6 @@ export type WidgetConfigMaxOrderByAggregateInput = {
   welcomeMessage?: Prisma.SortOrder
   inputPlaceholder?: Prisma.SortOrder
   position?: Prisma.SortOrder
-  leadFormEnabled?: Prisma.SortOrder
-  leadFormTitle?: Prisma.SortOrder
-  leadFormDescription?: Prisma.SortOrder
-  leadFormSubmitLabel?: Prisma.SortOrder
-  leadFormNameLabel?: Prisma.SortOrder
-  leadFormPhoneLabel?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -582,12 +440,6 @@ export type WidgetConfigMinOrderByAggregateInput = {
   welcomeMessage?: Prisma.SortOrder
   inputPlaceholder?: Prisma.SortOrder
   position?: Prisma.SortOrder
-  leadFormEnabled?: Prisma.SortOrder
-  leadFormTitle?: Prisma.SortOrder
-  leadFormDescription?: Prisma.SortOrder
-  leadFormSubmitLabel?: Prisma.SortOrder
-  leadFormNameLabel?: Prisma.SortOrder
-  leadFormPhoneLabel?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -641,13 +493,6 @@ export type WidgetConfigCreateWithoutTenantInput = {
   welcomeMessage?: string
   inputPlaceholder?: string
   position?: $Enums.WidgetPosition
-  leadFormEnabled?: boolean
-  leadFormTitle?: string
-  leadFormDescription?: string
-  leadFormSubmitLabel?: string
-  leadFormNameLabel?: string
-  leadFormPhoneLabel?: string
-  leadFormFields?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -661,13 +506,6 @@ export type WidgetConfigUncheckedCreateWithoutTenantInput = {
   welcomeMessage?: string
   inputPlaceholder?: string
   position?: $Enums.WidgetPosition
-  leadFormEnabled?: boolean
-  leadFormTitle?: string
-  leadFormDescription?: string
-  leadFormSubmitLabel?: string
-  leadFormNameLabel?: string
-  leadFormPhoneLabel?: string
-  leadFormFields?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -697,13 +535,6 @@ export type WidgetConfigUpdateWithoutTenantInput = {
   welcomeMessage?: Prisma.StringFieldUpdateOperationsInput | string
   inputPlaceholder?: Prisma.StringFieldUpdateOperationsInput | string
   position?: Prisma.EnumWidgetPositionFieldUpdateOperationsInput | $Enums.WidgetPosition
-  leadFormEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  leadFormTitle?: Prisma.StringFieldUpdateOperationsInput | string
-  leadFormDescription?: Prisma.StringFieldUpdateOperationsInput | string
-  leadFormSubmitLabel?: Prisma.StringFieldUpdateOperationsInput | string
-  leadFormNameLabel?: Prisma.StringFieldUpdateOperationsInput | string
-  leadFormPhoneLabel?: Prisma.StringFieldUpdateOperationsInput | string
-  leadFormFields?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -717,13 +548,6 @@ export type WidgetConfigUncheckedUpdateWithoutTenantInput = {
   welcomeMessage?: Prisma.StringFieldUpdateOperationsInput | string
   inputPlaceholder?: Prisma.StringFieldUpdateOperationsInput | string
   position?: Prisma.EnumWidgetPositionFieldUpdateOperationsInput | $Enums.WidgetPosition
-  leadFormEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  leadFormTitle?: Prisma.StringFieldUpdateOperationsInput | string
-  leadFormDescription?: Prisma.StringFieldUpdateOperationsInput | string
-  leadFormSubmitLabel?: Prisma.StringFieldUpdateOperationsInput | string
-  leadFormNameLabel?: Prisma.StringFieldUpdateOperationsInput | string
-  leadFormPhoneLabel?: Prisma.StringFieldUpdateOperationsInput | string
-  leadFormFields?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -740,13 +564,6 @@ export type WidgetConfigSelect<ExtArgs extends runtime.Types.Extensions.Internal
   welcomeMessage?: boolean
   inputPlaceholder?: boolean
   position?: boolean
-  leadFormEnabled?: boolean
-  leadFormTitle?: boolean
-  leadFormDescription?: boolean
-  leadFormSubmitLabel?: boolean
-  leadFormNameLabel?: boolean
-  leadFormPhoneLabel?: boolean
-  leadFormFields?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
@@ -762,13 +579,6 @@ export type WidgetConfigSelectCreateManyAndReturn<ExtArgs extends runtime.Types.
   welcomeMessage?: boolean
   inputPlaceholder?: boolean
   position?: boolean
-  leadFormEnabled?: boolean
-  leadFormTitle?: boolean
-  leadFormDescription?: boolean
-  leadFormSubmitLabel?: boolean
-  leadFormNameLabel?: boolean
-  leadFormPhoneLabel?: boolean
-  leadFormFields?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
@@ -784,13 +594,6 @@ export type WidgetConfigSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.
   welcomeMessage?: boolean
   inputPlaceholder?: boolean
   position?: boolean
-  leadFormEnabled?: boolean
-  leadFormTitle?: boolean
-  leadFormDescription?: boolean
-  leadFormSubmitLabel?: boolean
-  leadFormNameLabel?: boolean
-  leadFormPhoneLabel?: boolean
-  leadFormFields?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
@@ -806,18 +609,11 @@ export type WidgetConfigSelectScalar = {
   welcomeMessage?: boolean
   inputPlaceholder?: boolean
   position?: boolean
-  leadFormEnabled?: boolean
-  leadFormTitle?: boolean
-  leadFormDescription?: boolean
-  leadFormSubmitLabel?: boolean
-  leadFormNameLabel?: boolean
-  leadFormPhoneLabel?: boolean
-  leadFormFields?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type WidgetConfigOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "tenantId" | "mode" | "botName" | "logoUrl" | "primaryColor" | "welcomeMessage" | "inputPlaceholder" | "position" | "leadFormEnabled" | "leadFormTitle" | "leadFormDescription" | "leadFormSubmitLabel" | "leadFormNameLabel" | "leadFormPhoneLabel" | "leadFormFields" | "createdAt" | "updatedAt", ExtArgs["result"]["widgetConfig"]>
+export type WidgetConfigOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "tenantId" | "mode" | "botName" | "logoUrl" | "primaryColor" | "welcomeMessage" | "inputPlaceholder" | "position" | "createdAt" | "updatedAt", ExtArgs["result"]["widgetConfig"]>
 export type WidgetConfigInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
 }
@@ -843,13 +639,6 @@ export type $WidgetConfigPayload<ExtArgs extends runtime.Types.Extensions.Intern
     welcomeMessage: string
     inputPlaceholder: string
     position: $Enums.WidgetPosition
-    leadFormEnabled: boolean
-    leadFormTitle: string
-    leadFormDescription: string
-    leadFormSubmitLabel: string
-    leadFormNameLabel: string
-    leadFormPhoneLabel: string
-    leadFormFields: runtime.JsonValue
     createdAt: Date
     updatedAt: Date
   }, ExtArgs["result"]["widgetConfig"]>
@@ -1285,13 +1074,6 @@ export interface WidgetConfigFieldRefs {
   readonly welcomeMessage: Prisma.FieldRef<"WidgetConfig", 'String'>
   readonly inputPlaceholder: Prisma.FieldRef<"WidgetConfig", 'String'>
   readonly position: Prisma.FieldRef<"WidgetConfig", 'WidgetPosition'>
-  readonly leadFormEnabled: Prisma.FieldRef<"WidgetConfig", 'Boolean'>
-  readonly leadFormTitle: Prisma.FieldRef<"WidgetConfig", 'String'>
-  readonly leadFormDescription: Prisma.FieldRef<"WidgetConfig", 'String'>
-  readonly leadFormSubmitLabel: Prisma.FieldRef<"WidgetConfig", 'String'>
-  readonly leadFormNameLabel: Prisma.FieldRef<"WidgetConfig", 'String'>
-  readonly leadFormPhoneLabel: Prisma.FieldRef<"WidgetConfig", 'String'>
-  readonly leadFormFields: Prisma.FieldRef<"WidgetConfig", 'Json'>
   readonly createdAt: Prisma.FieldRef<"WidgetConfig", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"WidgetConfig", 'DateTime'>
 }

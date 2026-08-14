@@ -868,13 +868,6 @@ export type $ZaloChannelPayload<ExtArgs extends runtime.Types.Extensions.Interna
     accessTokenExpiresAt: Date | null
     refreshTokenEncrypted: string
     refreshTokenUpdatedAt: Date
-    /**
-     * Khoá ký webhook, LẤY Ở TRANG WEBHOOK CỦA APP ZALO — không phải App Secret
-     * Key. Công thức đã xác minh bằng request thật:
-     * sha256(appId + rawBody + timestamp + oaSecretKey).
-     * Nullable vì kênh nối trước khi có ô này vẫn tồn tại; thiếu khoá thì webhook
-     * không xác thực được nên sự kiện bị bỏ qua.
-     */
     oaSecretKeyEncrypted: string | null
     lastRefreshError: string | null
     isActive: boolean
