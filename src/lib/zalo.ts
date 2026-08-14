@@ -8,7 +8,6 @@ import { env } from "@/lib/env";
 export class ZaloError extends Error {
   constructor(
     message: string,
-    /** Mã lỗi Zalo trả trong body. 0 nghĩa là thành công nên không bao giờ xuất hiện ở đây. */
     readonly code: number,
     readonly detail?: unknown,
   ) {
@@ -17,17 +16,6 @@ export class ZaloError extends Error {
   }
 }
 
-/**
- * Đối chiếu header `X-ZEvent-Signature` với sha256(appId + rawBody + timestamp + secretKey).
- *
- * QUAN TRỌNG: `rawBody` phải là chuỗi gốc đọc bằng `request.text()`. Nếu parse
- * JSON rồi stringify lại thì thứ tự key và khoảng trắng đổi, chữ ký sẽ luôn sai.
- *
- * `timestamp` lấy từ chính body — không phải header — theo đúng công thức của Zalo.
- *
- * Chấp nhận cả `mac=<hash>` lẫn hash trần: tài liệu Zalo chưa kiểm chứng được
- * trực tiếp về tiền tố này, nhận cả hai thì không phụ thuộc vào chi tiết đó.
- */
 export function verifyZaloSignature(
   rawBody: string,
   signatureHeader: string | null,
@@ -61,14 +49,10 @@ export function verifyZaloSignature(
   return timingSafeEqual(receivedBuffer, expectedBuffer);
 }
 
-/** Một tin nhắn văn bản đã lọc ra từ payload webhook. */
 export type ZaloTextEvent = {
-  /** OA ID — khoá tra ngược ra tenant. Nằm ở `recipient.id` với event user gửi tới OA. */
   oaId: string;
-  /** User ID của người gửi, chỉ duy nhất trong phạm vi một OA. */
   userId: string;
   text: string;
-  /** `msg_id` của Zalo, dùng để chống xử lý trùng khi có retry. */
   msgId: string | null;
 };
 
@@ -79,15 +63,6 @@ type ZaloWebhookPayload = {
   message?: { text?: string; msg_id?: string };
 };
 
-/**
- * Rút sự kiện đáng trả lời khỏi payload webhook.
- *
- * Khác Messenger, mỗi request của Zalo chỉ chứa MỘT sự kiện. Vẫn trả mảng để
- * nơi gọi dùng chung khuôn mẫu với `collectTextEvents` của Messenger.
- *
- * Bỏ qua có chủ đích: mọi `event_name` khác `user_send_text` — gồm follow,
- * unfollow, ảnh/file, và tin do chính OA gửi (nếu không sẽ thành vòng lặp).
- */
 export function collectZaloTextEvents(payload: unknown): ZaloTextEvent[] {
   const body = payload as ZaloWebhookPayload | null;
   if (body?.event_name !== "user_send_text") return [];
@@ -101,26 +76,10 @@ export function collectZaloTextEvents(payload: unknown): ZaloTextEvent[] {
   return [{ oaId, userId, text, msgId: body.message?.msg_id ?? null }];
 }
 
-// --- Gọi API Zalo -----------------------------------------------------------
-
 const OAUTH_URL = "https://oauth.zaloapp.com/v4/oa/access_token";
 const CS_MESSAGE_URL = "https://openapi.zalo.me/v3.0/oa/message/cs";
 const REQUEST_TIMEOUT_MS = 10_000;
 
-/**
- * Đọc kết quả một lời gọi API Zalo.
- *
- * QUAN TRỌNG: Zalo trả HTTP 200 kể cả khi lỗi nghiệp vụ, mã lỗi thật nằm ở
- * trường `error` trong body. Chỉ kiểm `response.ok` là bỏ lọt gần hết lỗi.
- *
- * Zalo có HAI hình dạng phản hồi khác nhau tuỳ endpoint:
- * - CS Message API luôn trả `error: 0` khi thành công, khác 0 khi lỗi.
- * - OAuth access-token endpoint trả thẳng `{access_token, refresh_token,
- *   expires_in}` khi thành công — KHÔNG có trường `error` nào cả.
- * Vì vậy thiếu trường `error` không được coi là thất bại vô điều kiện: chỉ
- * khi thiếu `error` VÀ HTTP status cũng nằm ngoài 2xx thì mới ném lỗi (lỗi
- * tầng vận chuyển, ví dụ 401 kèm body JSON hợp lệ nhưng không có `error`).
- */
 export function readZaloResult(status: number, raw: string): unknown {
   let body: unknown;
   try {
@@ -137,15 +96,31 @@ export function readZaloResult(status: number, raw: string): unknown {
     throw new ZaloError(`Zalo trả về body rỗng (HTTP ${status}).`, status);
   }
 
-  const payload = body as { error?: number; message?: string; error_description?: string };
+  const payload = body as {
+    error?: unknown;
+    message?: string;
+    error_description?: string;
+  };
 
-  if (typeof payload.error === "number" && payload.error !== 0) {
+  const errorCode =
+    payload.error === undefined || payload.error === null
+      ? undefined
+      : Number(payload.error);
+
+  if (errorCode !== undefined && Number.isFinite(errorCode) && errorCode !== 0) {
     const detail = payload.message ?? payload.error_description ?? "không rõ lý do";
-    throw new ZaloError(`Zalo báo lỗi ${payload.error}: ${detail}`, payload.error, body);
+    throw new ZaloError(`Zalo báo lỗi ${errorCode}: ${detail}`, errorCode, body);
   }
 
-  // Không có trường `error` mà HTTP cũng hỏng → coi là lỗi tầng vận chuyển.
-  if (payload.error === undefined && (status < 200 || status >= 300)) {
+  if (errorCode !== undefined && !Number.isFinite(errorCode)) {
+    throw new ZaloError(
+      `Zalo trả về trường \`error\` không phải số (HTTP ${status}).`,
+      status,
+      body,
+    );
+  }
+
+  if (errorCode === undefined && (status < 200 || status >= 300)) {
     throw new ZaloError(`Zalo trả về HTTP ${status}.`, status, body);
   }
 
@@ -191,13 +166,6 @@ export type ZaloTokenSet = {
   expiresInSeconds: number;
 };
 
-/**
- * Đổi refresh token lấy cặp token mới.
- *
- * CẢNH BÁO: gọi hàm này là HUỶ `refreshToken` truyền vào — Zalo chỉ cho dùng một
- * lần. Bên gọi BẮT BUỘC phải lưu `refreshToken` mới trả về, nếu không kênh chết
- * vĩnh viễn. Chỉ được gọi từ `src/server/zalo-token.ts`, nơi có advisory lock.
- */
 export async function exchangeRefreshToken(
   refreshToken: string,
 ): Promise<ZaloTokenSet> {
@@ -223,11 +191,6 @@ export async function exchangeRefreshToken(
   };
 
   if (!result.access_token || !result.refresh_token) {
-    // KHÔNG gắn `body` thô vào đây: nếu Zalo trả về nửa vời (vd. có
-    // access_token nhưng thiếu refresh_token) thì `body` chứa một access
-    // token thật — gắn nguyên văn sẽ làm token đó lọt thẳng vào log. Chỉ ghi
-    // lại thông tin chẩn đoán không nhạy cảm: trường nào có/thiếu, cộng các
-    // trường vốn không bí mật như `expires_in` hay mã lỗi (nếu Zalo có kèm).
     const diagnostic = body as { error?: number; expires_in?: string | number };
     throw new ZaloError("Zalo không trả về đủ cặp token.", 500, {
       hasAccessToken: Boolean(result.access_token),
@@ -237,9 +200,6 @@ export async function exchangeRefreshToken(
     });
   }
 
-  // `expires_in` của Zalo là chuỗi nên phải ép kiểu số. Giá trị trả về là hạn
-  // thô, CHƯA trừ hao gì cả — biên an toàn (vd. coi là hết hạn sớm hơn vài
-  // phút) là trách nhiệm của `getValidAccessToken`, không phải ở đây.
   const expiresInSeconds = Number(result.expires_in ?? 3600);
 
   return {
@@ -249,7 +209,6 @@ export async function exchangeRefreshToken(
   };
 }
 
-/** Gửi tin tư vấn (CS message) cho người dùng, tự cắt nếu vượt 2000 ký tự. */
 export async function sendZaloText(options: {
   accessToken: string;
   userId: string;

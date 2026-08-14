@@ -3,7 +3,7 @@ import type { NextRequest } from "next/server";
 import { safeEqual } from "@/lib/crypto";
 import { env } from "@/lib/env";
 import { prisma } from "@/lib/prisma";
-import { getValidAccessToken } from "@/server/zalo-token";
+import { resolveAccessToken } from "@/server/zalo-token";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -25,7 +25,6 @@ export async function POST(request: NextRequest) {
 
   const channels = await prisma.zaloChannel.findMany({
     where: {
-      isActive: true,
       tenant: { status: "ACTIVE" },
       OR: [
         { accessTokenExpiresAt: null },
@@ -36,17 +35,21 @@ export async function POST(request: NextRequest) {
   });
 
   let refreshed = 0;
+  let skipped = 0;
   let failed = 0;
 
   for (const channel of channels) {
     try {
-      await getValidAccessToken(channel.id);
-      refreshed += 1;
+      const result = await resolveAccessToken(channel.id, {
+        marginMs: REFRESH_AHEAD_MS,
+      });
+      if (result.refreshed) refreshed += 1;
+      else skipped += 1;
     } catch (error) {
       failed += 1;
       console.error("cron zalo-refresh", { oaId: channel.oaId, error });
     }
   }
 
-  return Response.json({ refreshed, failed, scanned: channels.length });
+  return Response.json({ refreshed, skipped, failed, scanned: channels.length });
 }

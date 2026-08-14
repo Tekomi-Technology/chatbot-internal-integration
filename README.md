@@ -219,6 +219,16 @@ có job refresh định kỳ. Thêm dòng sau vào crontab trên host:
 Không chạy job này thì OA nào không có tin nhắn trong 3 tháng sẽ mất kết nối và
 phải cấp quyền lại bằng tay.
 
+Job này **có** xoay token cho cả kênh đang ở trạng thái "Tạm dừng" — giữ chuỗi
+token sống là việc khác với trả lời tin nhắn. Nhưng nó **bỏ qua** kênh của tenant
+đã chuyển sang `INACTIVE`: đó là khách đã ngừng dùng dịch vụ, và hệ quả có chủ
+đích là sau 3 tháng token của họ sẽ chết, phải cấp quyền lại nếu quay lại.
+
+Khi lượng tin nhắn tăng, cân nhắc đặt `connection_limit` và `pool_timeout` trong
+`DATABASE_URL`. Lúc token hết hạn, các request cùng một OA phải xếp hàng chờ
+advisory lock, mỗi request giữ một connection trong lúc chờ — pool mặc định dùng
+chung với dashboard và widget nên nghẽn ở đây ảnh hưởng cả hệ thống.
+
 ## Bảo mật
 
 - Mật khẩu admin hash bằng bcrypt (cost 12). Đăng nhập với email không tồn tại

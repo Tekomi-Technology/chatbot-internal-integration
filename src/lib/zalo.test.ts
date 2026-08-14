@@ -185,3 +185,30 @@ test("readZaloResult: HTTP 401 + JSON hợp lệ nhưng không có trường err
     (error: unknown) => error instanceof ZaloError && error.code === 401,
   );
 });
+
+test("readZaloResult: error dạng CHUỖI khác 0 vẫn phải là lỗi, không được lọt qua như thành công", () => {
+  const raw = JSON.stringify({ error: "-32", message: "Ngoài cửa sổ 7 ngày" });
+
+  assert.throws(
+    () => readZaloResult(200, raw),
+    (error: unknown) =>
+      error instanceof ZaloError &&
+      error.code === -32 &&
+      error.message.includes("Ngoài cửa sổ 7 ngày"),
+  );
+});
+
+test("readZaloResult: error dạng chuỗi \"0\" vẫn là thành công", () => {
+  const raw = JSON.stringify({ data: { message_id: "m1" }, error: "0" });
+
+  assert.deepEqual(readZaloResult(200, raw), { data: { message_id: "m1" }, error: "0" });
+});
+
+test("readZaloResult: error không ép được thành số thì ném lỗi thay vì đoán là thành công", () => {
+  const raw = JSON.stringify({ error: "boom" });
+
+  assert.throws(
+    () => readZaloResult(200, raw),
+    (error: unknown) => error instanceof ZaloError,
+  );
+});

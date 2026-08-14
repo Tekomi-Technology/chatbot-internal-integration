@@ -50,13 +50,25 @@ export async function updateZaloChannelAction(
 
   const existing = await prisma.zaloChannel.findUnique({
     where: { tenantId },
-    select: { id: true },
+    select: { id: true, oaId: true },
   });
 
   if (!existing && !refreshToken) {
     return errorState(
       "Vui lòng kiểm tra lại thông tin kết nối.",
       { refreshToken: "Bắt buộc nhập Refresh Token khi kết nối lần đầu." },
+      collectValues(formData, ZALO_ECHO_FIELDS),
+    );
+  }
+
+
+  if (existing && oaId !== existing.oaId && !refreshToken) {
+    return errorState(
+      "Vui lòng kiểm tra lại thông tin kết nối.",
+      {
+        refreshToken:
+          "Đổi sang OA khác thì phải dán Refresh Token mới — token cũ chỉ dùng được cho OA cũ.",
+      },
       collectValues(formData, ZALO_ECHO_FIELDS),
     );
   }
@@ -80,8 +92,6 @@ export async function updateZaloChannelAction(
           oaId,
           oaName,
           isActive: isActive === "ACTIVE",
-          // Dán refresh token mới nghĩa là bắt đầu lại chuỗi token: xoá access
-          // token cũ và lỗi cũ, để lần gửi tin kế tiếp refresh từ đầu.
           ...(refreshToken
             ? {
                 refreshTokenEncrypted: encryptSecret(refreshToken),
