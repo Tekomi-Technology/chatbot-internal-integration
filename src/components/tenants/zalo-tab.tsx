@@ -24,6 +24,8 @@ export type ZaloTabChannel = {
   oaName: string | null;
   isActive: boolean;
   refreshTokenMasked: string;
+  /** null khi kênh chưa có khoá ký webhook — sự kiện sẽ bị bỏ qua. */
+  oaSecretKeyMasked: string | null;
   refreshTokenUpdatedAtLabel: string;
   accessTokenExpiresAtLabel: string | null;
   lastRefreshError: string | null;
@@ -178,6 +180,27 @@ export function ZaloTab({
                 autoComplete="off"
                 placeholder={channel ? "Nhập token mới để thay thế" : ""}
                 required={!channel}
+              />
+            </FormField>
+
+            <FormField
+              name="oaSecretKey"
+              label="OA Secret Key"
+              hint={
+                channel?.oaSecretKeyMasked
+                  ? `Đang lưu: ${channel.oaSecretKeyMasked}. Để trống nếu không muốn đổi.`
+                  : "Lấy ở trang Webhook trong app Zalo (KHÔNG phải Khoá bí mật của ứng dụng). Thiếu khoá này thì tin nhắn đến bị bỏ qua vì không xác thực được."
+              }
+              error={state.errors?.oaSecretKey}
+            >
+              <Input
+                id="oaSecretKey"
+                name="oaSecretKey"
+                type="password"
+                autoComplete="off"
+                placeholder={
+                  channel?.oaSecretKeyMasked ? "Nhập khoá mới để thay thế" : ""
+                }
               />
             </FormField>
 

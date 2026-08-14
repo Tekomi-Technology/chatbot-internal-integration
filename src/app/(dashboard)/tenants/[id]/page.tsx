@@ -105,11 +105,20 @@ export default async function TenantDetailPage({ params, searchParams }: PagePro
 
   const zaloChannel = tenant.zaloChannel;
   let refreshTokenMasked = "";
+  let oaSecretKeyMasked: string | null = null;
   if (zaloChannel) {
     try {
       refreshTokenMasked = maskSecret(decryptSecret(zaloChannel.refreshTokenEncrypted));
     } catch {
       refreshTokenMasked = UNDECRYPTABLE;
+    }
+
+    if (zaloChannel.oaSecretKeyEncrypted) {
+      try {
+        oaSecretKeyMasked = maskSecret(decryptSecret(zaloChannel.oaSecretKeyEncrypted));
+      } catch {
+        oaSecretKeyMasked = UNDECRYPTABLE;
+      }
     }
   }
 
@@ -270,6 +279,7 @@ export default async function TenantDetailPage({ params, searchParams }: PagePro
                     oaName: zaloChannel.oaName,
                     isActive: zaloChannel.isActive,
                     refreshTokenMasked,
+                    oaSecretKeyMasked,
                     refreshTokenUpdatedAtLabel:
                       dateLabel(zaloChannel.refreshTokenUpdatedAt) ?? "—",
                     accessTokenExpiresAtLabel: dateLabel(

@@ -14,7 +14,7 @@ import type * as Prisma from "../internal/prismaNamespace"
 
 /**
  * Model ZaloChannel
- * Zalo OA của tenant đã cấp quyền cho app Zalo chung.
+ * 
  */
 export type ZaloChannelModel = runtime.Types.Result.DefaultSelection<Prisma.$ZaloChannelPayload>
 
@@ -33,6 +33,7 @@ export type ZaloChannelMinAggregateOutputType = {
   accessTokenExpiresAt: Date | null
   refreshTokenEncrypted: string | null
   refreshTokenUpdatedAt: Date | null
+  oaSecretKeyEncrypted: string | null
   lastRefreshError: string | null
   isActive: boolean | null
   lastEventAt: Date | null
@@ -49,6 +50,7 @@ export type ZaloChannelMaxAggregateOutputType = {
   accessTokenExpiresAt: Date | null
   refreshTokenEncrypted: string | null
   refreshTokenUpdatedAt: Date | null
+  oaSecretKeyEncrypted: string | null
   lastRefreshError: string | null
   isActive: boolean | null
   lastEventAt: Date | null
@@ -65,6 +67,7 @@ export type ZaloChannelCountAggregateOutputType = {
   accessTokenExpiresAt: number
   refreshTokenEncrypted: number
   refreshTokenUpdatedAt: number
+  oaSecretKeyEncrypted: number
   lastRefreshError: number
   isActive: number
   lastEventAt: number
@@ -83,6 +86,7 @@ export type ZaloChannelMinAggregateInputType = {
   accessTokenExpiresAt?: true
   refreshTokenEncrypted?: true
   refreshTokenUpdatedAt?: true
+  oaSecretKeyEncrypted?: true
   lastRefreshError?: true
   isActive?: true
   lastEventAt?: true
@@ -99,6 +103,7 @@ export type ZaloChannelMaxAggregateInputType = {
   accessTokenExpiresAt?: true
   refreshTokenEncrypted?: true
   refreshTokenUpdatedAt?: true
+  oaSecretKeyEncrypted?: true
   lastRefreshError?: true
   isActive?: true
   lastEventAt?: true
@@ -115,6 +120,7 @@ export type ZaloChannelCountAggregateInputType = {
   accessTokenExpiresAt?: true
   refreshTokenEncrypted?: true
   refreshTokenUpdatedAt?: true
+  oaSecretKeyEncrypted?: true
   lastRefreshError?: true
   isActive?: true
   lastEventAt?: true
@@ -204,6 +210,7 @@ export type ZaloChannelGroupByOutputType = {
   accessTokenExpiresAt: Date | null
   refreshTokenEncrypted: string
   refreshTokenUpdatedAt: Date
+  oaSecretKeyEncrypted: string | null
   lastRefreshError: string | null
   isActive: boolean
   lastEventAt: Date | null
@@ -241,6 +248,7 @@ export type ZaloChannelWhereInput = {
   accessTokenExpiresAt?: Prisma.DateTimeNullableFilter<"ZaloChannel"> | Date | string | null
   refreshTokenEncrypted?: Prisma.StringFilter<"ZaloChannel"> | string
   refreshTokenUpdatedAt?: Prisma.DateTimeFilter<"ZaloChannel"> | Date | string
+  oaSecretKeyEncrypted?: Prisma.StringNullableFilter<"ZaloChannel"> | string | null
   lastRefreshError?: Prisma.StringNullableFilter<"ZaloChannel"> | string | null
   isActive?: Prisma.BoolFilter<"ZaloChannel"> | boolean
   lastEventAt?: Prisma.DateTimeNullableFilter<"ZaloChannel"> | Date | string | null
@@ -259,6 +267,7 @@ export type ZaloChannelOrderByWithRelationInput = {
   accessTokenExpiresAt?: Prisma.SortOrderInput | Prisma.SortOrder
   refreshTokenEncrypted?: Prisma.SortOrder
   refreshTokenUpdatedAt?: Prisma.SortOrder
+  oaSecretKeyEncrypted?: Prisma.SortOrderInput | Prisma.SortOrder
   lastRefreshError?: Prisma.SortOrderInput | Prisma.SortOrder
   isActive?: Prisma.SortOrder
   lastEventAt?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -280,6 +289,7 @@ export type ZaloChannelWhereUniqueInput = Prisma.AtLeast<{
   accessTokenExpiresAt?: Prisma.DateTimeNullableFilter<"ZaloChannel"> | Date | string | null
   refreshTokenEncrypted?: Prisma.StringFilter<"ZaloChannel"> | string
   refreshTokenUpdatedAt?: Prisma.DateTimeFilter<"ZaloChannel"> | Date | string
+  oaSecretKeyEncrypted?: Prisma.StringNullableFilter<"ZaloChannel"> | string | null
   lastRefreshError?: Prisma.StringNullableFilter<"ZaloChannel"> | string | null
   isActive?: Prisma.BoolFilter<"ZaloChannel"> | boolean
   lastEventAt?: Prisma.DateTimeNullableFilter<"ZaloChannel"> | Date | string | null
@@ -298,6 +308,7 @@ export type ZaloChannelOrderByWithAggregationInput = {
   accessTokenExpiresAt?: Prisma.SortOrderInput | Prisma.SortOrder
   refreshTokenEncrypted?: Prisma.SortOrder
   refreshTokenUpdatedAt?: Prisma.SortOrder
+  oaSecretKeyEncrypted?: Prisma.SortOrderInput | Prisma.SortOrder
   lastRefreshError?: Prisma.SortOrderInput | Prisma.SortOrder
   isActive?: Prisma.SortOrder
   lastEventAt?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -320,6 +331,7 @@ export type ZaloChannelScalarWhereWithAggregatesInput = {
   accessTokenExpiresAt?: Prisma.DateTimeNullableWithAggregatesFilter<"ZaloChannel"> | Date | string | null
   refreshTokenEncrypted?: Prisma.StringWithAggregatesFilter<"ZaloChannel"> | string
   refreshTokenUpdatedAt?: Prisma.DateTimeWithAggregatesFilter<"ZaloChannel"> | Date | string
+  oaSecretKeyEncrypted?: Prisma.StringNullableWithAggregatesFilter<"ZaloChannel"> | string | null
   lastRefreshError?: Prisma.StringNullableWithAggregatesFilter<"ZaloChannel"> | string | null
   isActive?: Prisma.BoolWithAggregatesFilter<"ZaloChannel"> | boolean
   lastEventAt?: Prisma.DateTimeNullableWithAggregatesFilter<"ZaloChannel"> | Date | string | null
@@ -335,6 +347,7 @@ export type ZaloChannelCreateInput = {
   accessTokenExpiresAt?: Date | string | null
   refreshTokenEncrypted: string
   refreshTokenUpdatedAt: Date | string
+  oaSecretKeyEncrypted?: string | null
   lastRefreshError?: string | null
   isActive?: boolean
   lastEventAt?: Date | string | null
@@ -353,6 +366,7 @@ export type ZaloChannelUncheckedCreateInput = {
   accessTokenExpiresAt?: Date | string | null
   refreshTokenEncrypted: string
   refreshTokenUpdatedAt: Date | string
+  oaSecretKeyEncrypted?: string | null
   lastRefreshError?: string | null
   isActive?: boolean
   lastEventAt?: Date | string | null
@@ -369,6 +383,7 @@ export type ZaloChannelUpdateInput = {
   accessTokenExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   refreshTokenEncrypted?: Prisma.StringFieldUpdateOperationsInput | string
   refreshTokenUpdatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  oaSecretKeyEncrypted?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   lastRefreshError?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   lastEventAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -387,6 +402,7 @@ export type ZaloChannelUncheckedUpdateInput = {
   accessTokenExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   refreshTokenEncrypted?: Prisma.StringFieldUpdateOperationsInput | string
   refreshTokenUpdatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  oaSecretKeyEncrypted?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   lastRefreshError?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   lastEventAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -404,6 +420,7 @@ export type ZaloChannelCreateManyInput = {
   accessTokenExpiresAt?: Date | string | null
   refreshTokenEncrypted: string
   refreshTokenUpdatedAt: Date | string
+  oaSecretKeyEncrypted?: string | null
   lastRefreshError?: string | null
   isActive?: boolean
   lastEventAt?: Date | string | null
@@ -419,6 +436,7 @@ export type ZaloChannelUpdateManyMutationInput = {
   accessTokenExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   refreshTokenEncrypted?: Prisma.StringFieldUpdateOperationsInput | string
   refreshTokenUpdatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  oaSecretKeyEncrypted?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   lastRefreshError?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   lastEventAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -435,6 +453,7 @@ export type ZaloChannelUncheckedUpdateManyInput = {
   accessTokenExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   refreshTokenEncrypted?: Prisma.StringFieldUpdateOperationsInput | string
   refreshTokenUpdatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  oaSecretKeyEncrypted?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   lastRefreshError?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   lastEventAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -456,6 +475,7 @@ export type ZaloChannelCountOrderByAggregateInput = {
   accessTokenExpiresAt?: Prisma.SortOrder
   refreshTokenEncrypted?: Prisma.SortOrder
   refreshTokenUpdatedAt?: Prisma.SortOrder
+  oaSecretKeyEncrypted?: Prisma.SortOrder
   lastRefreshError?: Prisma.SortOrder
   isActive?: Prisma.SortOrder
   lastEventAt?: Prisma.SortOrder
@@ -472,6 +492,7 @@ export type ZaloChannelMaxOrderByAggregateInput = {
   accessTokenExpiresAt?: Prisma.SortOrder
   refreshTokenEncrypted?: Prisma.SortOrder
   refreshTokenUpdatedAt?: Prisma.SortOrder
+  oaSecretKeyEncrypted?: Prisma.SortOrder
   lastRefreshError?: Prisma.SortOrder
   isActive?: Prisma.SortOrder
   lastEventAt?: Prisma.SortOrder
@@ -488,6 +509,7 @@ export type ZaloChannelMinOrderByAggregateInput = {
   accessTokenExpiresAt?: Prisma.SortOrder
   refreshTokenEncrypted?: Prisma.SortOrder
   refreshTokenUpdatedAt?: Prisma.SortOrder
+  oaSecretKeyEncrypted?: Prisma.SortOrder
   lastRefreshError?: Prisma.SortOrder
   isActive?: Prisma.SortOrder
   lastEventAt?: Prisma.SortOrder
@@ -554,6 +576,7 @@ export type ZaloChannelCreateWithoutTenantInput = {
   accessTokenExpiresAt?: Date | string | null
   refreshTokenEncrypted: string
   refreshTokenUpdatedAt: Date | string
+  oaSecretKeyEncrypted?: string | null
   lastRefreshError?: string | null
   isActive?: boolean
   lastEventAt?: Date | string | null
@@ -570,6 +593,7 @@ export type ZaloChannelUncheckedCreateWithoutTenantInput = {
   accessTokenExpiresAt?: Date | string | null
   refreshTokenEncrypted: string
   refreshTokenUpdatedAt: Date | string
+  oaSecretKeyEncrypted?: string | null
   lastRefreshError?: string | null
   isActive?: boolean
   lastEventAt?: Date | string | null
@@ -602,6 +626,7 @@ export type ZaloChannelUpdateWithoutTenantInput = {
   accessTokenExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   refreshTokenEncrypted?: Prisma.StringFieldUpdateOperationsInput | string
   refreshTokenUpdatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  oaSecretKeyEncrypted?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   lastRefreshError?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   lastEventAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -618,6 +643,7 @@ export type ZaloChannelUncheckedUpdateWithoutTenantInput = {
   accessTokenExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   refreshTokenEncrypted?: Prisma.StringFieldUpdateOperationsInput | string
   refreshTokenUpdatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  oaSecretKeyEncrypted?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   lastRefreshError?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   lastEventAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -634,6 +660,7 @@ export type ZaloChannelCreateWithoutConversationsInput = {
   accessTokenExpiresAt?: Date | string | null
   refreshTokenEncrypted: string
   refreshTokenUpdatedAt: Date | string
+  oaSecretKeyEncrypted?: string | null
   lastRefreshError?: string | null
   isActive?: boolean
   lastEventAt?: Date | string | null
@@ -651,6 +678,7 @@ export type ZaloChannelUncheckedCreateWithoutConversationsInput = {
   accessTokenExpiresAt?: Date | string | null
   refreshTokenEncrypted: string
   refreshTokenUpdatedAt: Date | string
+  oaSecretKeyEncrypted?: string | null
   lastRefreshError?: string | null
   isActive?: boolean
   lastEventAt?: Date | string | null
@@ -682,6 +710,7 @@ export type ZaloChannelUpdateWithoutConversationsInput = {
   accessTokenExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   refreshTokenEncrypted?: Prisma.StringFieldUpdateOperationsInput | string
   refreshTokenUpdatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  oaSecretKeyEncrypted?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   lastRefreshError?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   lastEventAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -699,6 +728,7 @@ export type ZaloChannelUncheckedUpdateWithoutConversationsInput = {
   accessTokenExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   refreshTokenEncrypted?: Prisma.StringFieldUpdateOperationsInput | string
   refreshTokenUpdatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  oaSecretKeyEncrypted?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   lastRefreshError?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   lastEventAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -746,6 +776,7 @@ export type ZaloChannelSelect<ExtArgs extends runtime.Types.Extensions.InternalA
   accessTokenExpiresAt?: boolean
   refreshTokenEncrypted?: boolean
   refreshTokenUpdatedAt?: boolean
+  oaSecretKeyEncrypted?: boolean
   lastRefreshError?: boolean
   isActive?: boolean
   lastEventAt?: boolean
@@ -765,6 +796,7 @@ export type ZaloChannelSelectCreateManyAndReturn<ExtArgs extends runtime.Types.E
   accessTokenExpiresAt?: boolean
   refreshTokenEncrypted?: boolean
   refreshTokenUpdatedAt?: boolean
+  oaSecretKeyEncrypted?: boolean
   lastRefreshError?: boolean
   isActive?: boolean
   lastEventAt?: boolean
@@ -782,6 +814,7 @@ export type ZaloChannelSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.E
   accessTokenExpiresAt?: boolean
   refreshTokenEncrypted?: boolean
   refreshTokenUpdatedAt?: boolean
+  oaSecretKeyEncrypted?: boolean
   lastRefreshError?: boolean
   isActive?: boolean
   lastEventAt?: boolean
@@ -799,6 +832,7 @@ export type ZaloChannelSelectScalar = {
   accessTokenExpiresAt?: boolean
   refreshTokenEncrypted?: boolean
   refreshTokenUpdatedAt?: boolean
+  oaSecretKeyEncrypted?: boolean
   lastRefreshError?: boolean
   isActive?: boolean
   lastEventAt?: boolean
@@ -806,7 +840,7 @@ export type ZaloChannelSelectScalar = {
   updatedAt?: boolean
 }
 
-export type ZaloChannelOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "tenantId" | "oaId" | "oaName" | "accessTokenEncrypted" | "accessTokenExpiresAt" | "refreshTokenEncrypted" | "refreshTokenUpdatedAt" | "lastRefreshError" | "isActive" | "lastEventAt" | "createdAt" | "updatedAt", ExtArgs["result"]["zaloChannel"]>
+export type ZaloChannelOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "tenantId" | "oaId" | "oaName" | "accessTokenEncrypted" | "accessTokenExpiresAt" | "refreshTokenEncrypted" | "refreshTokenUpdatedAt" | "oaSecretKeyEncrypted" | "lastRefreshError" | "isActive" | "lastEventAt" | "createdAt" | "updatedAt", ExtArgs["result"]["zaloChannel"]>
 export type ZaloChannelInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
   conversations?: boolean | Prisma.ZaloChannel$conversationsArgs<ExtArgs>
@@ -828,28 +862,20 @@ export type $ZaloChannelPayload<ExtArgs extends runtime.Types.Extensions.Interna
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
     tenantId: string
-    /**
-     * OA ID. Dùng để tra ngược tenant từ payload webhook.
-     */
     oaId: string
     oaName: string | null
-    /**
-     * Ciphertext AES-256-GCM. NULL khi admin vừa dán refresh token, chưa refresh lần nào.
-     */
     accessTokenEncrypted: string | null
     accessTokenExpiresAt: Date | null
-    /**
-     * Ciphertext AES-256-GCM. Luôn có — đây là thứ admin dán vào.
-     * Zalo chỉ cho dùng MỘT LẦN: mỗi lần refresh phải ghi đè bằng giá trị mới.
-     */
     refreshTokenEncrypted: string
-    /**
-     * Mốc để biết còn cách hạn 3 tháng bao xa. Dashboard cảnh báo dựa vào đây.
-     */
     refreshTokenUpdatedAt: Date
     /**
-     * Lỗi refresh gần nhất. NULL = đang khoẻ.
+     * Khoá ký webhook, LẤY Ở TRANG WEBHOOK CỦA APP ZALO — không phải App Secret
+     * Key. Công thức đã xác minh bằng request thật:
+     * sha256(appId + rawBody + timestamp + oaSecretKey).
+     * Nullable vì kênh nối trước khi có ô này vẫn tồn tại; thiếu khoá thì webhook
+     * không xác thực được nên sự kiện bị bỏ qua.
      */
+    oaSecretKeyEncrypted: string | null
     lastRefreshError: string | null
     isActive: boolean
     lastEventAt: Date | null
@@ -1288,6 +1314,7 @@ export interface ZaloChannelFieldRefs {
   readonly accessTokenExpiresAt: Prisma.FieldRef<"ZaloChannel", 'DateTime'>
   readonly refreshTokenEncrypted: Prisma.FieldRef<"ZaloChannel", 'String'>
   readonly refreshTokenUpdatedAt: Prisma.FieldRef<"ZaloChannel", 'DateTime'>
+  readonly oaSecretKeyEncrypted: Prisma.FieldRef<"ZaloChannel", 'String'>
   readonly lastRefreshError: Prisma.FieldRef<"ZaloChannel", 'String'>
   readonly isActive: Prisma.FieldRef<"ZaloChannel", 'Boolean'>
   readonly lastEventAt: Prisma.FieldRef<"ZaloChannel", 'DateTime'>

@@ -211,6 +211,8 @@ model ZaloChannel {
   refreshTokenEncrypted String   @map("refresh_token_encrypted")
   refreshTokenUpdatedAt DateTime @map("refresh_token_updated_at")
 
+  oaSecretKeyEncrypted String? @map("oa_secret_key_encrypted")
+
   lastRefreshError String? @map("last_refresh_error")
 
   isActive    Boolean   @default(true) @map("is_active")

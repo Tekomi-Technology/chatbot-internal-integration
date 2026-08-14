@@ -35,6 +35,7 @@ export async function updateZaloChannelAction(
     oaId: formData.get("oaId"),
     oaName: formData.get("oaName") ?? "",
     refreshToken: formData.get("refreshToken") ?? "",
+    oaSecretKey: formData.get("oaSecretKey") ?? "",
     isActive: formData.get("isActive"),
   });
 
@@ -46,7 +47,7 @@ export async function updateZaloChannelAction(
     );
   }
 
-  const { oaId, oaName, refreshToken, isActive } = parsed.data;
+  const { oaId, oaName, refreshToken, oaSecretKey, isActive } = parsed.data;
 
   const existing = await prisma.zaloChannel.findUnique({
     where: { tenantId },
@@ -82,6 +83,9 @@ export async function updateZaloChannelAction(
           oaName,
           refreshTokenEncrypted: encryptSecret(refreshToken),
           refreshTokenUpdatedAt: new Date(),
+          ...(oaSecretKey
+            ? { oaSecretKeyEncrypted: encryptSecret(oaSecretKey) }
+            : {}),
           isActive: isActive === "ACTIVE",
         },
       });
@@ -92,6 +96,10 @@ export async function updateZaloChannelAction(
           oaId,
           oaName,
           isActive: isActive === "ACTIVE",
+          // Khoá ký webhook độc lập với chuỗi token: để trống thì giữ khoá cũ.
+          ...(oaSecretKey
+            ? { oaSecretKeyEncrypted: encryptSecret(oaSecretKey) }
+            : {}),
           ...(refreshToken
             ? {
                 refreshTokenEncrypted: encryptSecret(refreshToken),

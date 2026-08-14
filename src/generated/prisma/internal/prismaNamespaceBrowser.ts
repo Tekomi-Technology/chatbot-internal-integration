@@ -219,6 +219,7 @@ export const ZaloChannelScalarFieldEnum = {
   accessTokenExpiresAt: 'accessTokenExpiresAt',
   refreshTokenEncrypted: 'refreshTokenEncrypted',
   refreshTokenUpdatedAt: 'refreshTokenUpdatedAt',
+  oaSecretKeyEncrypted: 'oaSecretKeyEncrypted',
   lastRefreshError: 'lastRefreshError',
   isActive: 'isActive',
   lastEventAt: 'lastEventAt',

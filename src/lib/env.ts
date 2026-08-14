@@ -49,9 +49,6 @@ export const env = {
     };
   },
 
-  get zaloSkipWebhookVerify() {
-    return process.env.ZALO_WEBHOOK_SKIP_VERIFY?.trim() === "true";
-  },
   get cronSecret() {
     return process.env.CRON_SECRET?.trim() || null;
   },

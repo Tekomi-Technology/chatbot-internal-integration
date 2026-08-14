@@ -14,7 +14,7 @@ import type * as Prisma from "../internal/prismaNamespace"
 
 /**
  * Model ZaloConversation
- * Giữ mạch hội thoại Dify cho từng người nhắn tin.
+ * 
  */
 export type ZaloConversationModel = runtime.Types.Result.DefaultSelection<Prisma.$ZaloConversationPayload>
 
@@ -533,9 +533,6 @@ export type $ZaloConversationPayload<ExtArgs extends runtime.Types.Extensions.In
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
     channelId: string
-    /**
-     * User ID của người dùng Zalo, chỉ duy nhất trong phạm vi một OA.
-     */
     zaloUserId: string
     difyConversationId: string | null
     lastMessageAt: Date

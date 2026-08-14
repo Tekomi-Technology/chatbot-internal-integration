@@ -67,6 +67,7 @@ export const zaloChannelSchema = z.object({
   oaId: z.string().trim().min(1, "Bắt buộc nhập OA ID.").max(64),
   oaName: z.string().trim().max(120).optional().default(""),
   refreshToken: z.string().trim().max(2000).optional().default(""),
+  oaSecretKey: z.string().trim().max(200).optional().default(""),
   isActive: z.enum(["ACTIVE", "INACTIVE"]),
 });
 
