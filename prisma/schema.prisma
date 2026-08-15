@@ -160,6 +160,11 @@ model MessengerConversation {
 
   psid               String
   difyConversationId String?  @map("dify_conversation_id")
+
+  humanActive Boolean @default(false) @map("human_active")
+
+  handoverAt DateTime? @map("handover_at")
+
   lastMessageAt      DateTime @default(now()) @map("last_message_at")
   createdAt          DateTime @default(now()) @map("created_at")
 
