@@ -2,11 +2,63 @@ import { after, type NextRequest } from "next/server";
 
 import { safeEqual } from "@/lib/crypto";
 import { env } from "@/lib/env";
-import { collectTextEvents, verifyMessengerSignature } from "@/lib/messenger";
-import { handleMessengerEvents } from "@/server/messenger-handler";
+import {
+  collectHandoverRequests,
+  collectTextEvents,
+  verifyMessengerSignature,
+} from "@/lib/messenger";
+import {
+  handleMessengerEvents,
+  handleMessengerHandovers,
+} from "@/server/messenger-handler";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
+
+/**
+ * Ghi lại CẤU TRÚC của mọi webhook đã qua xác thực chữ ký.
+ *
+ * Vì sao cần: đường chạy bình thường không ghi log gì cả, nên khi bot im lặng ta
+ * không phân biệt được ba tình huống hoàn toàn khác nhau — webhook không tới,
+ * webhook tới nhưng payload bị lọc ra 0 sự kiện, hay handler chạy rồi mà lỗi.
+ *
+ * Trường đáng giá nhất là `standby`. Khi Handover Protocol được bật trên Page mà
+ * app không giữ quyền điều khiển thread, Facebook chuyển tin của khách sang
+ * `entry[].standby[]` thay vì `entry[].messaging[]`. `collectTextEvents` chỉ đọc
+ * `messaging`, nên gặp payload kiểu đó sẽ trả mảng rỗng và bot im hoàn toàn —
+ * không phải lỗi code, mà là cấu hình bên Meta.
+ *
+ * Cố ý KHÔNG ghi nội dung tin nhắn của khách, chỉ ghi hình dạng payload.
+ */
+function logWebhookReceived(
+  payload: unknown,
+  textEvents: number,
+  handovers: number,
+): void {
+  const body = payload as { object?: string; entry?: unknown[] };
+
+  const entries = (Array.isArray(body?.entry) ? body.entry : []).map((raw) => {
+    const entry = (raw ?? {}) as Record<string, unknown>;
+    const count = (key: string) =>
+      Array.isArray(entry[key]) ? (entry[key] as unknown[]).length : 0;
+
+    return {
+      id: entry.id,
+      messaging: count("messaging"),
+      standby: count("standby"),
+      // Bắt cả những mảng chưa lường trước, để không phải deploy thêm lần nữa
+      // mới biết Facebook đặt dữ liệu ở đâu.
+      keys: Object.keys(entry).filter((key) => key !== "id" && key !== "time"),
+    };
+  });
+
+  console.info("messenger webhook: WEBHOOK RECEIVED", {
+    object: body?.object,
+    entries,
+    textEvents,
+    handovers,
+  });
+}
 
 export async function GET(request: NextRequest) {
   const { verifyToken } = env.messenger;
@@ -58,8 +110,15 @@ export async function POST(request: NextRequest) {
   }
 
   const events = collectTextEvents(payload);
-  if (events.length > 0) {
-    after(() => handleMessengerEvents(events));
+  const handovers = collectHandoverRequests(payload);
+
+  logWebhookReceived(payload, events.length, handovers.length);
+
+  if (events.length > 0 || handovers.length > 0) {
+    after(async () => {
+      await handleMessengerHandovers(handovers);
+      await handleMessengerEvents(events);
+    });
   }
 
   return new Response("EVENT_RECEIVED", { status: 200 });
