@@ -29,6 +29,8 @@ export type MessengerConversationMinAggregateOutputType = {
   channelId: string | null
   psid: string | null
   difyConversationId: string | null
+  humanActive: boolean | null
+  handoverAt: Date | null
   lastMessageAt: Date | null
   createdAt: Date | null
 }
@@ -38,6 +40,8 @@ export type MessengerConversationMaxAggregateOutputType = {
   channelId: string | null
   psid: string | null
   difyConversationId: string | null
+  humanActive: boolean | null
+  handoverAt: Date | null
   lastMessageAt: Date | null
   createdAt: Date | null
 }
@@ -47,6 +51,8 @@ export type MessengerConversationCountAggregateOutputType = {
   channelId: number
   psid: number
   difyConversationId: number
+  humanActive: number
+  handoverAt: number
   lastMessageAt: number
   createdAt: number
   _all: number
@@ -58,6 +64,8 @@ export type MessengerConversationMinAggregateInputType = {
   channelId?: true
   psid?: true
   difyConversationId?: true
+  humanActive?: true
+  handoverAt?: true
   lastMessageAt?: true
   createdAt?: true
 }
@@ -67,6 +75,8 @@ export type MessengerConversationMaxAggregateInputType = {
   channelId?: true
   psid?: true
   difyConversationId?: true
+  humanActive?: true
+  handoverAt?: true
   lastMessageAt?: true
   createdAt?: true
 }
@@ -76,6 +86,8 @@ export type MessengerConversationCountAggregateInputType = {
   channelId?: true
   psid?: true
   difyConversationId?: true
+  humanActive?: true
+  handoverAt?: true
   lastMessageAt?: true
   createdAt?: true
   _all?: true
@@ -158,6 +170,8 @@ export type MessengerConversationGroupByOutputType = {
   channelId: string
   psid: string
   difyConversationId: string | null
+  humanActive: boolean
+  handoverAt: Date | null
   lastMessageAt: Date
   createdAt: Date
   _count: MessengerConversationCountAggregateOutputType | null
@@ -188,6 +202,8 @@ export type MessengerConversationWhereInput = {
   channelId?: Prisma.StringFilter<"MessengerConversation"> | string
   psid?: Prisma.StringFilter<"MessengerConversation"> | string
   difyConversationId?: Prisma.StringNullableFilter<"MessengerConversation"> | string | null
+  humanActive?: Prisma.BoolFilter<"MessengerConversation"> | boolean
+  handoverAt?: Prisma.DateTimeNullableFilter<"MessengerConversation"> | Date | string | null
   lastMessageAt?: Prisma.DateTimeFilter<"MessengerConversation"> | Date | string
   createdAt?: Prisma.DateTimeFilter<"MessengerConversation"> | Date | string
   channel?: Prisma.XOR<Prisma.MessengerChannelScalarRelationFilter, Prisma.MessengerChannelWhereInput>
@@ -198,6 +214,8 @@ export type MessengerConversationOrderByWithRelationInput = {
   channelId?: Prisma.SortOrder
   psid?: Prisma.SortOrder
   difyConversationId?: Prisma.SortOrderInput | Prisma.SortOrder
+  humanActive?: Prisma.SortOrder
+  handoverAt?: Prisma.SortOrderInput | Prisma.SortOrder
   lastMessageAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   channel?: Prisma.MessengerChannelOrderByWithRelationInput
@@ -212,6 +230,8 @@ export type MessengerConversationWhereUniqueInput = Prisma.AtLeast<{
   channelId?: Prisma.StringFilter<"MessengerConversation"> | string
   psid?: Prisma.StringFilter<"MessengerConversation"> | string
   difyConversationId?: Prisma.StringNullableFilter<"MessengerConversation"> | string | null
+  humanActive?: Prisma.BoolFilter<"MessengerConversation"> | boolean
+  handoverAt?: Prisma.DateTimeNullableFilter<"MessengerConversation"> | Date | string | null
   lastMessageAt?: Prisma.DateTimeFilter<"MessengerConversation"> | Date | string
   createdAt?: Prisma.DateTimeFilter<"MessengerConversation"> | Date | string
   channel?: Prisma.XOR<Prisma.MessengerChannelScalarRelationFilter, Prisma.MessengerChannelWhereInput>
@@ -222,6 +242,8 @@ export type MessengerConversationOrderByWithAggregationInput = {
   channelId?: Prisma.SortOrder
   psid?: Prisma.SortOrder
   difyConversationId?: Prisma.SortOrderInput | Prisma.SortOrder
+  humanActive?: Prisma.SortOrder
+  handoverAt?: Prisma.SortOrderInput | Prisma.SortOrder
   lastMessageAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   _count?: Prisma.MessengerConversationCountOrderByAggregateInput
@@ -237,6 +259,8 @@ export type MessengerConversationScalarWhereWithAggregatesInput = {
   channelId?: Prisma.StringWithAggregatesFilter<"MessengerConversation"> | string
   psid?: Prisma.StringWithAggregatesFilter<"MessengerConversation"> | string
   difyConversationId?: Prisma.StringNullableWithAggregatesFilter<"MessengerConversation"> | string | null
+  humanActive?: Prisma.BoolWithAggregatesFilter<"MessengerConversation"> | boolean
+  handoverAt?: Prisma.DateTimeNullableWithAggregatesFilter<"MessengerConversation"> | Date | string | null
   lastMessageAt?: Prisma.DateTimeWithAggregatesFilter<"MessengerConversation"> | Date | string
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"MessengerConversation"> | Date | string
 }
@@ -245,6 +269,8 @@ export type MessengerConversationCreateInput = {
   id?: string
   psid: string
   difyConversationId?: string | null
+  humanActive?: boolean
+  handoverAt?: Date | string | null
   lastMessageAt?: Date | string
   createdAt?: Date | string
   channel: Prisma.MessengerChannelCreateNestedOneWithoutConversationsInput
@@ -255,6 +281,8 @@ export type MessengerConversationUncheckedCreateInput = {
   channelId: string
   psid: string
   difyConversationId?: string | null
+  humanActive?: boolean
+  handoverAt?: Date | string | null
   lastMessageAt?: Date | string
   createdAt?: Date | string
 }
@@ -263,6 +291,8 @@ export type MessengerConversationUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   psid?: Prisma.StringFieldUpdateOperationsInput | string
   difyConversationId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  humanActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  handoverAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   lastMessageAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   channel?: Prisma.MessengerChannelUpdateOneRequiredWithoutConversationsNestedInput
@@ -273,6 +303,8 @@ export type MessengerConversationUncheckedUpdateInput = {
   channelId?: Prisma.StringFieldUpdateOperationsInput | string
   psid?: Prisma.StringFieldUpdateOperationsInput | string
   difyConversationId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  humanActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  handoverAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   lastMessageAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -282,6 +314,8 @@ export type MessengerConversationCreateManyInput = {
   channelId: string
   psid: string
   difyConversationId?: string | null
+  humanActive?: boolean
+  handoverAt?: Date | string | null
   lastMessageAt?: Date | string
   createdAt?: Date | string
 }
@@ -290,6 +324,8 @@ export type MessengerConversationUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   psid?: Prisma.StringFieldUpdateOperationsInput | string
   difyConversationId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  humanActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  handoverAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   lastMessageAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -299,6 +335,8 @@ export type MessengerConversationUncheckedUpdateManyInput = {
   channelId?: Prisma.StringFieldUpdateOperationsInput | string
   psid?: Prisma.StringFieldUpdateOperationsInput | string
   difyConversationId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  humanActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  handoverAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   lastMessageAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -323,6 +361,8 @@ export type MessengerConversationCountOrderByAggregateInput = {
   channelId?: Prisma.SortOrder
   psid?: Prisma.SortOrder
   difyConversationId?: Prisma.SortOrder
+  humanActive?: Prisma.SortOrder
+  handoverAt?: Prisma.SortOrder
   lastMessageAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
@@ -332,6 +372,8 @@ export type MessengerConversationMaxOrderByAggregateInput = {
   channelId?: Prisma.SortOrder
   psid?: Prisma.SortOrder
   difyConversationId?: Prisma.SortOrder
+  humanActive?: Prisma.SortOrder
+  handoverAt?: Prisma.SortOrder
   lastMessageAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
@@ -341,6 +383,8 @@ export type MessengerConversationMinOrderByAggregateInput = {
   channelId?: Prisma.SortOrder
   psid?: Prisma.SortOrder
   difyConversationId?: Prisma.SortOrder
+  humanActive?: Prisma.SortOrder
+  handoverAt?: Prisma.SortOrder
   lastMessageAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
@@ -391,6 +435,8 @@ export type MessengerConversationCreateWithoutChannelInput = {
   id?: string
   psid: string
   difyConversationId?: string | null
+  humanActive?: boolean
+  handoverAt?: Date | string | null
   lastMessageAt?: Date | string
   createdAt?: Date | string
 }
@@ -399,6 +445,8 @@ export type MessengerConversationUncheckedCreateWithoutChannelInput = {
   id?: string
   psid: string
   difyConversationId?: string | null
+  humanActive?: boolean
+  handoverAt?: Date | string | null
   lastMessageAt?: Date | string
   createdAt?: Date | string
 }
@@ -437,6 +485,8 @@ export type MessengerConversationScalarWhereInput = {
   channelId?: Prisma.StringFilter<"MessengerConversation"> | string
   psid?: Prisma.StringFilter<"MessengerConversation"> | string
   difyConversationId?: Prisma.StringNullableFilter<"MessengerConversation"> | string | null
+  humanActive?: Prisma.BoolFilter<"MessengerConversation"> | boolean
+  handoverAt?: Prisma.DateTimeNullableFilter<"MessengerConversation"> | Date | string | null
   lastMessageAt?: Prisma.DateTimeFilter<"MessengerConversation"> | Date | string
   createdAt?: Prisma.DateTimeFilter<"MessengerConversation"> | Date | string
 }
@@ -445,6 +495,8 @@ export type MessengerConversationCreateManyChannelInput = {
   id?: string
   psid: string
   difyConversationId?: string | null
+  humanActive?: boolean
+  handoverAt?: Date | string | null
   lastMessageAt?: Date | string
   createdAt?: Date | string
 }
@@ -453,6 +505,8 @@ export type MessengerConversationUpdateWithoutChannelInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   psid?: Prisma.StringFieldUpdateOperationsInput | string
   difyConversationId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  humanActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  handoverAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   lastMessageAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -461,6 +515,8 @@ export type MessengerConversationUncheckedUpdateWithoutChannelInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   psid?: Prisma.StringFieldUpdateOperationsInput | string
   difyConversationId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  humanActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  handoverAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   lastMessageAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -469,6 +525,8 @@ export type MessengerConversationUncheckedUpdateManyWithoutChannelInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   psid?: Prisma.StringFieldUpdateOperationsInput | string
   difyConversationId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  humanActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  handoverAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   lastMessageAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -480,6 +538,8 @@ export type MessengerConversationSelect<ExtArgs extends runtime.Types.Extensions
   channelId?: boolean
   psid?: boolean
   difyConversationId?: boolean
+  humanActive?: boolean
+  handoverAt?: boolean
   lastMessageAt?: boolean
   createdAt?: boolean
   channel?: boolean | Prisma.MessengerChannelDefaultArgs<ExtArgs>
@@ -490,6 +550,8 @@ export type MessengerConversationSelectCreateManyAndReturn<ExtArgs extends runti
   channelId?: boolean
   psid?: boolean
   difyConversationId?: boolean
+  humanActive?: boolean
+  handoverAt?: boolean
   lastMessageAt?: boolean
   createdAt?: boolean
   channel?: boolean | Prisma.MessengerChannelDefaultArgs<ExtArgs>
@@ -500,6 +562,8 @@ export type MessengerConversationSelectUpdateManyAndReturn<ExtArgs extends runti
   channelId?: boolean
   psid?: boolean
   difyConversationId?: boolean
+  humanActive?: boolean
+  handoverAt?: boolean
   lastMessageAt?: boolean
   createdAt?: boolean
   channel?: boolean | Prisma.MessengerChannelDefaultArgs<ExtArgs>
@@ -510,11 +574,13 @@ export type MessengerConversationSelectScalar = {
   channelId?: boolean
   psid?: boolean
   difyConversationId?: boolean
+  humanActive?: boolean
+  handoverAt?: boolean
   lastMessageAt?: boolean
   createdAt?: boolean
 }
 
-export type MessengerConversationOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "channelId" | "psid" | "difyConversationId" | "lastMessageAt" | "createdAt", ExtArgs["result"]["messengerConversation"]>
+export type MessengerConversationOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "channelId" | "psid" | "difyConversationId" | "humanActive" | "handoverAt" | "lastMessageAt" | "createdAt", ExtArgs["result"]["messengerConversation"]>
 export type MessengerConversationInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   channel?: boolean | Prisma.MessengerChannelDefaultArgs<ExtArgs>
 }
@@ -535,6 +601,8 @@ export type $MessengerConversationPayload<ExtArgs extends runtime.Types.Extensio
     channelId: string
     psid: string
     difyConversationId: string | null
+    humanActive: boolean
+    handoverAt: Date | null
     lastMessageAt: Date
     createdAt: Date
   }, ExtArgs["result"]["messengerConversation"]>
@@ -965,6 +1033,8 @@ export interface MessengerConversationFieldRefs {
   readonly channelId: Prisma.FieldRef<"MessengerConversation", 'String'>
   readonly psid: Prisma.FieldRef<"MessengerConversation", 'String'>
   readonly difyConversationId: Prisma.FieldRef<"MessengerConversation", 'String'>
+  readonly humanActive: Prisma.FieldRef<"MessengerConversation", 'Boolean'>
+  readonly handoverAt: Prisma.FieldRef<"MessengerConversation", 'DateTime'>
   readonly lastMessageAt: Prisma.FieldRef<"MessengerConversation", 'DateTime'>
   readonly createdAt: Prisma.FieldRef<"MessengerConversation", 'DateTime'>
 }
