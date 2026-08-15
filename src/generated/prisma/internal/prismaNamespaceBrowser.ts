@@ -181,8 +181,6 @@ export const MessengerConversationScalarFieldEnum = {
   channelId: 'channelId',
   psid: 'psid',
   difyConversationId: 'difyConversationId',
-  humanActive: 'humanActive',
-  handoverAt: 'handoverAt',
   lastMessageAt: 'lastMessageAt',
   createdAt: 'createdAt'
 } as const
