@@ -26,6 +26,7 @@ export type MetaTabChannel = {
   pageAccessTokenMasked: string;
 };
 
+/** Dòng chỉ để đọc + copy, dùng cho Callback URL và Verify token. */
 function ReadOnlyRow({
   label,
   value,
@@ -58,6 +59,7 @@ export function MetaTab({
 }: {
   channel: MetaTabChannel | null;
   callbackUrl: string;
+  /** null khi chưa đặt MESSENGER_VERIFY_TOKEN — hiện cảnh báo thay vì để trống. */
   verifyToken: string | null;
   action: (prev: ActionState, formData: FormData) => Promise<ActionState>;
   disconnectAction: () => Promise<void>;
@@ -98,15 +100,9 @@ export function MetaTab({
           )}
 
           <p className="text-xs text-muted-foreground">
-            Sau khi xác minh, nhớ đăng ký (subscribe) các trường{" "}
-            <code className="font-mono">messages</code>,{" "}
-            <code className="font-mono">messaging_postbacks</code> và{" "}
-            <code className="font-mono">messaging_handovers</code> cho Page.
-          </p>
-          <p className="text-xs text-muted-foreground">
-            Muốn nhân viên tiếp quản được hội thoại thì phải bật “Kiểm soát cuộc
-            trò chuyện” trong Nhắn tin nâng cao của Page. Khi nhân viên kéo hội
-            thoại sang “Inbox”, bot sẽ ngừng trả lời khách đó vĩnh viễn.
+            Sau khi xác minh, nhớ đăng ký (subscribe) trường{" "}
+            <code className="font-mono">messages</code> và{" "}
+            <code className="font-mono">messaging_postbacks</code> cho Page.
           </p>
         </CardContent>
       </Card>

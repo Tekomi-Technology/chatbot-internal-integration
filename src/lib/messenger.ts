@@ -112,62 +112,6 @@ export function collectTextEvents(payload: unknown): MessengerTextEvent[] {
   return events;
 }
 
-/** Một yêu cầu nhường quyền điều khiển hội thoại, do Page Inbox gửi tới. */
-export type MessengerHandoverRequest = {
-  /** `entry[].id` — khoá tra ngược ra tenant. */
-  pageId: string;
-  /** PSID của khách hàng mà nhân viên muốn tiếp quản. */
-  psid: string;
-  /** App ID của bên xin quyền (Page Inbox). Đọc từ payload, KHÔNG hardcode. */
-  requestedOwnerAppId: string;
-};
-
-type HandoverPayload = {
-  object?: string;
-  entry?: Array<{
-    id?: string;
-    messaging?: Array<{
-      sender?: { id?: string };
-      request_thread_control?: { requested_owner_app_id?: string | number };
-    }>;
-  }>;
-};
-
-/**
- * Rút các yêu cầu nhường quyền khỏi payload webhook.
- *
- * Hàm riêng, chạy song song với `collectTextEvents` trên cùng payload. Không gộp
- * vào hàm đó vì nó lọc bỏ mọi thứ không phải `message`/`postback` — nhồi vào là
- * làm hỏng một hàm đang chạy tốt.
- *
- * Bỏ qua có chủ đích: `pass_thread_control`. Thiết kế này một chiều, nhân viên
- * bấm "Done" cũng không trả quyền lại cho AI. Xem spec, mục "Thiết kế một chiều".
- */
-export function collectHandoverRequests(
-  payload: unknown,
-): MessengerHandoverRequest[] {
-  const body = payload as HandoverPayload;
-  if (body?.object !== "page" || !Array.isArray(body.entry)) return [];
-
-  const requests: MessengerHandoverRequest[] = [];
-
-  for (const entry of body.entry) {
-    const pageId = entry?.id;
-    if (!pageId || !Array.isArray(entry.messaging)) continue;
-
-    for (const item of entry.messaging) {
-      const psid = item?.sender?.id;
-      const appId = item?.request_thread_control?.requested_owner_app_id;
-      if (!psid || !appId) continue;
-
-      // Meta có lúc gửi app id dạng số, có lúc dạng chuỗi. Chuẩn hoá về chuỗi.
-      requests.push({ pageId, psid, requestedOwnerAppId: String(appId) });
-    }
-  }
-
-  return requests;
-}
-
 // --- Send API ---------------------------------------------------------------
 
 function graphUrl(path: string): string {
@@ -176,8 +120,6 @@ function graphUrl(path: string): string {
 
 async function callSendApi(
   pageAccessToken: string,
-  /** Path Graph API, ví dụ `me/messages` hoặc `me/pass_thread_control`. */
-  path: string,
   body: Record<string, unknown>,
 ): Promise<void> {
   const controller = new AbortController();
@@ -185,7 +127,7 @@ async function callSendApi(
 
   let response: Response;
   try {
-    response = await fetch(graphUrl(path), {
+    response = await fetch(graphUrl("me/messages"), {
       method: "POST",
       headers: {
         Authorization: `Bearer ${pageAccessToken}`,
@@ -198,9 +140,9 @@ async function callSendApi(
   } catch (error) {
     clearTimeout(timeout);
     if (error instanceof Error && error.name === "AbortError") {
-      throw new MessengerError(`Graph API ${path} không phản hồi kịp thời.`, 504);
+      throw new MessengerError("Send API không phản hồi kịp thời.", 504);
     }
-    throw new MessengerError(`Không kết nối được tới Graph API ${path}.`, 502, error);
+    throw new MessengerError("Không kết nối được tới Send API.", 502, error);
   }
 
   clearTimeout(timeout);
@@ -214,7 +156,7 @@ async function callSendApi(
       // Giữ nguyên chuỗi thô nếu Meta không trả JSON.
     }
     throw new MessengerError(
-      `Graph API ${path} trả về lỗi ${response.status}.`,
+      `Send API trả về lỗi ${response.status}.`,
       response.status,
       detail,
     );
@@ -228,7 +170,7 @@ export async function sendMessengerText(options: {
   text: string;
 }): Promise<void> {
   for (const chunk of chunkMessage(options.text)) {
-    await callSendApi(options.pageAccessToken, "me/messages", {
+    await callSendApi(options.pageAccessToken, {
       recipient: { id: options.psid },
       messaging_type: "RESPONSE",
       message: { text: chunk },
@@ -242,28 +184,8 @@ export async function sendSenderAction(options: {
   psid: string;
   action: "mark_seen" | "typing_on" | "typing_off";
 }): Promise<void> {
-  await callSendApi(options.pageAccessToken, "me/messages", {
+  await callSendApi(options.pageAccessToken, {
     recipient: { id: options.psid },
     sender_action: options.action,
-  });
-}
-
-/**
- * Nhường quyền điều khiển hội thoại cho app khác — ở đây luôn là Page Inbox.
- *
- * App của ta là primary receiver: KHÔNG gọi hàm này thì Page Inbox không nhắn
- * cho khách được, dù nhân viên đã kéo hội thoại sang "Inbox". Ghi cờ trong DB
- * thôi là chưa đủ.
- *
- * `targetAppId` đọc từ `requested_owner_app_id` trong payload, không hardcode.
- */
-export async function passThreadControl(options: {
-  pageAccessToken: string;
-  psid: string;
-  targetAppId: string;
-}): Promise<void> {
-  await callSendApi(options.pageAccessToken, "me/pass_thread_control", {
-    recipient: { id: options.psid },
-    target_app_id: options.targetAppId,
   });
 }

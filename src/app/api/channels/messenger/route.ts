@@ -2,15 +2,8 @@ import { after, type NextRequest } from "next/server";
 
 import { safeEqual } from "@/lib/crypto";
 import { env } from "@/lib/env";
-import {
-  collectHandoverRequests,
-  collectTextEvents,
-  verifyMessengerSignature,
-} from "@/lib/messenger";
-import {
-  handleMessengerEvents,
-  handleMessengerHandovers,
-} from "@/server/messenger-handler";
+import { collectTextEvents, verifyMessengerSignature } from "@/lib/messenger";
+import { handleMessengerEvents } from "@/server/messenger-handler";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -65,13 +58,8 @@ export async function POST(request: NextRequest) {
   }
 
   const events = collectTextEvents(payload);
-  const handovers = collectHandoverRequests(payload);
-
-  if (events.length > 0 || handovers.length > 0) {
-    after(async () => {
-      await handleMessengerHandovers(handovers);
-      await handleMessengerEvents(events);
-    });
+  if (events.length > 0) {
+    after(() => handleMessengerEvents(events));
   }
 
   return new Response("EVENT_RECEIVED", { status: 200 });
