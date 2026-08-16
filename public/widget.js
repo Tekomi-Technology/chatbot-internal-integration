@@ -19,43 +19,127 @@
   var targetSelector = script.getAttribute("data-target") || "#chatbot-container";
 
   var STORAGE_PREFIX = "chatbot:" + apiKey + ":";
+  var STATE_KEY = STORAGE_PREFIX + "state";
 
-  function getSessionId() {
-    var key = STORAGE_PREFIX + "session";
-    var value = null;
+  /** Tăng số này khi đổi hình dạng dữ liệu lưu — bản cũ sẽ bị bỏ, không cố đọc. */
+  var STATE_VERSION = 1;
+
+  /** Hạn trượt: tính từ lần hoạt động CUỐI, không phải lần đầu. */
+  var STATE_TTL_MS = 30 * 24 * 60 * 60 * 1000;
+
+  /**
+   * Chỉ giữ ngần này tin gần nhất.
+   *
+   * Widget chạy trên website của khách hàng nên dùng chung hạn mức localStorage
+   * (~5MB) với chính site đó. Không giới hạn là có ngày làm hỏng site người ta.
+   */
+  var MAX_STORED_MESSAGES = 50;
+
+  function clearState() {
     try {
-      value = window.sessionStorage.getItem(key);
+      window.localStorage.removeItem(STATE_KEY);
     } catch {
+      /* bỏ qua */
     }
-    if (!value) {
-      value =
-        "s_" +
-        Date.now().toString(36) +
-        Math.random().toString(36).slice(2, 10);
-      try {
-        window.sessionStorage.setItem(key, value);
-      } catch {
-        /* bỏ qua */
-      }
-    }
-    return value;
   }
 
-  var sessionId = getSessionId();
-  var conversationId = null;
-  try {
-    conversationId = window.sessionStorage.getItem(STORAGE_PREFIX + "conversation");
-  } catch {
+  /** Bỏ mọi bản ghi méo mó. Dữ liệu này người dùng sửa tay được, đừng tin. */
+  function sanitizeMessages(list) {
+    var out = [];
+    if (!Array.isArray(list)) return out;
+
+    for (var i = 0; i < list.length; i += 1) {
+      var item = list[i];
+      if (!item || (item.r !== "u" && item.r !== "b")) continue;
+      if (typeof item.t !== "string" || !item.t) continue;
+      out.push({ r: item.r, t: item.t });
+    }
+
+    return out.slice(-MAX_STORED_MESSAGES);
+  }
+
+  function readState() {
+    var raw = null;
+    try {
+      raw = window.localStorage.getItem(STATE_KEY);
+    } catch {
+      return null;
+    }
+    if (!raw) return null;
+
+    var parsed = null;
+    try {
+      parsed = JSON.parse(raw);
+    } catch {
+      clearState();
+      return null;
+    }
+
+    if (!parsed || parsed.v !== STATE_VERSION) {
+      clearState();
+      return null;
+    }
+
+    if (
+      typeof parsed.savedAt !== "number" ||
+      Date.now() - parsed.savedAt > STATE_TTL_MS
+    ) {
+      clearState();
+      return null;
+    }
+
+    return parsed;
+  }
+
+  var stored = readState();
+
+  var sessionId =
+    (stored && typeof stored.sessionId === "string" && stored.sessionId) ||
+    "s_" + Date.now().toString(36) + Math.random().toString(36).slice(2, 10);
+
+  var conversationId =
+    (stored && typeof stored.conversationId === "string" && stored.conversationId) ||
+    null;
+
+  var history = stored ? sanitizeMessages(stored.messages) : [];
+
+  /**
+   * Chỉ ghi khi thật sự có gì để nhớ.
+   *
+   * Cố ý KHÔNG ghi lúc khởi tạo: khách chỉ lướt qua trang mà không mở chat thì
+   * không nên để lại gì trong máy họ, và hạn 30 ngày cũng không nên trượt vì
+   * một lượt xem trang.
+   */
+  function saveState() {
+    try {
+      window.localStorage.setItem(
+        STATE_KEY,
+        JSON.stringify({
+          v: STATE_VERSION,
+          savedAt: Date.now(),
+          sessionId: sessionId,
+          conversationId: conversationId,
+          messages: history,
+        }),
+      );
+    } catch {
+      /* Hết hạn mức hoặc trình duyệt chặn storage. Widget vẫn chạy, chỉ không nhớ. */
+    }
   }
 
   function rememberConversation(id) {
     if (!id || id === conversationId) return;
     conversationId = id;
-    try {
-      window.sessionStorage.setItem(STORAGE_PREFIX + "conversation", id);
-    } catch {
-      /* bỏ qua */
+    saveState();
+  }
+
+  /** `role` là "u" (khách) hoặc "b" (bot). Bong bóng lỗi KHÔNG đi qua đây. */
+  function recordMessage(role, text) {
+    history.push({ r: role, t: text });
+    if (history.length > MAX_STORED_MESSAGES) {
+      history = history.slice(-MAX_STORED_MESSAGES);
     }
+    saveState();
   }
 
   function buildStyles(config) {
@@ -314,7 +398,15 @@
       return bubble;
     }
 
-    if (config.welcomeMessage) addMessage(config.welcomeMessage, "bot");
+    // Tin chào CHỈ hiện khi chưa có lịch sử. Nếu không, mỗi lần khách tải lại
+    // trang là thêm một lời chào nữa chồng lên đoạn chat cũ.
+    if (history.length > 0) {
+      for (var h = 0; h < history.length; h += 1) {
+        addMessage(history[h].t, history[h].r === "u" ? "user" : "bot");
+      }
+    } else if (config.welcomeMessage) {
+      addMessage(config.welcomeMessage, "bot");
+    }
 
     var sending = false;
 
@@ -326,6 +418,7 @@
 
     function send(text) {
       addMessage(text, "user");
+      recordMessage("u", text);
       var indicator = addTypingIndicator();
       setSending(true);
 
@@ -362,10 +455,10 @@
             return;
           }
           rememberConversation(result.payload.conversationId);
-          addMessage(
-            result.payload.answer || "(Trợ lý không trả về nội dung nào.)",
-            "bot",
-          );
+          var answer =
+            result.payload.answer || "(Trợ lý không trả về nội dung nào.)";
+          addMessage(answer, "bot");
+          recordMessage("b", answer);
         })
         .catch(function (error) {
           indicator.remove();
