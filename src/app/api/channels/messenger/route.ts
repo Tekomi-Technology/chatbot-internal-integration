@@ -61,6 +61,39 @@ function eventTypes(items: unknown[]): string {
   return join([...types]);
 }
 
+/**
+ * Mô tả các tin echo có trong một mảng sự kiện.
+ *
+ * `messagingTypes` không đủ để phân biệt: echo câu trả lời của bot và tin nhân
+ * viên gõ tay từ Hộp thư đều hiện ra `message` với `textEvents: 0`, giống hệt
+ * nhau. Thứ tách được hai loại là `message.app_id` — tin do app gửi thì có
+ * trường này, tin người gõ tay thì không.
+ *
+ * Đây là dữ liệu bắt buộc phải có TRƯỚC khi viết logic tự tắt bot: nhầm hai
+ * loại echo với nhau là bot tự bịt miệng bằng chính câu trả lời của nó.
+ *
+ * Không ghi nội dung tin, chỉ ghi có/không và giá trị `app_id`.
+ */
+function echoInfo(items: unknown[]): string {
+  const marks: string[] = [];
+
+  for (const raw of items) {
+    const message = ((raw ?? {}) as {
+      message?: { is_echo?: boolean; app_id?: unknown };
+    }).message;
+
+    if (!message?.is_echo) continue;
+
+    marks.push(
+      message.app_id === undefined || message.app_id === null
+        ? "echo(khong-co-app_id)"
+        : `echo(app_id=${String(message.app_id)})`,
+    );
+  }
+
+  return join(marks);
+}
+
 function logWebhookReceived(
   payload: unknown,
   textEvents: number,
@@ -77,8 +110,10 @@ function logWebhookReceived(
       id: entry.id,
       messaging: items("messaging").length,
       messagingTypes: eventTypes(items("messaging")),
+      messagingEchoes: echoInfo(items("messaging")),
       standby: items("standby").length,
       standbyTypes: eventTypes(items("standby")),
+      standbyEchoes: echoInfo(items("standby")),
       // Bắt cả những mảng chưa lường trước, để không phải deploy thêm lần nữa
       // mới biết Facebook đặt dữ liệu ở đâu.
       //
