@@ -244,6 +244,57 @@ export function collectHumanEchoes(
   return echoes;
 }
 
+// --- Khung giờ bot tự trả lời lại ban đêm ------------------------------------
+
+/**
+ * Múi giờ dùng để đọc giờ hiện tại, cố định thay vì đọc `TZ` của tiến trình.
+ *
+ * Vì sao cố định: test phải cho cùng kết quả trên máy lập trình viên lẫn trên
+ * VPS, và đổi cấu hình Docker không được âm thầm làm lệch khung giờ của khách.
+ */
+const NIGHT_WINDOW_TIMEZONE = "Asia/Ho_Chi_Minh";
+
+const nightWindowHourFormat = new Intl.DateTimeFormat("en-US", {
+  timeZone: NIGHT_WINDOW_TIMEZONE,
+  hour: "2-digit",
+  // `h23` cho 00-23. Đừng đổi sang `hour12: false` — cách đó trả "24" cho nửa
+  // đêm ở một số phiên bản Node.
+  hourCycle: "h23",
+});
+
+function isValidHour(value: number | null): value is number {
+  return value !== null && Number.isInteger(value) && value >= 0 && value <= 23;
+}
+
+/**
+ * Bây giờ có nằm trong khung giờ bot được phép trả lời lại không?
+ *
+ * Dùng để đè lên cờ `humanActive` ban đêm, khi nhân viên đã nghỉ. Cố ý KHÔNG
+ * sửa cờ: hết khung giờ là hội thoại tự quay về trạng thái nhân viên giữ, không
+ * cần job thứ hai và không có trạng thái nào hỏng giữa chừng.
+ *
+ * Quy ước: giờ bắt đầu tính vào khung, giờ kết thúc thì không — `1, 6` nghĩa là
+ * 01:00 đến 05:59. Khung qua nửa đêm (`22, 6`) hợp lệ.
+ *
+ * Trả `false` khi chưa cấu hình, cấu hình sai, hoặc hai giờ bằng nhau. Riêng ca
+ * bằng nhau: hiểu thành "chạy 24/24" thì bot đè lên nhân viên vĩnh viễn, nên
+ * coi là tắt an toàn hơn.
+ */
+export function isWithinNightWindow(
+  startHour: number | null,
+  endHour: number | null,
+  now: Date,
+): boolean {
+  if (!isValidHour(startHour) || !isValidHour(endHour)) return false;
+  if (startHour === endHour) return false;
+
+  const hour = Number(nightWindowHourFormat.format(now));
+
+  return startHour < endHour
+    ? hour >= startHour && hour < endHour
+    : hour >= startHour || hour < endHour;
+}
+
 // --- Send API ---------------------------------------------------------------
 
 function graphUrl(path: string): string {

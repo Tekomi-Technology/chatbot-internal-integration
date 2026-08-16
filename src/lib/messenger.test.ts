@@ -4,6 +4,7 @@ import { test } from "node:test";
 import {
   collectHandoverRequests,
   collectHumanEchoes,
+  isWithinNightWindow,
   collectTextEvents,
 } from "@/lib/messenger";
 
@@ -336,4 +337,59 @@ test("collectHumanEchoes: payload handover không lọt vào luồng echo", () =
 
 test("collectTextEvents: echo của nhân viên KHÔNG bị coi là tin của khách", () => {
   assert.deepEqual(collectTextEvents(HUMAN_ECHO_PAYLOAD), []);
+});
+
+// --- Khung giờ bot tự trả lời lại ban đêm -----------------------------------
+
+/** 2026-08-17 03:00 giờ VN. Viết dạng UTC vì test phải chạy đúng ở mọi múi giờ. */
+const AT_3AM_VN = new Date("2026-08-16T20:00:00Z");
+/** 2026-08-17 09:00 giờ VN — ngoài mọi khung giờ đêm dùng trong test. */
+const AT_9AM_VN = new Date("2026-08-17T02:00:00Z");
+/** 2026-08-17 23:30 giờ VN. */
+const AT_1130PM_VN = new Date("2026-08-17T16:30:00Z");
+/** 2026-08-17 00:30 giờ VN. */
+const AT_0030_VN = new Date("2026-08-16T17:30:00Z");
+
+test("isWithinNightWindow: trong khung 1-6 giờ", () => {
+  assert.equal(isWithinNightWindow(1, 6, AT_3AM_VN), true);
+});
+
+test("isWithinNightWindow: ngoài khung 1-6 giờ", () => {
+  assert.equal(isWithinNightWindow(1, 6, AT_9AM_VN), false);
+});
+
+test("isWithinNightWindow: khung qua nửa đêm 22-6 tính cả hai phía", () => {
+  assert.equal(isWithinNightWindow(22, 6, AT_1130PM_VN), true, "trước nửa đêm");
+  assert.equal(isWithinNightWindow(22, 6, AT_0030_VN), true, "sau nửa đêm");
+  assert.equal(isWithinNightWindow(22, 6, AT_9AM_VN), false, "ban ngày");
+});
+
+test("isWithinNightWindow: giờ bắt đầu tính vào khung, giờ kết thúc thì không", () => {
+  // 1-6 nghĩa là 01:00 đến 05:59. Đúng 6 giờ là đã hết khung.
+  assert.equal(isWithinNightWindow(1, 6, new Date("2026-08-16T18:00:00Z")), true, "01:00");
+  assert.equal(isWithinNightWindow(1, 6, new Date("2026-08-16T22:59:00Z")), true, "05:59");
+  assert.equal(isWithinNightWindow(1, 6, new Date("2026-08-16T23:00:00Z")), false, "06:00");
+});
+
+test("isWithinNightWindow: chưa cấu hình thì luôn false", () => {
+  assert.equal(isWithinNightWindow(null, null, AT_3AM_VN), false);
+  assert.equal(isWithinNightWindow(1, null, AT_3AM_VN), false, "thiếu giờ kết thúc");
+  assert.equal(isWithinNightWindow(null, 6, AT_3AM_VN), false, "thiếu giờ bắt đầu");
+});
+
+test("isWithinNightWindow: hai giờ bằng nhau coi như tắt, không phải chạy 24/24", () => {
+  // Nhập nhầm 1-1 mà hiểu là "cả ngày" thì bot đè lên nhân viên vĩnh viễn.
+  assert.equal(isWithinNightWindow(1, 1, AT_3AM_VN), false);
+  assert.equal(isWithinNightWindow(1, 1, AT_9AM_VN), false);
+});
+
+test("isWithinNightWindow: giờ ngoài 0-23 bị bỏ qua, không throw", () => {
+  assert.equal(isWithinNightWindow(-1, 6, AT_3AM_VN), false);
+  assert.equal(isWithinNightWindow(1, 24, AT_3AM_VN), false);
+  assert.equal(isWithinNightWindow(1.5, 6, AT_3AM_VN), false);
+});
+
+test("isWithinNightWindow: khung 0-6 giờ chạy đúng ngay sau nửa đêm", () => {
+  assert.equal(isWithinNightWindow(0, 6, AT_0030_VN), true);
+  assert.equal(isWithinNightWindow(0, 6, AT_1130PM_VN), false);
 });

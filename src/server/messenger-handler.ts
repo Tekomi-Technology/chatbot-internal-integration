@@ -5,6 +5,7 @@ import { decryptSecret } from "@/lib/crypto";
 import { DifyError, sendDifyChatMessage } from "@/lib/dify";
 import { env } from "@/lib/env";
 import {
+  isWithinNightWindow,
   passThreadControl,
   sendMessengerText,
   sendSenderAction,
@@ -183,6 +184,47 @@ async function handleHandover(
   });
 }
 
+/**
+ * Nhân viên vừa nhắn trong bao lâu thì vẫn coi là đang trực.
+ *
+ * Trong khung giờ đêm, bot chỉ nhận việc khi khoảng này đã trôi qua — để không
+ * nhảy vào giữa lúc có người trực khuya đang chat dở với khách.
+ */
+const HUMAN_ACTIVE_GRACE_MS = 30 * 60_000;
+
+/**
+ * Hội thoại đang do nhân viên giữ, nhưng bot có được phép trả lời lúc này không?
+ *
+ * Chỉ đúng khi đang trong khung giờ đêm của Page VÀ nhân viên đã im đủ lâu.
+ * Không sửa cờ `humanActive` — hết khung giờ là hội thoại tự quay về trạng thái
+ * nhân viên giữ, không cần job dọn dẹp nào.
+ */
+function mayAnswerDespiteHuman(
+  channel: { nightResumeStartHour: number | null; nightResumeEndHour: number | null },
+  conversation: { handoverAt: Date | null },
+): boolean {
+  const now = new Date();
+
+  if (
+    !isWithinNightWindow(
+      channel.nightResumeStartHour,
+      channel.nightResumeEndHour,
+      now,
+    )
+  ) {
+    return false;
+  }
+
+  if (
+    conversation.handoverAt &&
+    now.getTime() - conversation.handoverAt.getTime() < HUMAN_ACTIVE_GRACE_MS
+  ) {
+    return false;
+  }
+
+  return true;
+}
+
 async function handleOne(event: MessengerTextEvent): Promise<void> {
   if (markIdSeen(event.mid)) {
     // Bỏ im lặng ở đây thì trùng `mid` trong 10 phút cũng khiến bot câm, biểu
@@ -200,6 +242,8 @@ async function handleOne(event: MessengerTextEvent): Promise<void> {
       id: true,
       isActive: true,
       pageAccessTokenEncrypted: true,
+      nightResumeStartHour: true,
+      nightResumeEndHour: true,
       tenant: {
         select: {
           id: true,
@@ -226,10 +270,15 @@ async function handleOne(event: MessengerTextEvent): Promise<void> {
   // soạn tin" trong lúc nhân viên đang chat, trông rất lạ.
   const conversation = await prisma.messengerConversation.findUnique({
     where: { channelId_psid: { channelId: channel.id, psid: event.psid } },
-    select: { id: true, difyConversationId: true, humanActive: true },
+    select: {
+      id: true,
+      difyConversationId: true,
+      humanActive: true,
+      handoverAt: true,
+    },
   });
 
-  if (conversation?.humanActive) {
+  if (conversation?.humanActive && !mayAnswerDespiteHuman(channel, conversation)) {
     console.warn("messenger -> nhân viên đang giữ hội thoại, bot im", {
       pageId: event.pageId,
       psid: event.psid,

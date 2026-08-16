@@ -13,7 +13,18 @@ import {
 } from "@/server/action-state";
 import { fieldErrors, messengerChannelSchema } from "@/server/validation";
 
-const META_ECHO_FIELDS = ["pageId", "pageName", "isActive"] as const;
+const META_ECHO_FIELDS = [
+  "pageId",
+  "pageName",
+  "isActive",
+  "nightResumeStartHour",
+  "nightResumeEndHour",
+] as const;
+
+/** Ô để trống nghĩa là tắt khung giờ. Zod đã chặn mọi giá trị ngoài 0-23. */
+function parseHour(value: string | undefined): number | null {
+  return value ? Number(value) : null;
+}
 
 function isUniqueViolation(error: unknown): boolean {
   return (
@@ -36,6 +47,8 @@ export async function updateMessengerChannelAction(
     pageName: formData.get("pageName") ?? "",
     pageAccessToken: formData.get("pageAccessToken") ?? "",
     isActive: formData.get("isActive"),
+    nightResumeStartHour: formData.get("nightResumeStartHour") ?? "",
+    nightResumeEndHour: formData.get("nightResumeEndHour") ?? "",
   });
 
   if (!parsed.success) {
@@ -47,6 +60,8 @@ export async function updateMessengerChannelAction(
   }
 
   const { pageId, pageName, pageAccessToken, isActive } = parsed.data;
+  const nightResumeStartHour = parseHour(parsed.data.nightResumeStartHour);
+  const nightResumeEndHour = parseHour(parsed.data.nightResumeEndHour);
 
   const existing = await prisma.messengerChannel.findUnique({
     where: { tenantId },
@@ -70,6 +85,8 @@ export async function updateMessengerChannelAction(
           pageName,
           pageAccessTokenEncrypted: encryptSecret(pageAccessToken),
           isActive: isActive === "ACTIVE",
+          nightResumeStartHour,
+          nightResumeEndHour,
         },
       });
     } else {
@@ -79,6 +96,8 @@ export async function updateMessengerChannelAction(
           pageId,
           pageName,
           isActive: isActive === "ACTIVE",
+          nightResumeStartHour,
+          nightResumeEndHour,
           ...(pageAccessToken
             ? { pageAccessTokenEncrypted: encryptSecret(pageAccessToken) }
             : {}),

@@ -60,6 +60,46 @@ export const messengerChannelSchema = z.object({
     .transform((value) => (value ? value : null)),
   pageAccessToken: z.string().trim().max(500).optional(),
   isActive: z.enum(["ACTIVE", "INACTIVE"]),
+  // Giữ nguyên dạng chuỗi ở đây, đổi sang số trong action. Kiểm tra quan hệ giữa
+  // hai trường nằm ở `superRefine` bên dưới nên không tách ra được.
+  nightResumeStartHour: z.string().trim().optional(),
+  nightResumeEndHour: z.string().trim().optional(),
+}).superRefine((data, ctx) => {
+  const start = data.nightResumeStartHour ?? "";
+  const end = data.nightResumeEndHour ?? "";
+
+  const invalid = (value: string) => !/^([0-9]|1[0-9]|2[0-3])$/.test(value);
+
+  for (const [path, value] of [
+    ["nightResumeStartHour", start],
+    ["nightResumeEndHour", end],
+  ] as const) {
+    if (value !== "" && invalid(value)) {
+      ctx.addIssue({
+        code: "custom",
+        path: [path],
+        message: "Giờ phải là số nguyên từ 0 đến 23.",
+      });
+    }
+  }
+
+  // Một trong hai để trống thì khung giờ vô nghĩa — bắt điền đủ hoặc bỏ trống cả
+  // hai, thay vì âm thầm tắt tính năng mà người dùng tưởng đã bật.
+  if ((start === "") !== (end === "")) {
+    ctx.addIssue({
+      code: "custom",
+      path: [start === "" ? "nightResumeStartHour" : "nightResumeEndHour"],
+      message: "Điền cả giờ bắt đầu và giờ kết thúc, hoặc để trống cả hai.",
+    });
+  }
+
+  if (start !== "" && start === end) {
+    ctx.addIssue({
+      code: "custom",
+      path: ["nightResumeEndHour"],
+      message: "Giờ kết thúc phải khác giờ bắt đầu.",
+    });
+  }
 });
 
 export const zaloChannelSchema = z.object({

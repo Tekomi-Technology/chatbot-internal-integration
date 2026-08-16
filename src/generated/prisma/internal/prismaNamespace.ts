@@ -1295,6 +1295,8 @@ export const MessengerChannelScalarFieldEnum = {
   pageName: 'pageName',
   pageAccessTokenEncrypted: 'pageAccessTokenEncrypted',
   isActive: 'isActive',
+  nightResumeStartHour: 'nightResumeStartHour',
+  nightResumeEndHour: 'nightResumeEndHour',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const

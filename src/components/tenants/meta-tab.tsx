@@ -24,6 +24,8 @@ export type MetaTabChannel = {
   pageName: string | null;
   isActive: boolean;
   pageAccessTokenMasked: string;
+  nightResumeStartHour: number | null;
+  nightResumeEndHour: number | null;
 };
 
 function ReadOnlyRow({
@@ -220,6 +222,63 @@ export function MetaTab({
                 <option value="INACTIVE">Tạm dừng (bỏ qua tin nhắn đến)</option>
               </Select>
             </FormField>
+
+            <div className="flex flex-col gap-2 rounded-md border p-4">
+              <p className="text-sm font-medium">Bot trả lời lại ban đêm</p>
+              <p className="text-xs text-muted-foreground">
+                Khi nhân viên đã tiếp quản một hội thoại, bot ngừng trả lời khách
+                đó. Trong khung giờ dưới đây, bot sẽ nhận lại việc — dùng cho lúc
+                nhân viên đã nghỉ. Giờ theo múi giờ Việt Nam, để trống cả hai ô
+                để tắt.
+              </p>
+
+              <div className="flex items-end gap-3">
+                <FormField
+                  name="nightResumeStartHour"
+                  label="Từ giờ"
+                  error={state.errors?.nightResumeStartHour}
+                >
+                  <Input
+                    id="nightResumeStartHour"
+                    name="nightResumeStartHour"
+                    inputMode="numeric"
+                    className="w-24"
+                    placeholder="1"
+                    defaultValue={
+                      state.values?.nightResumeStartHour ??
+                      channel?.nightResumeStartHour?.toString() ??
+                      ""
+                    }
+                  />
+                </FormField>
+
+                <FormField
+                  name="nightResumeEndHour"
+                  label="Đến giờ"
+                  error={state.errors?.nightResumeEndHour}
+                >
+                  <Input
+                    id="nightResumeEndHour"
+                    name="nightResumeEndHour"
+                    inputMode="numeric"
+                    className="w-24"
+                    placeholder="6"
+                    defaultValue={
+                      state.values?.nightResumeEndHour ??
+                      channel?.nightResumeEndHour?.toString() ??
+                      ""
+                    }
+                  />
+                </FormField>
+              </div>
+
+              <p className="text-xs text-muted-foreground">
+                Giờ bắt đầu tính vào khung, giờ kết thúc thì không: 1 đến 6 nghĩa
+                là 01:00–05:59. Khung qua nửa đêm (22 đến 6) cũng hợp lệ. Nếu nhân
+                viên vừa nhắn trong vòng 30 phút thì bot vẫn im, kể cả trong khung
+                giờ này.
+              </p>
+            </div>
 
             {state.status !== "idle" && state.message ? (
               <p

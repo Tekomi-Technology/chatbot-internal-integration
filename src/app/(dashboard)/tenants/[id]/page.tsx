@@ -195,6 +195,8 @@ export default async function TenantDetailPage({ params, searchParams }: PagePro
                     pageName: channel.pageName,
                     isActive: channel.isActive,
                     pageAccessTokenMasked,
+                    nightResumeStartHour: channel.nightResumeStartHour,
+                    nightResumeEndHour: channel.nightResumeEndHour,
                   }
                 : null
             }

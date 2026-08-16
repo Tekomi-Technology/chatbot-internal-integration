@@ -20,8 +20,20 @@ export type MessengerChannelModel = runtime.Types.Result.DefaultSelection<Prisma
 
 export type AggregateMessengerChannel = {
   _count: MessengerChannelCountAggregateOutputType | null
+  _avg: MessengerChannelAvgAggregateOutputType | null
+  _sum: MessengerChannelSumAggregateOutputType | null
   _min: MessengerChannelMinAggregateOutputType | null
   _max: MessengerChannelMaxAggregateOutputType | null
+}
+
+export type MessengerChannelAvgAggregateOutputType = {
+  nightResumeStartHour: number | null
+  nightResumeEndHour: number | null
+}
+
+export type MessengerChannelSumAggregateOutputType = {
+  nightResumeStartHour: number | null
+  nightResumeEndHour: number | null
 }
 
 export type MessengerChannelMinAggregateOutputType = {
@@ -31,6 +43,8 @@ export type MessengerChannelMinAggregateOutputType = {
   pageName: string | null
   pageAccessTokenEncrypted: string | null
   isActive: boolean | null
+  nightResumeStartHour: number | null
+  nightResumeEndHour: number | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -42,6 +56,8 @@ export type MessengerChannelMaxAggregateOutputType = {
   pageName: string | null
   pageAccessTokenEncrypted: string | null
   isActive: boolean | null
+  nightResumeStartHour: number | null
+  nightResumeEndHour: number | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -53,11 +69,23 @@ export type MessengerChannelCountAggregateOutputType = {
   pageName: number
   pageAccessTokenEncrypted: number
   isActive: number
+  nightResumeStartHour: number
+  nightResumeEndHour: number
   createdAt: number
   updatedAt: number
   _all: number
 }
 
+
+export type MessengerChannelAvgAggregateInputType = {
+  nightResumeStartHour?: true
+  nightResumeEndHour?: true
+}
+
+export type MessengerChannelSumAggregateInputType = {
+  nightResumeStartHour?: true
+  nightResumeEndHour?: true
+}
 
 export type MessengerChannelMinAggregateInputType = {
   id?: true
@@ -66,6 +94,8 @@ export type MessengerChannelMinAggregateInputType = {
   pageName?: true
   pageAccessTokenEncrypted?: true
   isActive?: true
+  nightResumeStartHour?: true
+  nightResumeEndHour?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -77,6 +107,8 @@ export type MessengerChannelMaxAggregateInputType = {
   pageName?: true
   pageAccessTokenEncrypted?: true
   isActive?: true
+  nightResumeStartHour?: true
+  nightResumeEndHour?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -88,6 +120,8 @@ export type MessengerChannelCountAggregateInputType = {
   pageName?: true
   pageAccessTokenEncrypted?: true
   isActive?: true
+  nightResumeStartHour?: true
+  nightResumeEndHour?: true
   createdAt?: true
   updatedAt?: true
   _all?: true
@@ -131,6 +165,18 @@ export type MessengerChannelAggregateArgs<ExtArgs extends runtime.Types.Extensio
   /**
    * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
    * 
+   * Select which fields to average
+  **/
+  _avg?: MessengerChannelAvgAggregateInputType
+  /**
+   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+   * 
+   * Select which fields to sum
+  **/
+  _sum?: MessengerChannelSumAggregateInputType
+  /**
+   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+   * 
    * Select which fields to find the minimum value
   **/
   _min?: MessengerChannelMinAggregateInputType
@@ -161,6 +207,8 @@ export type MessengerChannelGroupByArgs<ExtArgs extends runtime.Types.Extensions
   take?: number
   skip?: number
   _count?: MessengerChannelCountAggregateInputType | true
+  _avg?: MessengerChannelAvgAggregateInputType
+  _sum?: MessengerChannelSumAggregateInputType
   _min?: MessengerChannelMinAggregateInputType
   _max?: MessengerChannelMaxAggregateInputType
 }
@@ -172,9 +220,13 @@ export type MessengerChannelGroupByOutputType = {
   pageName: string | null
   pageAccessTokenEncrypted: string
   isActive: boolean
+  nightResumeStartHour: number | null
+  nightResumeEndHour: number | null
   createdAt: Date
   updatedAt: Date
   _count: MessengerChannelCountAggregateOutputType | null
+  _avg: MessengerChannelAvgAggregateOutputType | null
+  _sum: MessengerChannelSumAggregateOutputType | null
   _min: MessengerChannelMinAggregateOutputType | null
   _max: MessengerChannelMaxAggregateOutputType | null
 }
@@ -204,6 +256,8 @@ export type MessengerChannelWhereInput = {
   pageName?: Prisma.StringNullableFilter<"MessengerChannel"> | string | null
   pageAccessTokenEncrypted?: Prisma.StringFilter<"MessengerChannel"> | string
   isActive?: Prisma.BoolFilter<"MessengerChannel"> | boolean
+  nightResumeStartHour?: Prisma.IntNullableFilter<"MessengerChannel"> | number | null
+  nightResumeEndHour?: Prisma.IntNullableFilter<"MessengerChannel"> | number | null
   createdAt?: Prisma.DateTimeFilter<"MessengerChannel"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"MessengerChannel"> | Date | string
   tenant?: Prisma.XOR<Prisma.TenantScalarRelationFilter, Prisma.TenantWhereInput>
@@ -217,6 +271,8 @@ export type MessengerChannelOrderByWithRelationInput = {
   pageName?: Prisma.SortOrderInput | Prisma.SortOrder
   pageAccessTokenEncrypted?: Prisma.SortOrder
   isActive?: Prisma.SortOrder
+  nightResumeStartHour?: Prisma.SortOrderInput | Prisma.SortOrder
+  nightResumeEndHour?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   tenant?: Prisma.TenantOrderByWithRelationInput
@@ -233,6 +289,8 @@ export type MessengerChannelWhereUniqueInput = Prisma.AtLeast<{
   pageName?: Prisma.StringNullableFilter<"MessengerChannel"> | string | null
   pageAccessTokenEncrypted?: Prisma.StringFilter<"MessengerChannel"> | string
   isActive?: Prisma.BoolFilter<"MessengerChannel"> | boolean
+  nightResumeStartHour?: Prisma.IntNullableFilter<"MessengerChannel"> | number | null
+  nightResumeEndHour?: Prisma.IntNullableFilter<"MessengerChannel"> | number | null
   createdAt?: Prisma.DateTimeFilter<"MessengerChannel"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"MessengerChannel"> | Date | string
   tenant?: Prisma.XOR<Prisma.TenantScalarRelationFilter, Prisma.TenantWhereInput>
@@ -246,11 +304,15 @@ export type MessengerChannelOrderByWithAggregationInput = {
   pageName?: Prisma.SortOrderInput | Prisma.SortOrder
   pageAccessTokenEncrypted?: Prisma.SortOrder
   isActive?: Prisma.SortOrder
+  nightResumeStartHour?: Prisma.SortOrderInput | Prisma.SortOrder
+  nightResumeEndHour?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   _count?: Prisma.MessengerChannelCountOrderByAggregateInput
+  _avg?: Prisma.MessengerChannelAvgOrderByAggregateInput
   _max?: Prisma.MessengerChannelMaxOrderByAggregateInput
   _min?: Prisma.MessengerChannelMinOrderByAggregateInput
+  _sum?: Prisma.MessengerChannelSumOrderByAggregateInput
 }
 
 export type MessengerChannelScalarWhereWithAggregatesInput = {
@@ -263,6 +325,8 @@ export type MessengerChannelScalarWhereWithAggregatesInput = {
   pageName?: Prisma.StringNullableWithAggregatesFilter<"MessengerChannel"> | string | null
   pageAccessTokenEncrypted?: Prisma.StringWithAggregatesFilter<"MessengerChannel"> | string
   isActive?: Prisma.BoolWithAggregatesFilter<"MessengerChannel"> | boolean
+  nightResumeStartHour?: Prisma.IntNullableWithAggregatesFilter<"MessengerChannel"> | number | null
+  nightResumeEndHour?: Prisma.IntNullableWithAggregatesFilter<"MessengerChannel"> | number | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"MessengerChannel"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"MessengerChannel"> | Date | string
 }
@@ -273,6 +337,8 @@ export type MessengerChannelCreateInput = {
   pageName?: string | null
   pageAccessTokenEncrypted: string
   isActive?: boolean
+  nightResumeStartHour?: number | null
+  nightResumeEndHour?: number | null
   createdAt?: Date | string
   updatedAt?: Date | string
   tenant: Prisma.TenantCreateNestedOneWithoutMessengerChannelInput
@@ -286,6 +352,8 @@ export type MessengerChannelUncheckedCreateInput = {
   pageName?: string | null
   pageAccessTokenEncrypted: string
   isActive?: boolean
+  nightResumeStartHour?: number | null
+  nightResumeEndHour?: number | null
   createdAt?: Date | string
   updatedAt?: Date | string
   conversations?: Prisma.MessengerConversationUncheckedCreateNestedManyWithoutChannelInput
@@ -297,6 +365,8 @@ export type MessengerChannelUpdateInput = {
   pageName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   pageAccessTokenEncrypted?: Prisma.StringFieldUpdateOperationsInput | string
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  nightResumeStartHour?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  nightResumeEndHour?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   tenant?: Prisma.TenantUpdateOneRequiredWithoutMessengerChannelNestedInput
@@ -310,6 +380,8 @@ export type MessengerChannelUncheckedUpdateInput = {
   pageName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   pageAccessTokenEncrypted?: Prisma.StringFieldUpdateOperationsInput | string
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  nightResumeStartHour?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  nightResumeEndHour?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   conversations?: Prisma.MessengerConversationUncheckedUpdateManyWithoutChannelNestedInput
@@ -322,6 +394,8 @@ export type MessengerChannelCreateManyInput = {
   pageName?: string | null
   pageAccessTokenEncrypted: string
   isActive?: boolean
+  nightResumeStartHour?: number | null
+  nightResumeEndHour?: number | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -332,6 +406,8 @@ export type MessengerChannelUpdateManyMutationInput = {
   pageName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   pageAccessTokenEncrypted?: Prisma.StringFieldUpdateOperationsInput | string
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  nightResumeStartHour?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  nightResumeEndHour?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -343,6 +419,8 @@ export type MessengerChannelUncheckedUpdateManyInput = {
   pageName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   pageAccessTokenEncrypted?: Prisma.StringFieldUpdateOperationsInput | string
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  nightResumeStartHour?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  nightResumeEndHour?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -359,8 +437,15 @@ export type MessengerChannelCountOrderByAggregateInput = {
   pageName?: Prisma.SortOrder
   pageAccessTokenEncrypted?: Prisma.SortOrder
   isActive?: Prisma.SortOrder
+  nightResumeStartHour?: Prisma.SortOrder
+  nightResumeEndHour?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+}
+
+export type MessengerChannelAvgOrderByAggregateInput = {
+  nightResumeStartHour?: Prisma.SortOrder
+  nightResumeEndHour?: Prisma.SortOrder
 }
 
 export type MessengerChannelMaxOrderByAggregateInput = {
@@ -370,6 +455,8 @@ export type MessengerChannelMaxOrderByAggregateInput = {
   pageName?: Prisma.SortOrder
   pageAccessTokenEncrypted?: Prisma.SortOrder
   isActive?: Prisma.SortOrder
+  nightResumeStartHour?: Prisma.SortOrder
+  nightResumeEndHour?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -381,8 +468,15 @@ export type MessengerChannelMinOrderByAggregateInput = {
   pageName?: Prisma.SortOrder
   pageAccessTokenEncrypted?: Prisma.SortOrder
   isActive?: Prisma.SortOrder
+  nightResumeStartHour?: Prisma.SortOrder
+  nightResumeEndHour?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+}
+
+export type MessengerChannelSumOrderByAggregateInput = {
+  nightResumeStartHour?: Prisma.SortOrder
+  nightResumeEndHour?: Prisma.SortOrder
 }
 
 export type MessengerChannelScalarRelationFilter = {
@@ -442,6 +536,8 @@ export type MessengerChannelCreateWithoutTenantInput = {
   pageName?: string | null
   pageAccessTokenEncrypted: string
   isActive?: boolean
+  nightResumeStartHour?: number | null
+  nightResumeEndHour?: number | null
   createdAt?: Date | string
   updatedAt?: Date | string
   conversations?: Prisma.MessengerConversationCreateNestedManyWithoutChannelInput
@@ -453,6 +549,8 @@ export type MessengerChannelUncheckedCreateWithoutTenantInput = {
   pageName?: string | null
   pageAccessTokenEncrypted: string
   isActive?: boolean
+  nightResumeStartHour?: number | null
+  nightResumeEndHour?: number | null
   createdAt?: Date | string
   updatedAt?: Date | string
   conversations?: Prisma.MessengerConversationUncheckedCreateNestedManyWithoutChannelInput
@@ -480,6 +578,8 @@ export type MessengerChannelUpdateWithoutTenantInput = {
   pageName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   pageAccessTokenEncrypted?: Prisma.StringFieldUpdateOperationsInput | string
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  nightResumeStartHour?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  nightResumeEndHour?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   conversations?: Prisma.MessengerConversationUpdateManyWithoutChannelNestedInput
@@ -491,6 +591,8 @@ export type MessengerChannelUncheckedUpdateWithoutTenantInput = {
   pageName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   pageAccessTokenEncrypted?: Prisma.StringFieldUpdateOperationsInput | string
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  nightResumeStartHour?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  nightResumeEndHour?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   conversations?: Prisma.MessengerConversationUncheckedUpdateManyWithoutChannelNestedInput
@@ -502,6 +604,8 @@ export type MessengerChannelCreateWithoutConversationsInput = {
   pageName?: string | null
   pageAccessTokenEncrypted: string
   isActive?: boolean
+  nightResumeStartHour?: number | null
+  nightResumeEndHour?: number | null
   createdAt?: Date | string
   updatedAt?: Date | string
   tenant: Prisma.TenantCreateNestedOneWithoutMessengerChannelInput
@@ -514,6 +618,8 @@ export type MessengerChannelUncheckedCreateWithoutConversationsInput = {
   pageName?: string | null
   pageAccessTokenEncrypted: string
   isActive?: boolean
+  nightResumeStartHour?: number | null
+  nightResumeEndHour?: number | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -540,6 +646,8 @@ export type MessengerChannelUpdateWithoutConversationsInput = {
   pageName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   pageAccessTokenEncrypted?: Prisma.StringFieldUpdateOperationsInput | string
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  nightResumeStartHour?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  nightResumeEndHour?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   tenant?: Prisma.TenantUpdateOneRequiredWithoutMessengerChannelNestedInput
@@ -552,6 +660,8 @@ export type MessengerChannelUncheckedUpdateWithoutConversationsInput = {
   pageName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   pageAccessTokenEncrypted?: Prisma.StringFieldUpdateOperationsInput | string
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  nightResumeStartHour?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  nightResumeEndHour?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -594,6 +704,8 @@ export type MessengerChannelSelect<ExtArgs extends runtime.Types.Extensions.Inte
   pageName?: boolean
   pageAccessTokenEncrypted?: boolean
   isActive?: boolean
+  nightResumeStartHour?: boolean
+  nightResumeEndHour?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
@@ -608,6 +720,8 @@ export type MessengerChannelSelectCreateManyAndReturn<ExtArgs extends runtime.Ty
   pageName?: boolean
   pageAccessTokenEncrypted?: boolean
   isActive?: boolean
+  nightResumeStartHour?: boolean
+  nightResumeEndHour?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
@@ -620,6 +734,8 @@ export type MessengerChannelSelectUpdateManyAndReturn<ExtArgs extends runtime.Ty
   pageName?: boolean
   pageAccessTokenEncrypted?: boolean
   isActive?: boolean
+  nightResumeStartHour?: boolean
+  nightResumeEndHour?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
@@ -632,11 +748,13 @@ export type MessengerChannelSelectScalar = {
   pageName?: boolean
   pageAccessTokenEncrypted?: boolean
   isActive?: boolean
+  nightResumeStartHour?: boolean
+  nightResumeEndHour?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type MessengerChannelOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "tenantId" | "pageId" | "pageName" | "pageAccessTokenEncrypted" | "isActive" | "createdAt" | "updatedAt", ExtArgs["result"]["messengerChannel"]>
+export type MessengerChannelOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "tenantId" | "pageId" | "pageName" | "pageAccessTokenEncrypted" | "isActive" | "nightResumeStartHour" | "nightResumeEndHour" | "createdAt" | "updatedAt", ExtArgs["result"]["messengerChannel"]>
 export type MessengerChannelInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
   conversations?: boolean | Prisma.MessengerChannel$conversationsArgs<ExtArgs>
@@ -662,6 +780,14 @@ export type $MessengerChannelPayload<ExtArgs extends runtime.Types.Extensions.In
     pageName: string | null
     pageAccessTokenEncrypted: string
     isActive: boolean
+    /**
+     * Khung giờ bot tự trả lời lại ban đêm, kể cả với hội thoại nhân viên đang
+     * giữ. Giờ theo Asia/Ho_Chi_Minh, 0-23. Khung qua nửa đêm (22 -> 6) hợp lệ.
+     * Cả hai cùng null = tắt tính năng. Không bao giờ sửa cờ `human_active` —
+     * hết khung giờ là hội thoại tự quay về trạng thái nhân viên giữ.
+     */
+    nightResumeStartHour: number | null
+    nightResumeEndHour: number | null
     createdAt: Date
     updatedAt: Date
   }, ExtArgs["result"]["messengerChannel"]>
@@ -1095,6 +1221,8 @@ export interface MessengerChannelFieldRefs {
   readonly pageName: Prisma.FieldRef<"MessengerChannel", 'String'>
   readonly pageAccessTokenEncrypted: Prisma.FieldRef<"MessengerChannel", 'String'>
   readonly isActive: Prisma.FieldRef<"MessengerChannel", 'Boolean'>
+  readonly nightResumeStartHour: Prisma.FieldRef<"MessengerChannel", 'Int'>
+  readonly nightResumeEndHour: Prisma.FieldRef<"MessengerChannel", 'Int'>
   readonly createdAt: Prisma.FieldRef<"MessengerChannel", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"MessengerChannel", 'DateTime'>
 }
