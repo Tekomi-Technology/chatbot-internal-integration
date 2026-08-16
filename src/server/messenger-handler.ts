@@ -9,6 +9,7 @@ import {
   sendMessengerText,
   sendSenderAction,
   type MessengerHandoverRequest,
+  type MessengerHumanEcho,
   type MessengerTextEvent,
 } from "@/lib/messenger";
 import { prisma } from "@/lib/prisma";
@@ -49,6 +50,74 @@ export async function handleMessengerHandovers(
         error,
       });
     }
+  }
+}
+
+/**
+ * Bật cờ khi phát hiện người khác đã nhắn cho khách từ phía Page.
+ *
+ * Đường chính để tính năng này hoạt động trên Meta Business Suite, nơi
+ * `request_thread_control` không bao giờ bắn. Khác `handleMessengerHandovers` ở
+ * một điểm quan trọng: KHÔNG gọi Graph API nào, chỉ ghi DB — nên không có cảnh
+ * "đã nhường quyền nhưng chưa ghi được cờ" như bên kia.
+ *
+ * Vẫn một chiều: chỉ bật, không bao giờ tắt. Xem spec.
+ */
+export async function handleHumanTakeovers(
+  echoes: MessengerHumanEcho[],
+): Promise<void> {
+  for (const echo of echoes) {
+    try {
+      await handleHumanTakeover(echo);
+    } catch (error) {
+      console.error("messenger -> tiếp quản", {
+        pageId: echo.pageId,
+        error,
+      });
+    }
+  }
+}
+
+async function handleHumanTakeover(echo: MessengerHumanEcho): Promise<void> {
+  const channel = await prisma.messengerChannel.findUnique({
+    where: { pageId: echo.pageId },
+    select: { id: true },
+  });
+
+  if (!channel) {
+    console.warn("messenger -> tiếp quản cho page chưa kết nối", {
+      pageId: echo.pageId,
+      psid: echo.psid,
+    });
+    return;
+  }
+
+  // `upsert` vì row chỉ ra đời sau lượt Dify đầu tiên, mà nhân viên hoàn toàn có
+  // thể nhắn trước cho một khách bot chưa từng trả lời.
+  const before = await prisma.messengerConversation.findUnique({
+    where: { channelId_psid: { channelId: channel.id, psid: echo.psid } },
+    select: { humanActive: true },
+  });
+
+  await prisma.messengerConversation.upsert({
+    where: { channelId_psid: { channelId: channel.id, psid: echo.psid } },
+    create: {
+      channelId: channel.id,
+      psid: echo.psid,
+      humanActive: true,
+      handoverAt: new Date(),
+    },
+    update: { humanActive: true, handoverAt: new Date() },
+  });
+
+  // Chỉ ghi log ở LẦN ĐẦU. Nhân viên nhắn mười câu thì có mười echo, ghi hết là
+  // rác log mà không thêm thông tin gì.
+  if (!before?.humanActive) {
+    console.info("messenger -> nhân viên đã tiếp quản hội thoại", {
+      pageId: echo.pageId,
+      psid: echo.psid,
+      senderAppId: echo.senderAppId,
+    });
   }
 }
 

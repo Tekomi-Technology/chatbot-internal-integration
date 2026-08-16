@@ -1,7 +1,11 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
 
-import { collectHandoverRequests, collectTextEvents } from "@/lib/messenger";
+import {
+  collectHandoverRequests,
+  collectHumanEchoes,
+  collectTextEvents,
+} from "@/lib/messenger";
 
 /** Payload Facebook gửi khi nhân viên kéo hội thoại sang "Inbox". */
 const HANDOVER_PAYLOAD = {
@@ -180,4 +184,156 @@ test("collectTextEvents: tin nằm ở standby thì bị bỏ qua — dấu hi�
 
   assert.deepEqual(collectTextEvents(standbyPayload), []);
   assert.deepEqual(collectHandoverRequests(standbyPayload), []);
+});
+
+// --- Echo: nhân viên tiếp quản hội thoại ------------------------------------
+
+/** App ID của app này. Mọi echo mang app id khác đều là người khác nhắn cho khách. */
+const OWN_APP_ID = "1404277608284195";
+
+/** App ID của Page Inbox — quan sát được trong log thật ngày 2026-08-17. */
+const PAGE_INBOX_APP_ID = "263902037430900";
+
+/**
+ * Echo Facebook gửi khi nhân viên gõ tay một tin từ Hộp thư.
+ *
+ * Chú ý chiều: `sender` là PAGE, `recipient` là KHÁCH. Ngược hẳn với payload
+ * tin nhắn thường.
+ */
+const HUMAN_ECHO_PAYLOAD = {
+  object: "page",
+  entry: [
+    {
+      id: "page-1",
+      messaging: [
+        {
+          sender: { id: "page-1" },
+          recipient: { id: "psid-1" },
+          timestamp: 1458692752478,
+          message: {
+            is_echo: true,
+            app_id: PAGE_INBOX_APP_ID,
+            mid: "mid-echo-1",
+            text: "Chào bạn, mình là Tú bên TKC",
+          },
+        },
+      ],
+    },
+  ],
+};
+
+/** Echo của chính bot. Nhận nhầm cái này là bot tự bịt miệng mình vĩnh viễn. */
+const OWN_ECHO_PAYLOAD = {
+  object: "page",
+  entry: [
+    {
+      id: "page-1",
+      messaging: [
+        {
+          sender: { id: "page-1" },
+          recipient: { id: "psid-1" },
+          message: {
+            is_echo: true,
+            app_id: OWN_APP_ID,
+            mid: "mid-echo-2",
+            text: "Xin chào, tôi là trợ lý nội bộ",
+          },
+        },
+      ],
+    },
+  ],
+};
+
+test("collectHumanEchoes: echo của nhân viên lấy PSID từ recipient, không phải sender", () => {
+  assert.deepEqual(collectHumanEchoes(HUMAN_ECHO_PAYLOAD, OWN_APP_ID), [
+    { pageId: "page-1", psid: "psid-1", senderAppId: PAGE_INBOX_APP_ID },
+  ]);
+});
+
+test("collectHumanEchoes: echo của chính app ta bị bỏ qua", () => {
+  assert.deepEqual(collectHumanEchoes(OWN_ECHO_PAYLOAD, OWN_APP_ID), []);
+});
+
+test("collectHumanEchoes: app id dạng số vẫn so khớp đúng", () => {
+  const payload = {
+    object: "page",
+    entry: [
+      {
+        id: "page-1",
+        messaging: [
+          {
+            sender: { id: "page-1" },
+            recipient: { id: "psid-1" },
+            message: { is_echo: true, app_id: Number(OWN_APP_ID) },
+          },
+        ],
+      },
+    ],
+  };
+
+  assert.deepEqual(collectHumanEchoes(payload, OWN_APP_ID), []);
+});
+
+test("collectHumanEchoes: echo không có app_id vẫn tính là người khác gửi", () => {
+  const payload = {
+    object: "page",
+    entry: [
+      {
+        id: "page-1",
+        messaging: [
+          {
+            sender: { id: "page-1" },
+            recipient: { id: "psid-1" },
+            message: { is_echo: true, mid: "mid-3", text: "gửi từ app Trang" },
+          },
+        ],
+      },
+    ],
+  };
+
+  assert.deepEqual(collectHumanEchoes(payload, OWN_APP_ID), [
+    { pageId: "page-1", psid: "psid-1", senderAppId: null },
+  ]);
+});
+
+test("collectHumanEchoes: tin thường của khách không phải echo", () => {
+  assert.deepEqual(collectHumanEchoes(TEXT_PAYLOAD, OWN_APP_ID), []);
+});
+
+test("collectHumanEchoes: thiếu MESSENGER_APP_ID thì TẮT hẳn tính năng", () => {
+  // Fail-safe. Không biết app id của mình thì mọi echo — kể cả của bot — đều
+  // trông như người lạ, và bot sẽ tự bịt miệng ngay sau câu trả lời đầu tiên.
+  // Thà không chạy tính năng còn hơn.
+  assert.deepEqual(collectHumanEchoes(HUMAN_ECHO_PAYLOAD, null), []);
+  assert.deepEqual(collectHumanEchoes(HUMAN_ECHO_PAYLOAD, ""), []);
+});
+
+test("collectHumanEchoes: thiếu trường thì trả mảng rỗng, không throw", () => {
+  assert.deepEqual(collectHumanEchoes(null, OWN_APP_ID), []);
+  assert.deepEqual(collectHumanEchoes({}, OWN_APP_ID), []);
+  assert.deepEqual(collectHumanEchoes({ object: "page" }, OWN_APP_ID), []);
+  assert.deepEqual(
+    collectHumanEchoes(
+      {
+        object: "page",
+        entry: [
+          {
+            id: "page-1",
+            messaging: [{ message: { is_echo: true, app_id: "app-la" } }],
+          },
+        ],
+      },
+      OWN_APP_ID,
+    ),
+    [],
+    "thiếu recipient.id thì phải bỏ",
+  );
+});
+
+test("collectHumanEchoes: payload handover không lọt vào luồng echo", () => {
+  assert.deepEqual(collectHumanEchoes(HANDOVER_PAYLOAD, OWN_APP_ID), []);
+});
+
+test("collectTextEvents: echo của nhân viên KHÔNG bị coi là tin của khách", () => {
+  assert.deepEqual(collectTextEvents(HUMAN_ECHO_PAYLOAD), []);
 });

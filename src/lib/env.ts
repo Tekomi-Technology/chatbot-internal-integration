@@ -39,6 +39,11 @@ export const env = {
       verifyToken: process.env.MESSENGER_VERIFY_TOKEN?.trim() || null,
       appSecret: process.env.MESSENGER_APP_SECRET?.trim() || null,
       graphApiVersion: process.env.MESSENGER_API_VERSION?.trim() || "v21.0",
+      /**
+       * Dùng để nhận ra echo của CHÍNH MÌNH và bỏ qua. Thiếu biến này thì tính
+       * năng "nhân viên tiếp quản" tắt hẳn — xem `collectHumanEchoes`.
+       */
+      appId: process.env.MESSENGER_APP_ID?.trim() || null,
     };
   },
 

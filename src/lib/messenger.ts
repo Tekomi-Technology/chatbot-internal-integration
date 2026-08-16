@@ -168,6 +168,82 @@ export function collectHandoverRequests(
   return requests;
 }
 
+/** Một tin do người khác — không phải app này — gửi cho khách từ phía Page. */
+export type MessengerHumanEcho = {
+  /** `entry[].id` — khoá tra ngược ra tenant. */
+  pageId: string;
+  /**
+   * PSID của khách.
+   *
+   * Đọc từ `recipient.id`, KHÔNG phải `sender.id`. Với echo thì chiều bị đảo:
+   * người gửi là Page, người nhận là khách. Lấy nhầm là ghi cờ vào Page ID.
+   */
+  psid: string;
+  /** App id của bên đã gửi. `null` khi payload không có, ví dụ gửi từ app Trang. */
+  senderAppId: string | null;
+};
+
+type EchoPayload = {
+  object?: string;
+  entry?: Array<{
+    id?: string;
+    messaging?: Array<{
+      recipient?: { id?: string };
+      message?: { is_echo?: boolean; app_id?: string | number };
+    }>;
+  }>;
+};
+
+/**
+ * Rút các tin do NGƯỜI KHÁC gửi cho khách từ phía Page.
+ *
+ * Đây là tín hiệu "nhân viên đã tiếp quản hội thoại". Thay cho
+ * `request_thread_control` — sự kiện đó đã được chứng minh là không bao giờ bắn
+ * trên Meta Business Suite Inbox (xem spec, mục "Vì sao bỏ Handover Protocol").
+ *
+ * Cách phân biệt: so `message.app_id` với app id của CHÍNH MÌNH. Mọi thứ khác
+ * đều tính là người ngoài — đúng với Page Inbox, app Trang trên di động, và bất
+ * kỳ công cụ nào nhân viên dùng sau này, không phải liệt kê trước từng cái.
+ *
+ * Trả mảng rỗng khi không biết `ownAppId`. Fail-safe có chủ đích: không biết app
+ * id của mình thì echo của chính bot cũng trông như người lạ, và bot sẽ tự bịt
+ * miệng ngay sau câu trả lời đầu tiên. Thà tắt tính năng còn hơn.
+ */
+export function collectHumanEchoes(
+  payload: unknown,
+  ownAppId: string | null,
+): MessengerHumanEcho[] {
+  if (!ownAppId) return [];
+
+  const body = payload as EchoPayload;
+  if (body?.object !== "page" || !Array.isArray(body.entry)) return [];
+
+  const echoes: MessengerHumanEcho[] = [];
+
+  for (const entry of body.entry) {
+    const pageId = entry?.id;
+    if (!pageId || !Array.isArray(entry.messaging)) continue;
+
+    for (const item of entry.messaging) {
+      if (!item?.message?.is_echo) continue;
+
+      const psid = item.recipient?.id;
+      if (!psid) continue;
+
+      const rawAppId = item.message.app_id;
+      // Meta có lúc gửi app id dạng số, có lúc dạng chuỗi. Chuẩn hoá rồi mới so.
+      const senderAppId =
+        rawAppId === undefined || rawAppId === null ? null : String(rawAppId);
+
+      if (senderAppId === ownAppId) continue;
+
+      echoes.push({ pageId, psid, senderAppId });
+    }
+  }
+
+  return echoes;
+}
+
 // --- Send API ---------------------------------------------------------------
 
 function graphUrl(path: string): string {

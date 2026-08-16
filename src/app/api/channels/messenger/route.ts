@@ -4,10 +4,12 @@ import { safeEqual } from "@/lib/crypto";
 import { env } from "@/lib/env";
 import {
   collectHandoverRequests,
+  collectHumanEchoes,
   collectTextEvents,
   verifyMessengerSignature,
 } from "@/lib/messenger";
 import {
+  handleHumanTakeovers,
   handleMessengerEvents,
   handleMessengerHandovers,
 } from "@/server/messenger-handler";
@@ -98,6 +100,7 @@ function logWebhookReceived(
   payload: unknown,
   textEvents: number,
   handovers: number,
+  takeovers: number,
 ): void {
   const body = payload as { object?: string; entry?: unknown[] };
 
@@ -131,6 +134,7 @@ function logWebhookReceived(
     entries,
     textEvents,
     handovers,
+    takeovers,
   });
 }
 
@@ -214,12 +218,16 @@ export async function POST(request: NextRequest) {
 
   const events = collectTextEvents(payload);
   const handovers = collectHandoverRequests(payload);
+  const takeovers = collectHumanEchoes(payload, env.messenger.appId);
 
-  logWebhookReceived(payload, events.length, handovers.length);
+  logWebhookReceived(payload, events.length, handovers.length, takeovers.length);
 
-  if (events.length > 0 || handovers.length > 0) {
+  if (events.length > 0 || handovers.length > 0 || takeovers.length > 0) {
     after(async () => {
+      // Bật cờ TRƯỚC khi xử lý tin nhắn: một request có thể chứa cả hai, và cờ
+      // mới phải có hiệu lực trước khi luồng trả lời đọc tới nó.
       await handleMessengerHandovers(handovers);
+      await handleHumanTakeovers(takeovers);
       await handleMessengerEvents(events);
     });
   }
