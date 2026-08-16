@@ -115,7 +115,15 @@ async function handleHandover(
 }
 
 async function handleOne(event: MessengerTextEvent): Promise<void> {
-  if (markIdSeen(event.mid)) return;
+  if (markIdSeen(event.mid)) {
+    // Bỏ im lặng ở đây thì trùng `mid` trong 10 phút cũng khiến bot câm, biểu
+    // hiện giống hệt mọi nguyên nhân khác khiến bot không trả lời.
+    console.info("messenger -> bỏ qua tin trùng mid", {
+      pageId: event.pageId,
+      mid: event.mid,
+    });
+    return;
+  }
 
   const channel = await prisma.messengerChannel.findUnique({
     where: { pageId: event.pageId },
