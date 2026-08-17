@@ -197,6 +197,14 @@ export const widgetConfigSchema = z.object({
       }
     })
     .pipe(leadFieldsSchema),
+  staffResumeHours: z
+    .string()
+    .trim()
+    .regex(
+      /^([1-9][0-9]?|[1-6][0-9]{2}|7(?:[01][0-9]|20))$/,
+      "Số giờ phải là số nguyên từ 1 đến 720.",
+    )
+    .transform((value) => Number(value)),
 });
 
 export function fieldErrors(error: z.ZodError): Record<string, string> {

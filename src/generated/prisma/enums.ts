@@ -39,3 +39,12 @@ export const WidgetPosition = {
 } as const
 
 export type WidgetPosition = (typeof WidgetPosition)[keyof typeof WidgetPosition]
+
+
+export const WidgetMessageSender = {
+  CUSTOMER: 'CUSTOMER',
+  BOT: 'BOT',
+  STAFF: 'STAFF'
+} as const
+
+export type WidgetMessageSender = (typeof WidgetMessageSender)[keyof typeof WidgetMessageSender]

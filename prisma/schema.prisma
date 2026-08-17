@@ -45,6 +45,7 @@ model Tenant {
   leads        Lead[]
   messengerChannel MessengerChannel?
   zaloChannel      ZaloChannel?
+  widgetConversations WidgetConversation[]
 
   @@map("tenants")
 }
@@ -123,6 +124,7 @@ model WidgetConfig {
   leadFormPhoneLabel String @default("Số điện thoại") @map("lead_form_phone_label")
 
   leadFormFields Json @default("[]") @map("lead_form_fields")
+  staffResumeHours Int @default(24) @map("staff_resume_hours")
 
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
@@ -255,4 +257,44 @@ model ZaloConversation {
   @@unique([channelId, zaloUserId])
   @@index([channelId])
   @@map("zalo_conversations")
+}
+
+enum WidgetMessageSender {
+  CUSTOMER
+  BOT
+  STAFF
+}
+
+model WidgetConversation {
+  id       String @id @default(cuid())
+  tenantId String @map("tenant_id")
+  tenant   Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  sessionId String @map("session_id")
+
+  staffActive      Boolean   @default(false) @map("staff_active")
+  lastStaffReplyAt DateTime? @map("last_staff_reply_at")
+
+  lastMessageAt DateTime @default(now()) @map("last_message_at")
+  createdAt     DateTime @default(now()) @map("created_at")
+
+  messages WidgetMessage[]
+
+  @@unique([tenantId, sessionId])
+  @@index([tenantId, lastMessageAt])
+  @@map("widget_conversations")
+}
+
+model WidgetMessage {
+  id             String             @id @default(cuid())
+  conversationId String             @map("conversation_id")
+  conversation   WidgetConversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+
+  sender WidgetMessageSender
+  text   String
+
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@index([conversationId, createdAt])
+  @@map("widget_messages")
 }

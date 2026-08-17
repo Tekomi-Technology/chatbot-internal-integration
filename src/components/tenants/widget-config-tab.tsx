@@ -35,6 +35,7 @@ export type WidgetConfigValues = {
   leadFormNameLabel: string;
   leadFormPhoneLabel: string;
   leadFormFields: LeadField[];
+  staffResumeHours: number;
 };
 
 export function WidgetConfigTab({
@@ -333,6 +334,25 @@ export function WidgetConfigTab({
                 </>
               )}
             </fieldset>
+
+            <FormField
+              name="staffResumeHours"
+              label="Số giờ bot tự nhận lại sau khi nhân viên nhắn"
+              hint={'Nhân viên nhắn trực tiếp cho khách qua tab "Khách hàng" sẽ tạm tắt bot cho khách đó. Sau đúng số giờ này kể từ tin nhân viên cuối, bot tự trả lời lại — hoặc nhân viên có thể bấm "Trả lại cho AI" để kết thúc sớm.'}
+              error={state.errors?.staffResumeHours}
+            >
+              <Input
+                id="staffResumeHours"
+                name="staffResumeHours"
+                inputMode="numeric"
+                className="w-24"
+                value={draft.staffResumeHours}
+                onChange={(event) =>
+                  set("staffResumeHours", Number(event.target.value) || 0)
+                }
+                required
+              />
+            </FormField>
 
             {state.status !== "idle" && state.message ? (
               <p

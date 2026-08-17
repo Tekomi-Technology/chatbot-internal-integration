@@ -25,8 +25,11 @@ export type RateLimitResult = {
   retryAfterSeconds?: number;
 };
 
-export function checkRateLimit(identifier: string): RateLimitResult {
-  const { limit, windowMs } = env.widgetRateLimit;
+export function checkRateLimit(
+  identifier: string,
+  config: { limit: number; windowMs: number } = env.widgetRateLimit,
+): RateLimitResult {
+  const { limit, windowMs } = config;
   const now = Date.now();
   sweep(now);
 

@@ -17,7 +17,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { decryptSecret, maskSecret } from "@/lib/crypto";
 import { env } from "@/lib/env";
-import { parseLeadFields, readLeadExtra } from "@/lib/lead-fields";
+import { parseLeadFields } from "@/lib/lead-fields";
 import { prisma } from "@/lib/prisma";
 import { buildEmbedSnippet } from "@/server/embed-script";
 import {
@@ -61,6 +61,7 @@ const DEFAULT_WIDGET_CONFIG = {
   leadFormNameLabel: "Họ và tên",
   leadFormPhoneLabel: "Số điện thoại",
   leadFormFields: [],
+  staffResumeHours: 24,
 } as const;
 
 const LEADS_PER_PAGE = 50;
@@ -130,33 +131,40 @@ export default async function TenantDetailPage({ params, searchParams }: PagePro
     (key) => key.type === "PUBLIC" && key.isActive,
   )?.keyValue;
 
-  const leadTotal = await prisma.lead.count({ where: { tenantId: tenant.id } });
-  const leadPageCount = Math.max(1, Math.ceil(leadTotal / LEADS_PER_PAGE));
-  const currentLeadPage = Math.min(
-    Math.max(1, Number.parseInt(leadPage ?? "1", 10) || 1),
-    leadPageCount,
-  );
+  const leadFields = parseLeadFields(widgetConfig.leadFormFields);
 
-  const leads = await prisma.lead.findMany({
+  const conversationTotal = await prisma.widgetConversation.count({
     where: { tenantId: tenant.id },
-    orderBy: { createdAt: "desc" },
-    skip: (currentLeadPage - 1) * LEADS_PER_PAGE,
-    take: LEADS_PER_PAGE,
-    select: {
-      id: true,
-      fullName: true,
-      phone: true,
-      pageUrl: true,
-      createdAt: true,
-      extra: true,
-    },
   });
 
-  const leadFields = parseLeadFields(widgetConfig.leadFormFields);
-  const leadRows = leads.map((lead) => ({
-    ...lead,
-    extra: readLeadExtra(lead.extra),
-  }));
+  const conversations = await prisma.widgetConversation.findMany({
+    where: { tenantId: tenant.id },
+    orderBy: { lastMessageAt: "desc" },
+    take: LEADS_PER_PAGE,
+    select: { id: true, sessionId: true, staffActive: true, lastMessageAt: true },
+  });
+
+  const conversationLeads = await prisma.lead.findMany({
+    where: {
+      tenantId: tenant.id,
+      sessionId: { in: conversations.map((conversation) => conversation.sessionId) },
+    },
+    select: { sessionId: true, fullName: true, phone: true },
+  });
+  const leadBySessionId = new Map(
+    conversationLeads.map((lead) => [lead.sessionId, lead]),
+  );
+
+  const conversationRows = conversations.map((conversation) => {
+    const lead = leadBySessionId.get(conversation.sessionId);
+    return {
+      id: conversation.id,
+      fullName: lead?.fullName ?? null,
+      phone: lead?.phone ?? null,
+      staffActive: conversation.staffActive,
+      lastMessageAt: conversation.lastMessageAt,
+    };
+  });
 
   return (
     <div className="flex flex-col gap-6">
@@ -229,6 +237,7 @@ export default async function TenantDetailPage({ params, searchParams }: PagePro
               leadFormNameLabel: widgetConfig.leadFormNameLabel,
               leadFormPhoneLabel: widgetConfig.leadFormPhoneLabel,
               leadFormFields: leadFields,
+              staffResumeHours: widgetConfig.staffResumeHours,
             }}
             action={updateWidgetConfigAction.bind(null, tenant.id)}
           />
@@ -236,15 +245,8 @@ export default async function TenantDetailPage({ params, searchParams }: PagePro
         leads={
           <LeadsTab
             tenantId={tenant.id}
-            leads={leadRows}
-            total={leadTotal}
-            page={currentLeadPage}
-            pageCount={leadPageCount}
-            leadFormEnabled={widgetConfig.leadFormEnabled}
-            extraColumns={leadFields.map((field) => ({
-              key: field.key,
-              label: field.label,
-            }))}
+            conversations={conversationRows}
+            total={conversationTotal}
           />
         }
         meta={

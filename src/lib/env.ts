@@ -59,4 +59,10 @@ export const env = {
       windowMs: Number(process.env.WIDGET_RATE_LIMIT_WINDOW_MS ?? 60_000),
     };
   },
+  get widgetPollRateLimit() {
+    return {
+      limit: Number(process.env.WIDGET_POLL_RATE_LIMIT ?? 40),
+      windowMs: Number(process.env.WIDGET_POLL_RATE_LIMIT_WINDOW_MS ?? 60_000),
+    };
+  },
 };

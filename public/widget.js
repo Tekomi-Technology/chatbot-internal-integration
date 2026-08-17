@@ -22,7 +22,7 @@
   var STATE_KEY = STORAGE_PREFIX + "state";
 
   /** Tăng số này khi đổi hình dạng dữ liệu lưu — bản cũ sẽ bị bỏ, không cố đọc. */
-  var STATE_VERSION = 1;
+  var STATE_VERSION = 2;
 
   /** Hạn trượt: tính từ lần hoạt động CUỐI, không phải lần đầu. */
   var STATE_TTL_MS = 30 * 24 * 60 * 60 * 1000;
@@ -50,9 +50,10 @@
 
     for (var i = 0; i < list.length; i += 1) {
       var item = list[i];
-      if (!item || (item.r !== "u" && item.r !== "b")) continue;
+      if (!item || (item.r !== "u" && item.r !== "b" && item.r !== "s")) continue;
       if (typeof item.t !== "string" || !item.t) continue;
-      out.push({ r: item.r, t: item.t });
+      if (typeof item.c !== "string" || !item.c) continue;
+      out.push({ r: item.r, t: item.t, c: item.c });
     }
 
     return out.slice(-MAX_STORED_MESSAGES);
@@ -144,9 +145,8 @@
     saveState();
   }
 
-  /** `role` là "u" (khách) hoặc "b" (bot). Bong bóng lỗi KHÔNG đi qua đây. */
-  function recordMessage(role, text) {
-    history.push({ r: role, t: text });
+  function recordMessage(role, text, createdAt) {
+    history.push({ r: role, t: text, c: createdAt || new Date().toISOString() });
     if (history.length > MAX_STORED_MESSAGES) {
       history = history.slice(-MAX_STORED_MESSAGES);
     }
@@ -240,6 +240,8 @@
       ".msg--bot { align-self: flex-start; background: #fff; border: 1px solid #e2e8f0; border-bottom-left-radius: 4px; }",
       ".msg--user { align-self: flex-end; background: var(--primary); color: #fff; border-bottom-right-radius: 4px; }",
       ".msg--error { align-self: flex-start; background: #fef2f2; color: #b91c1c; border: 1px solid #fecaca; }",
+      ".msg--staff { align-self: flex-start; background: #eff6ff; border: 1px solid #bfdbfe; }",
+      ".msg--pending { align-self: flex-start; background: #f8fafc; color: #64748b; border: 1px dashed #cbd5e1; font-style: italic; }",
 
       ".typing { display: flex; gap: 4px; align-items: center; }",
       ".typing i {",
@@ -478,6 +480,7 @@
       header.appendChild(closeBtn);
       closeBtn.addEventListener("click", function () {
         panel.hidden = true;
+        stopPolling();
       });
     }
     panel.appendChild(header);
@@ -521,7 +524,12 @@
       launcher.innerHTML = ICON_CHAT;
       launcher.addEventListener("click", function () {
         panel.hidden = !panel.hidden;
-        if (!panel.hidden) focusFirstField();
+        if (!panel.hidden) {
+          focusFirstField();
+          startPolling();
+        } else {
+          stopPolling();
+        }
       });
       root.appendChild(launcher);
     }
@@ -550,9 +558,15 @@
 
     // Tin chào CHỈ hiện khi chưa có lịch sử. Nếu không, mỗi lần khách tải lại
     // trang là thêm một lời chào nữa chồng lên đoạn chat cũ.
+    function roleToVariant(role) {
+      if (role === "u") return "user";
+      if (role === "s") return "staff";
+      return "bot";
+    }
+
     if (history.length > 0) {
       for (var h = 0; h < history.length; h += 1) {
-        addMessage(history[h].t, history[h].r === "u" ? "user" : "bot");
+        addMessage(history[h].t, roleToVariant(history[h].r));
       }
     } else if (config.welcomeMessage) {
       addMessage(config.welcomeMessage, "bot");
@@ -701,6 +715,55 @@
     }
 
 
+    var POLL_INTERVAL_MS = 4000;
+    var pollTimer = null;
+    var lastSeenAt =
+      history.length > 0 ? history[history.length - 1].c : new Date().toISOString();
+
+    function pollForNewMessages() {
+      fetch(
+        origin +
+          "/api/widget/messages?sessionId=" +
+          encodeURIComponent(sessionId) +
+          "&since=" +
+          encodeURIComponent(lastSeenAt),
+        {
+          method: "GET",
+          credentials: "omit",
+          headers: { "X-Api-Key": apiKey },
+        },
+      )
+        .then(function (response) {
+          if (!response.ok) return null;
+          return response.json();
+        })
+        .then(function (payload) {
+          if (!payload || !Array.isArray(payload.messages)) return;
+          for (var i = 0; i < payload.messages.length; i += 1) {
+            var item = payload.messages[i];
+            if (!item || (item.sender !== "STAFF" && item.sender !== "BOT")) continue;
+            var role = item.sender === "STAFF" ? "s" : "b";
+            addMessage(item.text, role === "s" ? "staff" : "bot");
+            recordMessage(role, item.text, item.createdAt);
+            lastSeenAt = item.createdAt;
+          }
+        })
+        .catch(function () {
+          /* im lặng, thử lại ở lượt sau */
+        });
+    }
+
+    function startPolling() {
+      if (pollTimer) return;
+      pollTimer = setInterval(pollForNewMessages, POLL_INTERVAL_MS);
+    }
+
+    function stopPolling() {
+      if (!pollTimer) return;
+      clearInterval(pollTimer);
+      pollTimer = null;
+    }
+
     var sending = false;
 
     function setSending(value) {
@@ -747,11 +810,15 @@
             );
             return;
           }
+          if (result.payload.status === "pending_staff") {
+            addMessage("Đang chờ nhân viên phản hồi...", "pending");
+            return;
+          }
           rememberConversation(result.payload.conversationId);
           var answer =
             result.payload.answer || "(Trợ lý không trả về nội dung nào.)";
           addMessage(answer, "bot");
-          recordMessage("b", answer);
+          recordMessage("b", answer, result.payload.createdAt);
         })
         .catch(function (error) {
           indicator.remove();
@@ -784,5 +851,7 @@
       input.style.height = "auto";
       input.style.height = Math.min(input.scrollHeight, 96) + "px";
     });
+
+    if (mode === "inline") startPolling();
   }
 })();

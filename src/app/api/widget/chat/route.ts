@@ -8,6 +8,7 @@ import { hostnameFromHeader, isDomainAllowed } from "@/lib/domain";
 import { env } from "@/lib/env";
 import { prisma } from "@/lib/prisma";
 import { checkRateLimit, clientIpFrom } from "@/lib/rate-limit";
+import { isStaffResumeExpired } from "@/lib/widget-chat";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -65,6 +66,7 @@ export async function POST(request: NextRequest) {
           difyApiKeyEncrypted: true,
           difyApiBaseUrl: true,
           domains: { select: { domain: true } },
+          widgetConfig: { select: { staffResumeHours: true } },
         },
       },
     },
@@ -114,6 +116,40 @@ export async function POST(request: NextRequest) {
     );
   }
 
+  void prisma.apiKey
+    .update({ where: { id: apiKey.id }, data: { lastUsedAt: new Date() } })
+    .catch((error) => console.error("widget/chat -> lastUsedAt", error));
+
+  // upsert TRƯỚC khi ghi tin: row có thể chưa tồn tại nếu đây là lượt chat
+  // đầu tiên của khách.
+  const conversation = await prisma.widgetConversation.upsert({
+    where: { tenantId_sessionId: { tenantId: tenant.id, sessionId: parsed.data.sessionId } },
+    create: { tenantId: tenant.id, sessionId: parsed.data.sessionId },
+    update: { lastMessageAt: new Date() },
+    select: { id: true, staffActive: true, lastStaffReplyAt: true },
+  });
+
+  await prisma.widgetMessage.create({
+    data: { conversationId: conversation.id, sender: "CUSTOMER", text: parsed.data.message },
+  });
+
+  if (conversation.staffActive) {
+    const staffResumeHours = tenant.widgetConfig?.staffResumeHours ?? 24;
+    const expired = isStaffResumeExpired(conversation.lastStaffReplyAt, staffResumeHours, new Date());
+
+    if (!expired) {
+      return jsonWithCors(
+        { status: "pending_staff" },
+        { origin, extraHeaders: rateHeaders },
+      );
+    }
+
+    await prisma.widgetConversation.update({
+      where: { id: conversation.id },
+      data: { staffActive: false },
+    });
+  }
+
   const startedAt = Date.now();
   let result;
   try {
@@ -138,10 +174,14 @@ export async function POST(request: NextRequest) {
   }
 
   const latencyMs = Date.now() - startedAt;
+  const botMessage = await prisma.widgetMessage.create({
+    data: { conversationId: conversation.id, sender: "BOT", text: result.answer },
+    select: { createdAt: true },
+  });
 
-  void prisma.apiKey
-    .update({ where: { id: apiKey.id }, data: { lastUsedAt: new Date() } })
-    .catch((error) => console.error("widget/chat -> lastUsedAt", error));
+  void prisma.widgetConversation
+    .update({ where: { id: conversation.id }, data: { lastMessageAt: new Date() } })
+    .catch((error) => console.error("widget/chat -> lastMessageAt", error));
 
   if (env.enableConversationLog) {
     void prisma.conversationLog
@@ -160,9 +200,11 @@ export async function POST(request: NextRequest) {
 
   return jsonWithCors(
     {
+      status: "answered",
       answer: result.answer,
       conversationId: result.conversationId,
       messageId: result.messageId,
+      createdAt: botMessage.createdAt.toISOString(),
     },
     { origin, extraHeaders: rateHeaders },
   );

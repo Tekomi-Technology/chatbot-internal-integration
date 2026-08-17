@@ -72,3 +72,13 @@ export type ZaloChannel = Prisma.ZaloChannelModel
  * 
  */
 export type ZaloConversation = Prisma.ZaloConversationModel
+/**
+ * Model WidgetConversation
+ * 
+ */
+export type WidgetConversation = Prisma.WidgetConversationModel
+/**
+ * Model WidgetMessage
+ * 
+ */
+export type WidgetMessage = Prisma.WidgetMessageModel

@@ -61,7 +61,9 @@ export const ModelName = {
   MessengerChannel: 'MessengerChannel',
   MessengerConversation: 'MessengerConversation',
   ZaloChannel: 'ZaloChannel',
-  ZaloConversation: 'ZaloConversation'
+  ZaloConversation: 'ZaloConversation',
+  WidgetConversation: 'WidgetConversation',
+  WidgetMessage: 'WidgetMessage'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -149,6 +151,7 @@ export const WidgetConfigScalarFieldEnum = {
   leadFormNameLabel: 'leadFormNameLabel',
   leadFormPhoneLabel: 'leadFormPhoneLabel',
   leadFormFields: 'leadFormFields',
+  staffResumeHours: 'staffResumeHours',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
@@ -248,6 +251,30 @@ export const ZaloConversationScalarFieldEnum = {
 } as const
 
 export type ZaloConversationScalarFieldEnum = (typeof ZaloConversationScalarFieldEnum)[keyof typeof ZaloConversationScalarFieldEnum]
+
+
+export const WidgetConversationScalarFieldEnum = {
+  id: 'id',
+  tenantId: 'tenantId',
+  sessionId: 'sessionId',
+  staffActive: 'staffActive',
+  lastStaffReplyAt: 'lastStaffReplyAt',
+  lastMessageAt: 'lastMessageAt',
+  createdAt: 'createdAt'
+} as const
+
+export type WidgetConversationScalarFieldEnum = (typeof WidgetConversationScalarFieldEnum)[keyof typeof WidgetConversationScalarFieldEnum]
+
+
+export const WidgetMessageScalarFieldEnum = {
+  id: 'id',
+  conversationId: 'conversationId',
+  sender: 'sender',
+  text: 'text',
+  createdAt: 'createdAt'
+} as const
+
+export type WidgetMessageScalarFieldEnum = (typeof WidgetMessageScalarFieldEnum)[keyof typeof WidgetMessageScalarFieldEnum]
 
 
 export const SortOrder = {

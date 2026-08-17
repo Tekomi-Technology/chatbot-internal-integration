@@ -27,6 +27,7 @@ const WIDGET_ECHO_FIELDS = [
   "leadFormNameLabel",
   "leadFormPhoneLabel",
   "leadFormFields",
+  "staffResumeHours",
 ] as const;
 
 export async function updateWidgetConfigAction(
@@ -51,6 +52,7 @@ export async function updateWidgetConfigAction(
     leadFormNameLabel: formData.get("leadFormNameLabel"),
     leadFormPhoneLabel: formData.get("leadFormPhoneLabel"),
     leadFormFields: formData.get("leadFormFields") ?? "[]",
+    staffResumeHours: formData.get("staffResumeHours") ?? "24",
   });
 
   if (!parsed.success) {

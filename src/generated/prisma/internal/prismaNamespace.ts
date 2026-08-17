@@ -407,7 +407,9 @@ export const ModelName = {
   MessengerChannel: 'MessengerChannel',
   MessengerConversation: 'MessengerConversation',
   ZaloChannel: 'ZaloChannel',
-  ZaloConversation: 'ZaloConversation'
+  ZaloConversation: 'ZaloConversation',
+  WidgetConversation: 'WidgetConversation',
+  WidgetMessage: 'WidgetMessage'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -423,7 +425,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "admin" | "tenant" | "apiKey" | "domainWhitelist" | "widgetConfig" | "lead" | "conversationLog" | "messengerChannel" | "messengerConversation" | "zaloChannel" | "zaloConversation"
+    modelProps: "admin" | "tenant" | "apiKey" | "domainWhitelist" | "widgetConfig" | "lead" | "conversationLog" | "messengerChannel" | "messengerConversation" | "zaloChannel" | "zaloConversation" | "widgetConversation" | "widgetMessage"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -1241,6 +1243,154 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    WidgetConversation: {
+      payload: Prisma.$WidgetConversationPayload<ExtArgs>
+      fields: Prisma.WidgetConversationFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.WidgetConversationFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$WidgetConversationPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.WidgetConversationFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$WidgetConversationPayload>
+        }
+        findFirst: {
+          args: Prisma.WidgetConversationFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$WidgetConversationPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.WidgetConversationFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$WidgetConversationPayload>
+        }
+        findMany: {
+          args: Prisma.WidgetConversationFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$WidgetConversationPayload>[]
+        }
+        create: {
+          args: Prisma.WidgetConversationCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$WidgetConversationPayload>
+        }
+        createMany: {
+          args: Prisma.WidgetConversationCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.WidgetConversationCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$WidgetConversationPayload>[]
+        }
+        delete: {
+          args: Prisma.WidgetConversationDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$WidgetConversationPayload>
+        }
+        update: {
+          args: Prisma.WidgetConversationUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$WidgetConversationPayload>
+        }
+        deleteMany: {
+          args: Prisma.WidgetConversationDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.WidgetConversationUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.WidgetConversationUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$WidgetConversationPayload>[]
+        }
+        upsert: {
+          args: Prisma.WidgetConversationUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$WidgetConversationPayload>
+        }
+        aggregate: {
+          args: Prisma.WidgetConversationAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateWidgetConversation>
+        }
+        groupBy: {
+          args: Prisma.WidgetConversationGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.WidgetConversationGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.WidgetConversationCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.WidgetConversationCountAggregateOutputType> | number
+        }
+      }
+    }
+    WidgetMessage: {
+      payload: Prisma.$WidgetMessagePayload<ExtArgs>
+      fields: Prisma.WidgetMessageFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.WidgetMessageFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$WidgetMessagePayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.WidgetMessageFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$WidgetMessagePayload>
+        }
+        findFirst: {
+          args: Prisma.WidgetMessageFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$WidgetMessagePayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.WidgetMessageFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$WidgetMessagePayload>
+        }
+        findMany: {
+          args: Prisma.WidgetMessageFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$WidgetMessagePayload>[]
+        }
+        create: {
+          args: Prisma.WidgetMessageCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$WidgetMessagePayload>
+        }
+        createMany: {
+          args: Prisma.WidgetMessageCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.WidgetMessageCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$WidgetMessagePayload>[]
+        }
+        delete: {
+          args: Prisma.WidgetMessageDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$WidgetMessagePayload>
+        }
+        update: {
+          args: Prisma.WidgetMessageUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$WidgetMessagePayload>
+        }
+        deleteMany: {
+          args: Prisma.WidgetMessageDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.WidgetMessageUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.WidgetMessageUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$WidgetMessagePayload>[]
+        }
+        upsert: {
+          args: Prisma.WidgetMessageUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$WidgetMessagePayload>
+        }
+        aggregate: {
+          args: Prisma.WidgetMessageAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateWidgetMessage>
+        }
+        groupBy: {
+          args: Prisma.WidgetMessageGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.WidgetMessageGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.WidgetMessageCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.WidgetMessageCountAggregateOutputType> | number
+        }
+      }
+    }
   }
 } & {
   other: {
@@ -1349,6 +1499,7 @@ export const WidgetConfigScalarFieldEnum = {
   leadFormNameLabel: 'leadFormNameLabel',
   leadFormPhoneLabel: 'leadFormPhoneLabel',
   leadFormFields: 'leadFormFields',
+  staffResumeHours: 'staffResumeHours',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
@@ -1448,6 +1599,30 @@ export const ZaloConversationScalarFieldEnum = {
 } as const
 
 export type ZaloConversationScalarFieldEnum = (typeof ZaloConversationScalarFieldEnum)[keyof typeof ZaloConversationScalarFieldEnum]
+
+
+export const WidgetConversationScalarFieldEnum = {
+  id: 'id',
+  tenantId: 'tenantId',
+  sessionId: 'sessionId',
+  staffActive: 'staffActive',
+  lastStaffReplyAt: 'lastStaffReplyAt',
+  lastMessageAt: 'lastMessageAt',
+  createdAt: 'createdAt'
+} as const
+
+export type WidgetConversationScalarFieldEnum = (typeof WidgetConversationScalarFieldEnum)[keyof typeof WidgetConversationScalarFieldEnum]
+
+
+export const WidgetMessageScalarFieldEnum = {
+  id: 'id',
+  conversationId: 'conversationId',
+  sender: 'sender',
+  text: 'text',
+  createdAt: 'createdAt'
+} as const
+
+export type WidgetMessageScalarFieldEnum = (typeof WidgetMessageScalarFieldEnum)[keyof typeof WidgetMessageScalarFieldEnum]
 
 
 export const SortOrder = {
@@ -1612,6 +1787,20 @@ export type IntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'In
  * Reference to a field of type 'Int[]'
  */
 export type ListIntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Int[]'>
+    
+
+
+/**
+ * Reference to a field of type 'WidgetMessageSender'
+ */
+export type EnumWidgetMessageSenderFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'WidgetMessageSender'>
+    
+
+
+/**
+ * Reference to a field of type 'WidgetMessageSender[]'
+ */
+export type ListEnumWidgetMessageSenderFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'WidgetMessageSender[]'>
     
 
 
@@ -1790,6 +1979,8 @@ export type GlobalOmitConfig = {
   messengerConversation?: Prisma.MessengerConversationOmit
   zaloChannel?: Prisma.ZaloChannelOmit
   zaloConversation?: Prisma.ZaloConversationOmit
+  widgetConversation?: Prisma.WidgetConversationOmit
+  widgetMessage?: Prisma.WidgetMessageOmit
 }
 
 /* Types for Logging */

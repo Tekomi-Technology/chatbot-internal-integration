@@ -20,8 +20,18 @@ export type WidgetConfigModel = runtime.Types.Result.DefaultSelection<Prisma.$Wi
 
 export type AggregateWidgetConfig = {
   _count: WidgetConfigCountAggregateOutputType | null
+  _avg: WidgetConfigAvgAggregateOutputType | null
+  _sum: WidgetConfigSumAggregateOutputType | null
   _min: WidgetConfigMinAggregateOutputType | null
   _max: WidgetConfigMaxAggregateOutputType | null
+}
+
+export type WidgetConfigAvgAggregateOutputType = {
+  staffResumeHours: number | null
+}
+
+export type WidgetConfigSumAggregateOutputType = {
+  staffResumeHours: number | null
 }
 
 export type WidgetConfigMinAggregateOutputType = {
@@ -40,6 +50,7 @@ export type WidgetConfigMinAggregateOutputType = {
   leadFormSubmitLabel: string | null
   leadFormNameLabel: string | null
   leadFormPhoneLabel: string | null
+  staffResumeHours: number | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -60,6 +71,7 @@ export type WidgetConfigMaxAggregateOutputType = {
   leadFormSubmitLabel: string | null
   leadFormNameLabel: string | null
   leadFormPhoneLabel: string | null
+  staffResumeHours: number | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -81,11 +93,20 @@ export type WidgetConfigCountAggregateOutputType = {
   leadFormNameLabel: number
   leadFormPhoneLabel: number
   leadFormFields: number
+  staffResumeHours: number
   createdAt: number
   updatedAt: number
   _all: number
 }
 
+
+export type WidgetConfigAvgAggregateInputType = {
+  staffResumeHours?: true
+}
+
+export type WidgetConfigSumAggregateInputType = {
+  staffResumeHours?: true
+}
 
 export type WidgetConfigMinAggregateInputType = {
   id?: true
@@ -103,6 +124,7 @@ export type WidgetConfigMinAggregateInputType = {
   leadFormSubmitLabel?: true
   leadFormNameLabel?: true
   leadFormPhoneLabel?: true
+  staffResumeHours?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -123,6 +145,7 @@ export type WidgetConfigMaxAggregateInputType = {
   leadFormSubmitLabel?: true
   leadFormNameLabel?: true
   leadFormPhoneLabel?: true
+  staffResumeHours?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -144,6 +167,7 @@ export type WidgetConfigCountAggregateInputType = {
   leadFormNameLabel?: true
   leadFormPhoneLabel?: true
   leadFormFields?: true
+  staffResumeHours?: true
   createdAt?: true
   updatedAt?: true
   _all?: true
@@ -187,6 +211,18 @@ export type WidgetConfigAggregateArgs<ExtArgs extends runtime.Types.Extensions.I
   /**
    * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
    * 
+   * Select which fields to average
+  **/
+  _avg?: WidgetConfigAvgAggregateInputType
+  /**
+   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+   * 
+   * Select which fields to sum
+  **/
+  _sum?: WidgetConfigSumAggregateInputType
+  /**
+   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+   * 
    * Select which fields to find the minimum value
   **/
   _min?: WidgetConfigMinAggregateInputType
@@ -217,6 +253,8 @@ export type WidgetConfigGroupByArgs<ExtArgs extends runtime.Types.Extensions.Int
   take?: number
   skip?: number
   _count?: WidgetConfigCountAggregateInputType | true
+  _avg?: WidgetConfigAvgAggregateInputType
+  _sum?: WidgetConfigSumAggregateInputType
   _min?: WidgetConfigMinAggregateInputType
   _max?: WidgetConfigMaxAggregateInputType
 }
@@ -238,9 +276,12 @@ export type WidgetConfigGroupByOutputType = {
   leadFormNameLabel: string
   leadFormPhoneLabel: string
   leadFormFields: runtime.JsonValue
+  staffResumeHours: number
   createdAt: Date
   updatedAt: Date
   _count: WidgetConfigCountAggregateOutputType | null
+  _avg: WidgetConfigAvgAggregateOutputType | null
+  _sum: WidgetConfigSumAggregateOutputType | null
   _min: WidgetConfigMinAggregateOutputType | null
   _max: WidgetConfigMaxAggregateOutputType | null
 }
@@ -280,6 +321,7 @@ export type WidgetConfigWhereInput = {
   leadFormNameLabel?: Prisma.StringFilter<"WidgetConfig"> | string
   leadFormPhoneLabel?: Prisma.StringFilter<"WidgetConfig"> | string
   leadFormFields?: Prisma.JsonFilter<"WidgetConfig">
+  staffResumeHours?: Prisma.IntFilter<"WidgetConfig"> | number
   createdAt?: Prisma.DateTimeFilter<"WidgetConfig"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"WidgetConfig"> | Date | string
   tenant?: Prisma.XOR<Prisma.TenantScalarRelationFilter, Prisma.TenantWhereInput>
@@ -302,6 +344,7 @@ export type WidgetConfigOrderByWithRelationInput = {
   leadFormNameLabel?: Prisma.SortOrder
   leadFormPhoneLabel?: Prisma.SortOrder
   leadFormFields?: Prisma.SortOrder
+  staffResumeHours?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   tenant?: Prisma.TenantOrderByWithRelationInput
@@ -327,6 +370,7 @@ export type WidgetConfigWhereUniqueInput = Prisma.AtLeast<{
   leadFormNameLabel?: Prisma.StringFilter<"WidgetConfig"> | string
   leadFormPhoneLabel?: Prisma.StringFilter<"WidgetConfig"> | string
   leadFormFields?: Prisma.JsonFilter<"WidgetConfig">
+  staffResumeHours?: Prisma.IntFilter<"WidgetConfig"> | number
   createdAt?: Prisma.DateTimeFilter<"WidgetConfig"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"WidgetConfig"> | Date | string
   tenant?: Prisma.XOR<Prisma.TenantScalarRelationFilter, Prisma.TenantWhereInput>
@@ -349,11 +393,14 @@ export type WidgetConfigOrderByWithAggregationInput = {
   leadFormNameLabel?: Prisma.SortOrder
   leadFormPhoneLabel?: Prisma.SortOrder
   leadFormFields?: Prisma.SortOrder
+  staffResumeHours?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   _count?: Prisma.WidgetConfigCountOrderByAggregateInput
+  _avg?: Prisma.WidgetConfigAvgOrderByAggregateInput
   _max?: Prisma.WidgetConfigMaxOrderByAggregateInput
   _min?: Prisma.WidgetConfigMinOrderByAggregateInput
+  _sum?: Prisma.WidgetConfigSumOrderByAggregateInput
 }
 
 export type WidgetConfigScalarWhereWithAggregatesInput = {
@@ -376,6 +423,7 @@ export type WidgetConfigScalarWhereWithAggregatesInput = {
   leadFormNameLabel?: Prisma.StringWithAggregatesFilter<"WidgetConfig"> | string
   leadFormPhoneLabel?: Prisma.StringWithAggregatesFilter<"WidgetConfig"> | string
   leadFormFields?: Prisma.JsonWithAggregatesFilter<"WidgetConfig">
+  staffResumeHours?: Prisma.IntWithAggregatesFilter<"WidgetConfig"> | number
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"WidgetConfig"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"WidgetConfig"> | Date | string
 }
@@ -396,6 +444,7 @@ export type WidgetConfigCreateInput = {
   leadFormNameLabel?: string
   leadFormPhoneLabel?: string
   leadFormFields?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  staffResumeHours?: number
   createdAt?: Date | string
   updatedAt?: Date | string
   tenant: Prisma.TenantCreateNestedOneWithoutWidgetConfigInput
@@ -418,6 +467,7 @@ export type WidgetConfigUncheckedCreateInput = {
   leadFormNameLabel?: string
   leadFormPhoneLabel?: string
   leadFormFields?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  staffResumeHours?: number
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -438,6 +488,7 @@ export type WidgetConfigUpdateInput = {
   leadFormNameLabel?: Prisma.StringFieldUpdateOperationsInput | string
   leadFormPhoneLabel?: Prisma.StringFieldUpdateOperationsInput | string
   leadFormFields?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  staffResumeHours?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   tenant?: Prisma.TenantUpdateOneRequiredWithoutWidgetConfigNestedInput
@@ -460,6 +511,7 @@ export type WidgetConfigUncheckedUpdateInput = {
   leadFormNameLabel?: Prisma.StringFieldUpdateOperationsInput | string
   leadFormPhoneLabel?: Prisma.StringFieldUpdateOperationsInput | string
   leadFormFields?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  staffResumeHours?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -481,6 +533,7 @@ export type WidgetConfigCreateManyInput = {
   leadFormNameLabel?: string
   leadFormPhoneLabel?: string
   leadFormFields?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  staffResumeHours?: number
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -501,6 +554,7 @@ export type WidgetConfigUpdateManyMutationInput = {
   leadFormNameLabel?: Prisma.StringFieldUpdateOperationsInput | string
   leadFormPhoneLabel?: Prisma.StringFieldUpdateOperationsInput | string
   leadFormFields?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  staffResumeHours?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -522,6 +576,7 @@ export type WidgetConfigUncheckedUpdateManyInput = {
   leadFormNameLabel?: Prisma.StringFieldUpdateOperationsInput | string
   leadFormPhoneLabel?: Prisma.StringFieldUpdateOperationsInput | string
   leadFormFields?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  staffResumeHours?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -548,8 +603,13 @@ export type WidgetConfigCountOrderByAggregateInput = {
   leadFormNameLabel?: Prisma.SortOrder
   leadFormPhoneLabel?: Prisma.SortOrder
   leadFormFields?: Prisma.SortOrder
+  staffResumeHours?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+}
+
+export type WidgetConfigAvgOrderByAggregateInput = {
+  staffResumeHours?: Prisma.SortOrder
 }
 
 export type WidgetConfigMaxOrderByAggregateInput = {
@@ -568,6 +628,7 @@ export type WidgetConfigMaxOrderByAggregateInput = {
   leadFormSubmitLabel?: Prisma.SortOrder
   leadFormNameLabel?: Prisma.SortOrder
   leadFormPhoneLabel?: Prisma.SortOrder
+  staffResumeHours?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -588,8 +649,13 @@ export type WidgetConfigMinOrderByAggregateInput = {
   leadFormSubmitLabel?: Prisma.SortOrder
   leadFormNameLabel?: Prisma.SortOrder
   leadFormPhoneLabel?: Prisma.SortOrder
+  staffResumeHours?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+}
+
+export type WidgetConfigSumOrderByAggregateInput = {
+  staffResumeHours?: Prisma.SortOrder
 }
 
 export type WidgetConfigCreateNestedOneWithoutTenantInput = {
@@ -632,6 +698,14 @@ export type EnumWidgetPositionFieldUpdateOperationsInput = {
   set?: $Enums.WidgetPosition
 }
 
+export type IntFieldUpdateOperationsInput = {
+  set?: number
+  increment?: number
+  decrement?: number
+  multiply?: number
+  divide?: number
+}
+
 export type WidgetConfigCreateWithoutTenantInput = {
   id?: string
   mode?: $Enums.WidgetMode
@@ -648,6 +722,7 @@ export type WidgetConfigCreateWithoutTenantInput = {
   leadFormNameLabel?: string
   leadFormPhoneLabel?: string
   leadFormFields?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  staffResumeHours?: number
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -668,6 +743,7 @@ export type WidgetConfigUncheckedCreateWithoutTenantInput = {
   leadFormNameLabel?: string
   leadFormPhoneLabel?: string
   leadFormFields?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  staffResumeHours?: number
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -704,6 +780,7 @@ export type WidgetConfigUpdateWithoutTenantInput = {
   leadFormNameLabel?: Prisma.StringFieldUpdateOperationsInput | string
   leadFormPhoneLabel?: Prisma.StringFieldUpdateOperationsInput | string
   leadFormFields?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  staffResumeHours?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -724,6 +801,7 @@ export type WidgetConfigUncheckedUpdateWithoutTenantInput = {
   leadFormNameLabel?: Prisma.StringFieldUpdateOperationsInput | string
   leadFormPhoneLabel?: Prisma.StringFieldUpdateOperationsInput | string
   leadFormFields?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  staffResumeHours?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -747,6 +825,7 @@ export type WidgetConfigSelect<ExtArgs extends runtime.Types.Extensions.Internal
   leadFormNameLabel?: boolean
   leadFormPhoneLabel?: boolean
   leadFormFields?: boolean
+  staffResumeHours?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
@@ -769,6 +848,7 @@ export type WidgetConfigSelectCreateManyAndReturn<ExtArgs extends runtime.Types.
   leadFormNameLabel?: boolean
   leadFormPhoneLabel?: boolean
   leadFormFields?: boolean
+  staffResumeHours?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
@@ -791,6 +871,7 @@ export type WidgetConfigSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.
   leadFormNameLabel?: boolean
   leadFormPhoneLabel?: boolean
   leadFormFields?: boolean
+  staffResumeHours?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
@@ -813,11 +894,12 @@ export type WidgetConfigSelectScalar = {
   leadFormNameLabel?: boolean
   leadFormPhoneLabel?: boolean
   leadFormFields?: boolean
+  staffResumeHours?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type WidgetConfigOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "tenantId" | "mode" | "botName" | "logoUrl" | "primaryColor" | "welcomeMessage" | "inputPlaceholder" | "position" | "leadFormEnabled" | "leadFormTitle" | "leadFormDescription" | "leadFormSubmitLabel" | "leadFormNameLabel" | "leadFormPhoneLabel" | "leadFormFields" | "createdAt" | "updatedAt", ExtArgs["result"]["widgetConfig"]>
+export type WidgetConfigOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "tenantId" | "mode" | "botName" | "logoUrl" | "primaryColor" | "welcomeMessage" | "inputPlaceholder" | "position" | "leadFormEnabled" | "leadFormTitle" | "leadFormDescription" | "leadFormSubmitLabel" | "leadFormNameLabel" | "leadFormPhoneLabel" | "leadFormFields" | "staffResumeHours" | "createdAt" | "updatedAt", ExtArgs["result"]["widgetConfig"]>
 export type WidgetConfigInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
 }
@@ -850,6 +932,7 @@ export type $WidgetConfigPayload<ExtArgs extends runtime.Types.Extensions.Intern
     leadFormNameLabel: string
     leadFormPhoneLabel: string
     leadFormFields: runtime.JsonValue
+    staffResumeHours: number
     createdAt: Date
     updatedAt: Date
   }, ExtArgs["result"]["widgetConfig"]>
@@ -1292,6 +1375,7 @@ export interface WidgetConfigFieldRefs {
   readonly leadFormNameLabel: Prisma.FieldRef<"WidgetConfig", 'String'>
   readonly leadFormPhoneLabel: Prisma.FieldRef<"WidgetConfig", 'String'>
   readonly leadFormFields: Prisma.FieldRef<"WidgetConfig", 'Json'>
+  readonly staffResumeHours: Prisma.FieldRef<"WidgetConfig", 'Int'>
   readonly createdAt: Prisma.FieldRef<"WidgetConfig", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"WidgetConfig", 'DateTime'>
 }
