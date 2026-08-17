@@ -28,6 +28,8 @@ export type ZaloTabChannel = {
   refreshTokenUpdatedAtLabel: string;
   accessTokenExpiresAtLabel: string | null;
   lastRefreshError: string | null;
+  nightResumeStartHour: number | null;
+  nightResumeEndHour: number | null;
 };
 
 function StatusBadge({ channel }: { channel: ZaloTabChannel | null }) {
@@ -226,23 +228,41 @@ export function ZaloTab({
               </p>
 
               <div className="flex items-end gap-3">
-                <FormField name="nightResumeStartHour" label="Từ giờ">
+                <FormField
+                  name="nightResumeStartHour"
+                  label="Từ giờ"
+                  error={state.errors?.nightResumeStartHour}
+                >
                   <Input
                     id="nightResumeStartHour"
                     name="nightResumeStartHour"
                     inputMode="numeric"
                     className="w-24"
                     placeholder="1"
+                    defaultValue={
+                      state.values?.nightResumeStartHour ??
+                      channel?.nightResumeStartHour?.toString() ??
+                      ""
+                    }
                   />
                 </FormField>
 
-                <FormField name="nightResumeEndHour" label="Đến giờ">
+                <FormField
+                  name="nightResumeEndHour"
+                  label="Đến giờ"
+                  error={state.errors?.nightResumeEndHour}
+                >
                   <Input
                     id="nightResumeEndHour"
                     name="nightResumeEndHour"
                     inputMode="numeric"
                     className="w-24"
                     placeholder="6"
+                    defaultValue={
+                      state.values?.nightResumeEndHour ??
+                      channel?.nightResumeEndHour?.toString() ??
+                      ""
+                    }
                   />
                 </FormField>
               </div>

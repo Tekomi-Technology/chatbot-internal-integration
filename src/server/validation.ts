@@ -99,13 +99,51 @@ export const messengerChannelSchema = z.object({
   }
 });
 
-export const zaloChannelSchema = z.object({
-  oaId: z.string().trim().min(1, "Bắt buộc nhập OA ID.").max(64),
-  oaName: z.string().trim().max(120).optional().default(""),
-  refreshToken: z.string().trim().max(2000).optional().default(""),
-  oaSecretKey: z.string().trim().max(200).optional().default(""),
-  isActive: z.enum(["ACTIVE", "INACTIVE"]),
-});
+export const zaloChannelSchema = z
+  .object({
+    oaId: z.string().trim().min(1, "Bắt buộc nhập OA ID.").max(64),
+    oaName: z.string().trim().max(120).optional().default(""),
+    refreshToken: z.string().trim().max(2000).optional().default(""),
+    oaSecretKey: z.string().trim().max(200).optional().default(""),
+    isActive: z.enum(["ACTIVE", "INACTIVE"]),
+    nightResumeStartHour: z.string().trim().optional(),
+    nightResumeEndHour: z.string().trim().optional(),
+  })
+  .superRefine((data, ctx) => {
+    const start = data.nightResumeStartHour ?? "";
+    const end = data.nightResumeEndHour ?? "";
+
+    const invalid = (value: string) => !/^([0-9]|1[0-9]|2[0-3])$/.test(value);
+
+    for (const [path, value] of [
+      ["nightResumeStartHour", start],
+      ["nightResumeEndHour", end],
+    ] as const) {
+      if (value !== "" && invalid(value)) {
+        ctx.addIssue({
+          code: "custom",
+          path: [path],
+          message: "Giờ phải là số nguyên từ 0 đến 23.",
+        });
+      }
+    }
+
+    if ((start === "") !== (end === "")) {
+      ctx.addIssue({
+        code: "custom",
+        path: [start === "" ? "nightResumeStartHour" : "nightResumeEndHour"],
+        message: "Điền cả giờ bắt đầu và giờ kết thúc, hoặc để trống cả hai.",
+      });
+    }
+
+    if (start !== "" && start === end) {
+      ctx.addIssue({
+        code: "custom",
+        path: ["nightResumeEndHour"],
+        message: "Giờ kết thúc phải khác giờ bắt đầu.",
+      });
+    }
+  });
 
 const HEX_COLOR = /^#(?:[0-9a-fA-F]{3}|[0-9a-fA-F]{6})$/;
 

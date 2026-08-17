@@ -13,7 +13,18 @@ import {
 } from "@/server/action-state";
 import { fieldErrors, zaloChannelSchema } from "@/server/validation";
 
-const ZALO_ECHO_FIELDS = ["oaId", "oaName", "isActive"] as const;
+const ZALO_ECHO_FIELDS = [
+  "oaId",
+  "oaName",
+  "isActive",
+  "nightResumeStartHour",
+  "nightResumeEndHour",
+] as const;
+
+/** Ô để trống nghĩa là tắt khung giờ. Zod đã chặn mọi giá trị ngoài 0-23. */
+function parseHour(value: string | undefined): number | null {
+  return value ? Number(value) : null;
+}
 
 function isUniqueViolation(error: unknown): boolean {
   return (
@@ -37,6 +48,8 @@ export async function updateZaloChannelAction(
     refreshToken: formData.get("refreshToken") ?? "",
     oaSecretKey: formData.get("oaSecretKey") ?? "",
     isActive: formData.get("isActive"),
+    nightResumeStartHour: formData.get("nightResumeStartHour") ?? "",
+    nightResumeEndHour: formData.get("nightResumeEndHour") ?? "",
   });
 
   if (!parsed.success) {
@@ -48,6 +61,8 @@ export async function updateZaloChannelAction(
   }
 
   const { oaId, oaName, refreshToken, oaSecretKey, isActive } = parsed.data;
+  const nightResumeStartHour = parseHour(parsed.data.nightResumeStartHour);
+  const nightResumeEndHour = parseHour(parsed.data.nightResumeEndHour);
 
   const existing = await prisma.zaloChannel.findUnique({
     where: { tenantId },
@@ -87,6 +102,8 @@ export async function updateZaloChannelAction(
             ? { oaSecretKeyEncrypted: encryptSecret(oaSecretKey) }
             : {}),
           isActive: isActive === "ACTIVE",
+          nightResumeStartHour,
+          nightResumeEndHour,
         },
       });
     } else {
@@ -96,6 +113,8 @@ export async function updateZaloChannelAction(
           oaId,
           oaName,
           isActive: isActive === "ACTIVE",
+          nightResumeStartHour,
+          nightResumeEndHour,
           // Khoá ký webhook độc lập với chuỗi token: để trống thì giữ khoá cũ.
           ...(oaSecretKey
             ? { oaSecretKeyEncrypted: encryptSecret(oaSecretKey) }

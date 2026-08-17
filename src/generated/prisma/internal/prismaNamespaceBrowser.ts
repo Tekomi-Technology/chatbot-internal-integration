@@ -227,6 +227,8 @@ export const ZaloChannelScalarFieldEnum = {
   lastRefreshError: 'lastRefreshError',
   isActive: 'isActive',
   lastEventAt: 'lastEventAt',
+  nightResumeStartHour: 'nightResumeStartHour',
+  nightResumeEndHour: 'nightResumeEndHour',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
@@ -239,6 +241,8 @@ export const ZaloConversationScalarFieldEnum = {
   channelId: 'channelId',
   zaloUserId: 'zaloUserId',
   difyConversationId: 'difyConversationId',
+  humanActive: 'humanActive',
+  handoverAt: 'handoverAt',
   lastMessageAt: 'lastMessageAt',
   createdAt: 'createdAt'
 } as const

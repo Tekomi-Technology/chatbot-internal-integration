@@ -29,6 +29,8 @@ export type ZaloConversationMinAggregateOutputType = {
   channelId: string | null
   zaloUserId: string | null
   difyConversationId: string | null
+  humanActive: boolean | null
+  handoverAt: Date | null
   lastMessageAt: Date | null
   createdAt: Date | null
 }
@@ -38,6 +40,8 @@ export type ZaloConversationMaxAggregateOutputType = {
   channelId: string | null
   zaloUserId: string | null
   difyConversationId: string | null
+  humanActive: boolean | null
+  handoverAt: Date | null
   lastMessageAt: Date | null
   createdAt: Date | null
 }
@@ -47,6 +51,8 @@ export type ZaloConversationCountAggregateOutputType = {
   channelId: number
   zaloUserId: number
   difyConversationId: number
+  humanActive: number
+  handoverAt: number
   lastMessageAt: number
   createdAt: number
   _all: number
@@ -58,6 +64,8 @@ export type ZaloConversationMinAggregateInputType = {
   channelId?: true
   zaloUserId?: true
   difyConversationId?: true
+  humanActive?: true
+  handoverAt?: true
   lastMessageAt?: true
   createdAt?: true
 }
@@ -67,6 +75,8 @@ export type ZaloConversationMaxAggregateInputType = {
   channelId?: true
   zaloUserId?: true
   difyConversationId?: true
+  humanActive?: true
+  handoverAt?: true
   lastMessageAt?: true
   createdAt?: true
 }
@@ -76,6 +86,8 @@ export type ZaloConversationCountAggregateInputType = {
   channelId?: true
   zaloUserId?: true
   difyConversationId?: true
+  humanActive?: true
+  handoverAt?: true
   lastMessageAt?: true
   createdAt?: true
   _all?: true
@@ -158,6 +170,8 @@ export type ZaloConversationGroupByOutputType = {
   channelId: string
   zaloUserId: string
   difyConversationId: string | null
+  humanActive: boolean
+  handoverAt: Date | null
   lastMessageAt: Date
   createdAt: Date
   _count: ZaloConversationCountAggregateOutputType | null
@@ -188,6 +202,8 @@ export type ZaloConversationWhereInput = {
   channelId?: Prisma.StringFilter<"ZaloConversation"> | string
   zaloUserId?: Prisma.StringFilter<"ZaloConversation"> | string
   difyConversationId?: Prisma.StringNullableFilter<"ZaloConversation"> | string | null
+  humanActive?: Prisma.BoolFilter<"ZaloConversation"> | boolean
+  handoverAt?: Prisma.DateTimeNullableFilter<"ZaloConversation"> | Date | string | null
   lastMessageAt?: Prisma.DateTimeFilter<"ZaloConversation"> | Date | string
   createdAt?: Prisma.DateTimeFilter<"ZaloConversation"> | Date | string
   channel?: Prisma.XOR<Prisma.ZaloChannelScalarRelationFilter, Prisma.ZaloChannelWhereInput>
@@ -198,6 +214,8 @@ export type ZaloConversationOrderByWithRelationInput = {
   channelId?: Prisma.SortOrder
   zaloUserId?: Prisma.SortOrder
   difyConversationId?: Prisma.SortOrderInput | Prisma.SortOrder
+  humanActive?: Prisma.SortOrder
+  handoverAt?: Prisma.SortOrderInput | Prisma.SortOrder
   lastMessageAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   channel?: Prisma.ZaloChannelOrderByWithRelationInput
@@ -212,6 +230,8 @@ export type ZaloConversationWhereUniqueInput = Prisma.AtLeast<{
   channelId?: Prisma.StringFilter<"ZaloConversation"> | string
   zaloUserId?: Prisma.StringFilter<"ZaloConversation"> | string
   difyConversationId?: Prisma.StringNullableFilter<"ZaloConversation"> | string | null
+  humanActive?: Prisma.BoolFilter<"ZaloConversation"> | boolean
+  handoverAt?: Prisma.DateTimeNullableFilter<"ZaloConversation"> | Date | string | null
   lastMessageAt?: Prisma.DateTimeFilter<"ZaloConversation"> | Date | string
   createdAt?: Prisma.DateTimeFilter<"ZaloConversation"> | Date | string
   channel?: Prisma.XOR<Prisma.ZaloChannelScalarRelationFilter, Prisma.ZaloChannelWhereInput>
@@ -222,6 +242,8 @@ export type ZaloConversationOrderByWithAggregationInput = {
   channelId?: Prisma.SortOrder
   zaloUserId?: Prisma.SortOrder
   difyConversationId?: Prisma.SortOrderInput | Prisma.SortOrder
+  humanActive?: Prisma.SortOrder
+  handoverAt?: Prisma.SortOrderInput | Prisma.SortOrder
   lastMessageAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   _count?: Prisma.ZaloConversationCountOrderByAggregateInput
@@ -237,6 +259,8 @@ export type ZaloConversationScalarWhereWithAggregatesInput = {
   channelId?: Prisma.StringWithAggregatesFilter<"ZaloConversation"> | string
   zaloUserId?: Prisma.StringWithAggregatesFilter<"ZaloConversation"> | string
   difyConversationId?: Prisma.StringNullableWithAggregatesFilter<"ZaloConversation"> | string | null
+  humanActive?: Prisma.BoolWithAggregatesFilter<"ZaloConversation"> | boolean
+  handoverAt?: Prisma.DateTimeNullableWithAggregatesFilter<"ZaloConversation"> | Date | string | null
   lastMessageAt?: Prisma.DateTimeWithAggregatesFilter<"ZaloConversation"> | Date | string
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"ZaloConversation"> | Date | string
 }
@@ -245,6 +269,8 @@ export type ZaloConversationCreateInput = {
   id?: string
   zaloUserId: string
   difyConversationId?: string | null
+  humanActive?: boolean
+  handoverAt?: Date | string | null
   lastMessageAt?: Date | string
   createdAt?: Date | string
   channel: Prisma.ZaloChannelCreateNestedOneWithoutConversationsInput
@@ -255,6 +281,8 @@ export type ZaloConversationUncheckedCreateInput = {
   channelId: string
   zaloUserId: string
   difyConversationId?: string | null
+  humanActive?: boolean
+  handoverAt?: Date | string | null
   lastMessageAt?: Date | string
   createdAt?: Date | string
 }
@@ -263,6 +291,8 @@ export type ZaloConversationUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   zaloUserId?: Prisma.StringFieldUpdateOperationsInput | string
   difyConversationId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  humanActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  handoverAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   lastMessageAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   channel?: Prisma.ZaloChannelUpdateOneRequiredWithoutConversationsNestedInput
@@ -273,6 +303,8 @@ export type ZaloConversationUncheckedUpdateInput = {
   channelId?: Prisma.StringFieldUpdateOperationsInput | string
   zaloUserId?: Prisma.StringFieldUpdateOperationsInput | string
   difyConversationId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  humanActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  handoverAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   lastMessageAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -282,6 +314,8 @@ export type ZaloConversationCreateManyInput = {
   channelId: string
   zaloUserId: string
   difyConversationId?: string | null
+  humanActive?: boolean
+  handoverAt?: Date | string | null
   lastMessageAt?: Date | string
   createdAt?: Date | string
 }
@@ -290,6 +324,8 @@ export type ZaloConversationUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   zaloUserId?: Prisma.StringFieldUpdateOperationsInput | string
   difyConversationId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  humanActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  handoverAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   lastMessageAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -299,6 +335,8 @@ export type ZaloConversationUncheckedUpdateManyInput = {
   channelId?: Prisma.StringFieldUpdateOperationsInput | string
   zaloUserId?: Prisma.StringFieldUpdateOperationsInput | string
   difyConversationId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  humanActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  handoverAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   lastMessageAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -323,6 +361,8 @@ export type ZaloConversationCountOrderByAggregateInput = {
   channelId?: Prisma.SortOrder
   zaloUserId?: Prisma.SortOrder
   difyConversationId?: Prisma.SortOrder
+  humanActive?: Prisma.SortOrder
+  handoverAt?: Prisma.SortOrder
   lastMessageAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
@@ -332,6 +372,8 @@ export type ZaloConversationMaxOrderByAggregateInput = {
   channelId?: Prisma.SortOrder
   zaloUserId?: Prisma.SortOrder
   difyConversationId?: Prisma.SortOrder
+  humanActive?: Prisma.SortOrder
+  handoverAt?: Prisma.SortOrder
   lastMessageAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
@@ -341,6 +383,8 @@ export type ZaloConversationMinOrderByAggregateInput = {
   channelId?: Prisma.SortOrder
   zaloUserId?: Prisma.SortOrder
   difyConversationId?: Prisma.SortOrder
+  humanActive?: Prisma.SortOrder
+  handoverAt?: Prisma.SortOrder
   lastMessageAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
@@ -391,6 +435,8 @@ export type ZaloConversationCreateWithoutChannelInput = {
   id?: string
   zaloUserId: string
   difyConversationId?: string | null
+  humanActive?: boolean
+  handoverAt?: Date | string | null
   lastMessageAt?: Date | string
   createdAt?: Date | string
 }
@@ -399,6 +445,8 @@ export type ZaloConversationUncheckedCreateWithoutChannelInput = {
   id?: string
   zaloUserId: string
   difyConversationId?: string | null
+  humanActive?: boolean
+  handoverAt?: Date | string | null
   lastMessageAt?: Date | string
   createdAt?: Date | string
 }
@@ -437,6 +485,8 @@ export type ZaloConversationScalarWhereInput = {
   channelId?: Prisma.StringFilter<"ZaloConversation"> | string
   zaloUserId?: Prisma.StringFilter<"ZaloConversation"> | string
   difyConversationId?: Prisma.StringNullableFilter<"ZaloConversation"> | string | null
+  humanActive?: Prisma.BoolFilter<"ZaloConversation"> | boolean
+  handoverAt?: Prisma.DateTimeNullableFilter<"ZaloConversation"> | Date | string | null
   lastMessageAt?: Prisma.DateTimeFilter<"ZaloConversation"> | Date | string
   createdAt?: Prisma.DateTimeFilter<"ZaloConversation"> | Date | string
 }
@@ -445,6 +495,8 @@ export type ZaloConversationCreateManyChannelInput = {
   id?: string
   zaloUserId: string
   difyConversationId?: string | null
+  humanActive?: boolean
+  handoverAt?: Date | string | null
   lastMessageAt?: Date | string
   createdAt?: Date | string
 }
@@ -453,6 +505,8 @@ export type ZaloConversationUpdateWithoutChannelInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   zaloUserId?: Prisma.StringFieldUpdateOperationsInput | string
   difyConversationId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  humanActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  handoverAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   lastMessageAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -461,6 +515,8 @@ export type ZaloConversationUncheckedUpdateWithoutChannelInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   zaloUserId?: Prisma.StringFieldUpdateOperationsInput | string
   difyConversationId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  humanActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  handoverAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   lastMessageAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -469,6 +525,8 @@ export type ZaloConversationUncheckedUpdateManyWithoutChannelInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   zaloUserId?: Prisma.StringFieldUpdateOperationsInput | string
   difyConversationId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  humanActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  handoverAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   lastMessageAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -480,6 +538,8 @@ export type ZaloConversationSelect<ExtArgs extends runtime.Types.Extensions.Inte
   channelId?: boolean
   zaloUserId?: boolean
   difyConversationId?: boolean
+  humanActive?: boolean
+  handoverAt?: boolean
   lastMessageAt?: boolean
   createdAt?: boolean
   channel?: boolean | Prisma.ZaloChannelDefaultArgs<ExtArgs>
@@ -490,6 +550,8 @@ export type ZaloConversationSelectCreateManyAndReturn<ExtArgs extends runtime.Ty
   channelId?: boolean
   zaloUserId?: boolean
   difyConversationId?: boolean
+  humanActive?: boolean
+  handoverAt?: boolean
   lastMessageAt?: boolean
   createdAt?: boolean
   channel?: boolean | Prisma.ZaloChannelDefaultArgs<ExtArgs>
@@ -500,6 +562,8 @@ export type ZaloConversationSelectUpdateManyAndReturn<ExtArgs extends runtime.Ty
   channelId?: boolean
   zaloUserId?: boolean
   difyConversationId?: boolean
+  humanActive?: boolean
+  handoverAt?: boolean
   lastMessageAt?: boolean
   createdAt?: boolean
   channel?: boolean | Prisma.ZaloChannelDefaultArgs<ExtArgs>
@@ -510,11 +574,13 @@ export type ZaloConversationSelectScalar = {
   channelId?: boolean
   zaloUserId?: boolean
   difyConversationId?: boolean
+  humanActive?: boolean
+  handoverAt?: boolean
   lastMessageAt?: boolean
   createdAt?: boolean
 }
 
-export type ZaloConversationOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "channelId" | "zaloUserId" | "difyConversationId" | "lastMessageAt" | "createdAt", ExtArgs["result"]["zaloConversation"]>
+export type ZaloConversationOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "channelId" | "zaloUserId" | "difyConversationId" | "humanActive" | "handoverAt" | "lastMessageAt" | "createdAt", ExtArgs["result"]["zaloConversation"]>
 export type ZaloConversationInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   channel?: boolean | Prisma.ZaloChannelDefaultArgs<ExtArgs>
 }
@@ -535,6 +601,8 @@ export type $ZaloConversationPayload<ExtArgs extends runtime.Types.Extensions.In
     channelId: string
     zaloUserId: string
     difyConversationId: string | null
+    humanActive: boolean
+    handoverAt: Date | null
     lastMessageAt: Date
     createdAt: Date
   }, ExtArgs["result"]["zaloConversation"]>
@@ -965,6 +1033,8 @@ export interface ZaloConversationFieldRefs {
   readonly channelId: Prisma.FieldRef<"ZaloConversation", 'String'>
   readonly zaloUserId: Prisma.FieldRef<"ZaloConversation", 'String'>
   readonly difyConversationId: Prisma.FieldRef<"ZaloConversation", 'String'>
+  readonly humanActive: Prisma.FieldRef<"ZaloConversation", 'Boolean'>
+  readonly handoverAt: Prisma.FieldRef<"ZaloConversation", 'DateTime'>
   readonly lastMessageAt: Prisma.FieldRef<"ZaloConversation", 'DateTime'>
   readonly createdAt: Prisma.FieldRef<"ZaloConversation", 'DateTime'>
 }

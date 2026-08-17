@@ -3,21 +3,16 @@ import { after, type NextRequest } from "next/server";
 import { decryptSecret } from "@/lib/crypto";
 import { env } from "@/lib/env";
 import { prisma } from "@/lib/prisma";
-import { collectZaloTextEvents, verifyZaloSignature } from "@/lib/zalo";
-import { handleZaloEvents } from "@/server/zalo-handler";
+import {
+  collectZaloHumanEchoes,
+  collectZaloTextEvents,
+  readOaId,
+  verifyZaloSignature,
+} from "@/lib/zalo";
+import { handleZaloEvents, handleZaloHumanEchoes } from "@/server/zalo-handler";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
-
-function readOaId(rawBody: string): string | null {
-  try {
-    const parsed = JSON.parse(rawBody) as { recipient?: { id?: unknown } };
-    const oaId = parsed?.recipient?.id;
-    return typeof oaId === "string" && oaId ? oaId : null;
-  } catch {
-    return null;
-  }
-}
 
 export async function POST(request: NextRequest) {
   const { appId } = env.zalo;
@@ -77,6 +72,11 @@ export async function POST(request: NextRequest) {
   const events = collectZaloTextEvents(payload);
   if (events.length > 0) {
     after(() => handleZaloEvents(events));
+  }
+
+  const humanEchoes = collectZaloHumanEchoes(payload);
+  if (humanEchoes.length > 0) {
+    after(() => handleZaloHumanEchoes(humanEchoes));
   }
 
   return new Response("EVENT_RECEIVED", { status: 200 });

@@ -288,6 +288,8 @@ export default async function TenantDetailPage({ params, searchParams }: PagePro
                       zaloChannel.accessTokenExpiresAt,
                     ),
                     lastRefreshError: zaloChannel.lastRefreshError,
+                    nightResumeStartHour: zaloChannel.nightResumeStartHour,
+                    nightResumeEndHour: zaloChannel.nightResumeEndHour,
                   }
                 : null
             }

@@ -2,7 +2,7 @@ import "server-only";
 
 import { createHash, timingSafeEqual } from "node:crypto";
 
-import { chunkMessage } from "@/lib/channel-utils";
+import { chunkMessage, markSelfSent, wasSelfSent } from "@/lib/channel-utils";
 import { env } from "@/lib/env";
 
 export class ZaloError extends Error {
@@ -49,6 +49,31 @@ export function verifyZaloSignature(
   return timingSafeEqual(receivedBuffer, expectedBuffer);
 }
 
+/**
+ * Đọc `oa_id` từ raw body webhook để tra kênh trước khi verify chữ ký.
+ *
+ * Chiều field phụ thuộc `event_name`: sự kiện OA gửi ra (`oa_send_*`, ví dụ
+ * `oa_send_text`) thì OA nằm ở `sender`; các sự kiện khác — khách gửi vào,
+ * ví dụ `user_send_text` — thì OA nằm ở `recipient`. Xem doc comment của
+ * `collectZaloHumanEchoes` bên dưới về chiều field bị đảo ngược này.
+ */
+export function readOaId(rawBody: string): string | null {
+  try {
+    const parsed = JSON.parse(rawBody) as {
+      event_name?: unknown;
+      sender?: { id?: unknown };
+      recipient?: { id?: unknown };
+    };
+    const raw =
+      typeof parsed?.event_name === "string" && parsed.event_name.startsWith("oa_send")
+        ? parsed?.sender?.id
+        : parsed?.recipient?.id;
+    return typeof raw === "string" && raw ? raw : null;
+  } catch {
+    return null;
+  }
+}
+
 export type ZaloTextEvent = {
   oaId: string;
   userId: string;
@@ -74,6 +99,45 @@ export function collectZaloTextEvents(payload: unknown): ZaloTextEvent[] {
   if (!oaId || !userId || !text) return [];
 
   return [{ oaId, userId, text, msgId: body.message?.msg_id ?? null }];
+}
+
+/** Một tin do NHÂN VIÊN gửi tay cho khách qua app Zalo OA — không phải bot. */
+export type ZaloHumanEcho = {
+  oaId: string;
+  userId: string;
+  msgId: string | null;
+};
+
+type ZaloEchoPayload = {
+  event_name?: string;
+  sender?: { id?: string };
+  recipient?: { id?: string };
+  message?: { msg_id?: string };
+};
+
+/**
+ * Rút các tin do NHÂN VIÊN gửi tay cho khách qua app Zalo OA.
+ *
+ * `oa_send_text` bắn cho MỌI tin OA gửi ra khách — cả tin bot tự gửi qua API
+ * lẫn tin nhân viên gõ tay. Zalo không có field kiểu `app_id` như Facebook để
+ * phân biệt, nên so `msg_id` với registry `markSelfSent` ghi lại lúc
+ * `sendZaloText` gửi thành công: khớp thì là bot, không khớp (kể cả thiếu
+ * msg_id) thì là nhân viên.
+ *
+ * Chú ý chiều: `sender` là OA, `recipient` là khách — ngược với `user_send_text`.
+ */
+export function collectZaloHumanEchoes(payload: unknown): ZaloHumanEcho[] {
+  const body = payload as ZaloEchoPayload | null;
+  if (body?.event_name !== "oa_send_text") return [];
+
+  const oaId = body.sender?.id;
+  const userId = body.recipient?.id;
+  if (!oaId || !userId) return [];
+
+  const msgId = body.message?.msg_id ?? null;
+  if (wasSelfSent(msgId)) return [];
+
+  return [{ oaId, userId, msgId }];
 }
 
 const OAUTH_URL = "https://oauth.zaloapp.com/v4/oa/access_token";
@@ -215,7 +279,7 @@ export async function sendZaloText(options: {
   text: string;
 }): Promise<void> {
   for (const chunk of chunkMessage(options.text)) {
-    await callZalo(CS_MESSAGE_URL, {
+    const body = (await callZalo(CS_MESSAGE_URL, {
       method: "POST",
       headers: {
         access_token: options.accessToken,
@@ -225,6 +289,15 @@ export async function sendZaloText(options: {
         recipient: { user_id: options.userId },
         message: { text: chunk },
       }),
-    });
+    })) as { data?: { message_id?: string } };
+
+    const messageId = body?.data?.message_id ?? null;
+    if (!messageId) {
+      console.warn(
+        "zalo -> gửi tin thành công nhưng thiếu message_id, không đăng ký được là tin tự gửi",
+        { userId: options.userId },
+      );
+    }
+    markSelfSent(messageId);
   }
 }

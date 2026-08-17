@@ -4,11 +4,14 @@ import assert from "node:assert/strict";
 import { test } from "node:test";
 
 import {
+  collectZaloHumanEchoes,
   collectZaloTextEvents,
+  readOaId,
   readZaloResult,
   verifyZaloSignature,
   ZaloError,
 } from "@/lib/zalo";
+import { markSelfSent } from "@/lib/channel-utils";
 
 const APP_ID = "1234567890";
 const SECRET = "secret-key-cua-app";
@@ -68,6 +71,55 @@ test("verifyZaloSignature: header rác không làm throw", () => {
 
   assert.equal(verifyZaloSignature(rawBody, "mac=zzz", APP_ID, SECRET), false);
   assert.equal(verifyZaloSignature(rawBody, "", APP_ID, SECRET), false);
+});
+
+// --- readOaId: chọn field theo chiều event_name ------------------------------
+
+test("readOaId: user_send_text thì đọc recipient.id (OA nhận tin từ khách)", () => {
+  assert.equal(readOaId(JSON.stringify(SAMPLE)), "oa-xyz");
+});
+
+test("readOaId: oa_send_text thì đọc sender.id (OA gửi tin ra khách)", () => {
+  assert.equal(
+    readOaId(
+      JSON.stringify({
+        event_name: "oa_send_text",
+        sender: { id: "oa-xyz" },
+        recipient: { id: "user-abc" },
+      }),
+    ),
+    "oa-xyz",
+  );
+});
+
+test("readOaId: event lạ/không rõ thì mặc định đọc recipient.id như cũ", () => {
+  assert.equal(
+    readOaId(
+      JSON.stringify({
+        event_name: "follow",
+        sender: { id: "user-abc" },
+        recipient: { id: "oa-xyz" },
+      }),
+    ),
+    "oa-xyz",
+  );
+});
+
+test("readOaId: JSON hỏng thì trả null, không throw", () => {
+  assert.equal(readOaId("{ khong phai json"), null);
+});
+
+test("readOaId: thiếu field id tương ứng thì trả null", () => {
+  assert.equal(
+    readOaId(JSON.stringify({ event_name: "user_send_text", recipient: {} })),
+    null,
+  );
+  assert.equal(
+    readOaId(
+      JSON.stringify({ event_name: "oa_send_text", sender: {}, recipient: { id: "user-abc" } }),
+    ),
+    null,
+  );
 });
 
 test("collectZaloTextEvents: payload chuẩn ra đúng một sự kiện", () => {
@@ -210,5 +262,68 @@ test("readZaloResult: error không ép được thành số thì ném lỗi thay
   assert.throws(
     () => readZaloResult(200, raw),
     (error: unknown) => error instanceof ZaloError,
+  );
+});
+
+// --- Echo: nhân viên tiếp quản hội thoại -------------------------------------
+
+/** Payload Zalo gửi khi OA gửi tin ra khách — cả bot tự gửi lẫn nhân viên gõ tay. */
+const OA_SEND_PAYLOAD = {
+  event_name: "oa_send_text",
+  sender: { id: "oa-xyz" },
+  recipient: { id: "user-abc" },
+  message: { text: "Chào bạn, mình là Tú bên TKC", msg_id: "msg-nv-1" },
+};
+
+test("collectZaloHumanEchoes: oa_send_text với msg_id lạ là nhân viên gửi tay", () => {
+  assert.deepEqual(collectZaloHumanEchoes(OA_SEND_PAYLOAD), [
+    { oaId: "oa-xyz", userId: "user-abc", msgId: "msg-nv-1" },
+  ]);
+});
+
+test("collectZaloHumanEchoes: msg_id đã đăng ký tự gửi thì bỏ qua", () => {
+  markSelfSent("msg-bot-1");
+
+  assert.deepEqual(
+    collectZaloHumanEchoes({
+      ...OA_SEND_PAYLOAD,
+      message: { text: "Dạ em chào anh/chị", msg_id: "msg-bot-1" },
+    }),
+    [],
+  );
+});
+
+test("collectZaloHumanEchoes: thiếu msg_id vẫn tính là nhân viên gửi tay", () => {
+  assert.deepEqual(
+    collectZaloHumanEchoes({
+      ...OA_SEND_PAYLOAD,
+      message: { text: "gửi không có msg_id" },
+    }),
+    [{ oaId: "oa-xyz", userId: "user-abc", msgId: null }],
+  );
+});
+
+test("collectZaloHumanEchoes: event khác oa_send_text bị bỏ", () => {
+  for (const eventName of ["user_send_text", "follow", "unfollow"]) {
+    assert.deepEqual(
+      collectZaloHumanEchoes({ ...OA_SEND_PAYLOAD, event_name: eventName }),
+      [],
+      `event ${eventName} lẽ ra phải bị bỏ`,
+    );
+  }
+});
+
+test("collectZaloHumanEchoes: thiếu trường thì trả mảng rỗng, không throw", () => {
+  assert.deepEqual(collectZaloHumanEchoes(null), []);
+  assert.deepEqual(collectZaloHumanEchoes({}), []);
+  assert.deepEqual(collectZaloHumanEchoes({ event_name: "oa_send_text" }), []);
+  assert.deepEqual(
+    collectZaloHumanEchoes({
+      event_name: "oa_send_text",
+      sender: {},
+      recipient: { id: "user-abc" },
+    }),
+    [],
+    "thiếu sender.id thì phải bỏ",
   );
 });

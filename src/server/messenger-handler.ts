@@ -1,11 +1,10 @@
 import "server-only";
 
-import { markIdSeen } from "@/lib/channel-utils";
+import { markIdSeen, mayAnswerDespiteHuman } from "@/lib/channel-utils";
 import { decryptSecret } from "@/lib/crypto";
 import { DifyError, sendDifyChatMessage } from "@/lib/dify";
 import { env } from "@/lib/env";
 import {
-  isWithinNightWindow,
   passThreadControl,
   sendMessengerText,
   sendSenderAction,
@@ -182,47 +181,6 @@ async function handleHandover(
     psid: request.psid,
     targetAppId: request.requestedOwnerAppId,
   });
-}
-
-/**
- * Nhân viên vừa nhắn trong bao lâu thì vẫn coi là đang trực.
- *
- * Trong khung giờ đêm, bot chỉ nhận việc khi khoảng này đã trôi qua — để không
- * nhảy vào giữa lúc có người trực khuya đang chat dở với khách.
- */
-const HUMAN_ACTIVE_GRACE_MS = 30 * 60_000;
-
-/**
- * Hội thoại đang do nhân viên giữ, nhưng bot có được phép trả lời lúc này không?
- *
- * Chỉ đúng khi đang trong khung giờ đêm của Page VÀ nhân viên đã im đủ lâu.
- * Không sửa cờ `humanActive` — hết khung giờ là hội thoại tự quay về trạng thái
- * nhân viên giữ, không cần job dọn dẹp nào.
- */
-function mayAnswerDespiteHuman(
-  channel: { nightResumeStartHour: number | null; nightResumeEndHour: number | null },
-  conversation: { handoverAt: Date | null },
-): boolean {
-  const now = new Date();
-
-  if (
-    !isWithinNightWindow(
-      channel.nightResumeStartHour,
-      channel.nightResumeEndHour,
-      now,
-    )
-  ) {
-    return false;
-  }
-
-  if (
-    conversation.handoverAt &&
-    now.getTime() - conversation.handoverAt.getTime() < HUMAN_ACTIVE_GRACE_MS
-  ) {
-    return false;
-  }
-
-  return true;
 }
 
 async function handleOne(event: MessengerTextEvent): Promise<void> {

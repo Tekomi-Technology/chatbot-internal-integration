@@ -20,8 +20,20 @@ export type ZaloChannelModel = runtime.Types.Result.DefaultSelection<Prisma.$Zal
 
 export type AggregateZaloChannel = {
   _count: ZaloChannelCountAggregateOutputType | null
+  _avg: ZaloChannelAvgAggregateOutputType | null
+  _sum: ZaloChannelSumAggregateOutputType | null
   _min: ZaloChannelMinAggregateOutputType | null
   _max: ZaloChannelMaxAggregateOutputType | null
+}
+
+export type ZaloChannelAvgAggregateOutputType = {
+  nightResumeStartHour: number | null
+  nightResumeEndHour: number | null
+}
+
+export type ZaloChannelSumAggregateOutputType = {
+  nightResumeStartHour: number | null
+  nightResumeEndHour: number | null
 }
 
 export type ZaloChannelMinAggregateOutputType = {
@@ -37,6 +49,8 @@ export type ZaloChannelMinAggregateOutputType = {
   lastRefreshError: string | null
   isActive: boolean | null
   lastEventAt: Date | null
+  nightResumeStartHour: number | null
+  nightResumeEndHour: number | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -54,6 +68,8 @@ export type ZaloChannelMaxAggregateOutputType = {
   lastRefreshError: string | null
   isActive: boolean | null
   lastEventAt: Date | null
+  nightResumeStartHour: number | null
+  nightResumeEndHour: number | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -71,11 +87,23 @@ export type ZaloChannelCountAggregateOutputType = {
   lastRefreshError: number
   isActive: number
   lastEventAt: number
+  nightResumeStartHour: number
+  nightResumeEndHour: number
   createdAt: number
   updatedAt: number
   _all: number
 }
 
+
+export type ZaloChannelAvgAggregateInputType = {
+  nightResumeStartHour?: true
+  nightResumeEndHour?: true
+}
+
+export type ZaloChannelSumAggregateInputType = {
+  nightResumeStartHour?: true
+  nightResumeEndHour?: true
+}
 
 export type ZaloChannelMinAggregateInputType = {
   id?: true
@@ -90,6 +118,8 @@ export type ZaloChannelMinAggregateInputType = {
   lastRefreshError?: true
   isActive?: true
   lastEventAt?: true
+  nightResumeStartHour?: true
+  nightResumeEndHour?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -107,6 +137,8 @@ export type ZaloChannelMaxAggregateInputType = {
   lastRefreshError?: true
   isActive?: true
   lastEventAt?: true
+  nightResumeStartHour?: true
+  nightResumeEndHour?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -124,6 +156,8 @@ export type ZaloChannelCountAggregateInputType = {
   lastRefreshError?: true
   isActive?: true
   lastEventAt?: true
+  nightResumeStartHour?: true
+  nightResumeEndHour?: true
   createdAt?: true
   updatedAt?: true
   _all?: true
@@ -167,6 +201,18 @@ export type ZaloChannelAggregateArgs<ExtArgs extends runtime.Types.Extensions.In
   /**
    * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
    * 
+   * Select which fields to average
+  **/
+  _avg?: ZaloChannelAvgAggregateInputType
+  /**
+   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+   * 
+   * Select which fields to sum
+  **/
+  _sum?: ZaloChannelSumAggregateInputType
+  /**
+   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+   * 
    * Select which fields to find the minimum value
   **/
   _min?: ZaloChannelMinAggregateInputType
@@ -197,6 +243,8 @@ export type ZaloChannelGroupByArgs<ExtArgs extends runtime.Types.Extensions.Inte
   take?: number
   skip?: number
   _count?: ZaloChannelCountAggregateInputType | true
+  _avg?: ZaloChannelAvgAggregateInputType
+  _sum?: ZaloChannelSumAggregateInputType
   _min?: ZaloChannelMinAggregateInputType
   _max?: ZaloChannelMaxAggregateInputType
 }
@@ -214,9 +262,13 @@ export type ZaloChannelGroupByOutputType = {
   lastRefreshError: string | null
   isActive: boolean
   lastEventAt: Date | null
+  nightResumeStartHour: number | null
+  nightResumeEndHour: number | null
   createdAt: Date
   updatedAt: Date
   _count: ZaloChannelCountAggregateOutputType | null
+  _avg: ZaloChannelAvgAggregateOutputType | null
+  _sum: ZaloChannelSumAggregateOutputType | null
   _min: ZaloChannelMinAggregateOutputType | null
   _max: ZaloChannelMaxAggregateOutputType | null
 }
@@ -252,6 +304,8 @@ export type ZaloChannelWhereInput = {
   lastRefreshError?: Prisma.StringNullableFilter<"ZaloChannel"> | string | null
   isActive?: Prisma.BoolFilter<"ZaloChannel"> | boolean
   lastEventAt?: Prisma.DateTimeNullableFilter<"ZaloChannel"> | Date | string | null
+  nightResumeStartHour?: Prisma.IntNullableFilter<"ZaloChannel"> | number | null
+  nightResumeEndHour?: Prisma.IntNullableFilter<"ZaloChannel"> | number | null
   createdAt?: Prisma.DateTimeFilter<"ZaloChannel"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"ZaloChannel"> | Date | string
   tenant?: Prisma.XOR<Prisma.TenantScalarRelationFilter, Prisma.TenantWhereInput>
@@ -271,6 +325,8 @@ export type ZaloChannelOrderByWithRelationInput = {
   lastRefreshError?: Prisma.SortOrderInput | Prisma.SortOrder
   isActive?: Prisma.SortOrder
   lastEventAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  nightResumeStartHour?: Prisma.SortOrderInput | Prisma.SortOrder
+  nightResumeEndHour?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   tenant?: Prisma.TenantOrderByWithRelationInput
@@ -293,6 +349,8 @@ export type ZaloChannelWhereUniqueInput = Prisma.AtLeast<{
   lastRefreshError?: Prisma.StringNullableFilter<"ZaloChannel"> | string | null
   isActive?: Prisma.BoolFilter<"ZaloChannel"> | boolean
   lastEventAt?: Prisma.DateTimeNullableFilter<"ZaloChannel"> | Date | string | null
+  nightResumeStartHour?: Prisma.IntNullableFilter<"ZaloChannel"> | number | null
+  nightResumeEndHour?: Prisma.IntNullableFilter<"ZaloChannel"> | number | null
   createdAt?: Prisma.DateTimeFilter<"ZaloChannel"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"ZaloChannel"> | Date | string
   tenant?: Prisma.XOR<Prisma.TenantScalarRelationFilter, Prisma.TenantWhereInput>
@@ -312,11 +370,15 @@ export type ZaloChannelOrderByWithAggregationInput = {
   lastRefreshError?: Prisma.SortOrderInput | Prisma.SortOrder
   isActive?: Prisma.SortOrder
   lastEventAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  nightResumeStartHour?: Prisma.SortOrderInput | Prisma.SortOrder
+  nightResumeEndHour?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   _count?: Prisma.ZaloChannelCountOrderByAggregateInput
+  _avg?: Prisma.ZaloChannelAvgOrderByAggregateInput
   _max?: Prisma.ZaloChannelMaxOrderByAggregateInput
   _min?: Prisma.ZaloChannelMinOrderByAggregateInput
+  _sum?: Prisma.ZaloChannelSumOrderByAggregateInput
 }
 
 export type ZaloChannelScalarWhereWithAggregatesInput = {
@@ -335,6 +397,8 @@ export type ZaloChannelScalarWhereWithAggregatesInput = {
   lastRefreshError?: Prisma.StringNullableWithAggregatesFilter<"ZaloChannel"> | string | null
   isActive?: Prisma.BoolWithAggregatesFilter<"ZaloChannel"> | boolean
   lastEventAt?: Prisma.DateTimeNullableWithAggregatesFilter<"ZaloChannel"> | Date | string | null
+  nightResumeStartHour?: Prisma.IntNullableWithAggregatesFilter<"ZaloChannel"> | number | null
+  nightResumeEndHour?: Prisma.IntNullableWithAggregatesFilter<"ZaloChannel"> | number | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"ZaloChannel"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"ZaloChannel"> | Date | string
 }
@@ -351,6 +415,8 @@ export type ZaloChannelCreateInput = {
   lastRefreshError?: string | null
   isActive?: boolean
   lastEventAt?: Date | string | null
+  nightResumeStartHour?: number | null
+  nightResumeEndHour?: number | null
   createdAt?: Date | string
   updatedAt?: Date | string
   tenant: Prisma.TenantCreateNestedOneWithoutZaloChannelInput
@@ -370,6 +436,8 @@ export type ZaloChannelUncheckedCreateInput = {
   lastRefreshError?: string | null
   isActive?: boolean
   lastEventAt?: Date | string | null
+  nightResumeStartHour?: number | null
+  nightResumeEndHour?: number | null
   createdAt?: Date | string
   updatedAt?: Date | string
   conversations?: Prisma.ZaloConversationUncheckedCreateNestedManyWithoutChannelInput
@@ -387,6 +455,8 @@ export type ZaloChannelUpdateInput = {
   lastRefreshError?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   lastEventAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  nightResumeStartHour?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  nightResumeEndHour?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   tenant?: Prisma.TenantUpdateOneRequiredWithoutZaloChannelNestedInput
@@ -406,6 +476,8 @@ export type ZaloChannelUncheckedUpdateInput = {
   lastRefreshError?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   lastEventAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  nightResumeStartHour?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  nightResumeEndHour?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   conversations?: Prisma.ZaloConversationUncheckedUpdateManyWithoutChannelNestedInput
@@ -424,6 +496,8 @@ export type ZaloChannelCreateManyInput = {
   lastRefreshError?: string | null
   isActive?: boolean
   lastEventAt?: Date | string | null
+  nightResumeStartHour?: number | null
+  nightResumeEndHour?: number | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -440,6 +514,8 @@ export type ZaloChannelUpdateManyMutationInput = {
   lastRefreshError?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   lastEventAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  nightResumeStartHour?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  nightResumeEndHour?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -457,6 +533,8 @@ export type ZaloChannelUncheckedUpdateManyInput = {
   lastRefreshError?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   lastEventAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  nightResumeStartHour?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  nightResumeEndHour?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -479,8 +557,15 @@ export type ZaloChannelCountOrderByAggregateInput = {
   lastRefreshError?: Prisma.SortOrder
   isActive?: Prisma.SortOrder
   lastEventAt?: Prisma.SortOrder
+  nightResumeStartHour?: Prisma.SortOrder
+  nightResumeEndHour?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+}
+
+export type ZaloChannelAvgOrderByAggregateInput = {
+  nightResumeStartHour?: Prisma.SortOrder
+  nightResumeEndHour?: Prisma.SortOrder
 }
 
 export type ZaloChannelMaxOrderByAggregateInput = {
@@ -496,6 +581,8 @@ export type ZaloChannelMaxOrderByAggregateInput = {
   lastRefreshError?: Prisma.SortOrder
   isActive?: Prisma.SortOrder
   lastEventAt?: Prisma.SortOrder
+  nightResumeStartHour?: Prisma.SortOrder
+  nightResumeEndHour?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -513,8 +600,15 @@ export type ZaloChannelMinOrderByAggregateInput = {
   lastRefreshError?: Prisma.SortOrder
   isActive?: Prisma.SortOrder
   lastEventAt?: Prisma.SortOrder
+  nightResumeStartHour?: Prisma.SortOrder
+  nightResumeEndHour?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+}
+
+export type ZaloChannelSumOrderByAggregateInput = {
+  nightResumeStartHour?: Prisma.SortOrder
+  nightResumeEndHour?: Prisma.SortOrder
 }
 
 export type ZaloChannelScalarRelationFilter = {
@@ -580,6 +674,8 @@ export type ZaloChannelCreateWithoutTenantInput = {
   lastRefreshError?: string | null
   isActive?: boolean
   lastEventAt?: Date | string | null
+  nightResumeStartHour?: number | null
+  nightResumeEndHour?: number | null
   createdAt?: Date | string
   updatedAt?: Date | string
   conversations?: Prisma.ZaloConversationCreateNestedManyWithoutChannelInput
@@ -597,6 +693,8 @@ export type ZaloChannelUncheckedCreateWithoutTenantInput = {
   lastRefreshError?: string | null
   isActive?: boolean
   lastEventAt?: Date | string | null
+  nightResumeStartHour?: number | null
+  nightResumeEndHour?: number | null
   createdAt?: Date | string
   updatedAt?: Date | string
   conversations?: Prisma.ZaloConversationUncheckedCreateNestedManyWithoutChannelInput
@@ -630,6 +728,8 @@ export type ZaloChannelUpdateWithoutTenantInput = {
   lastRefreshError?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   lastEventAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  nightResumeStartHour?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  nightResumeEndHour?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   conversations?: Prisma.ZaloConversationUpdateManyWithoutChannelNestedInput
@@ -647,6 +747,8 @@ export type ZaloChannelUncheckedUpdateWithoutTenantInput = {
   lastRefreshError?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   lastEventAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  nightResumeStartHour?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  nightResumeEndHour?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   conversations?: Prisma.ZaloConversationUncheckedUpdateManyWithoutChannelNestedInput
@@ -664,6 +766,8 @@ export type ZaloChannelCreateWithoutConversationsInput = {
   lastRefreshError?: string | null
   isActive?: boolean
   lastEventAt?: Date | string | null
+  nightResumeStartHour?: number | null
+  nightResumeEndHour?: number | null
   createdAt?: Date | string
   updatedAt?: Date | string
   tenant: Prisma.TenantCreateNestedOneWithoutZaloChannelInput
@@ -682,6 +786,8 @@ export type ZaloChannelUncheckedCreateWithoutConversationsInput = {
   lastRefreshError?: string | null
   isActive?: boolean
   lastEventAt?: Date | string | null
+  nightResumeStartHour?: number | null
+  nightResumeEndHour?: number | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -714,6 +820,8 @@ export type ZaloChannelUpdateWithoutConversationsInput = {
   lastRefreshError?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   lastEventAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  nightResumeStartHour?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  nightResumeEndHour?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   tenant?: Prisma.TenantUpdateOneRequiredWithoutZaloChannelNestedInput
@@ -732,6 +840,8 @@ export type ZaloChannelUncheckedUpdateWithoutConversationsInput = {
   lastRefreshError?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   lastEventAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  nightResumeStartHour?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  nightResumeEndHour?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -780,6 +890,8 @@ export type ZaloChannelSelect<ExtArgs extends runtime.Types.Extensions.InternalA
   lastRefreshError?: boolean
   isActive?: boolean
   lastEventAt?: boolean
+  nightResumeStartHour?: boolean
+  nightResumeEndHour?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
@@ -800,6 +912,8 @@ export type ZaloChannelSelectCreateManyAndReturn<ExtArgs extends runtime.Types.E
   lastRefreshError?: boolean
   isActive?: boolean
   lastEventAt?: boolean
+  nightResumeStartHour?: boolean
+  nightResumeEndHour?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
@@ -818,6 +932,8 @@ export type ZaloChannelSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.E
   lastRefreshError?: boolean
   isActive?: boolean
   lastEventAt?: boolean
+  nightResumeStartHour?: boolean
+  nightResumeEndHour?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
@@ -836,11 +952,13 @@ export type ZaloChannelSelectScalar = {
   lastRefreshError?: boolean
   isActive?: boolean
   lastEventAt?: boolean
+  nightResumeStartHour?: boolean
+  nightResumeEndHour?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type ZaloChannelOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "tenantId" | "oaId" | "oaName" | "accessTokenEncrypted" | "accessTokenExpiresAt" | "refreshTokenEncrypted" | "refreshTokenUpdatedAt" | "oaSecretKeyEncrypted" | "lastRefreshError" | "isActive" | "lastEventAt" | "createdAt" | "updatedAt", ExtArgs["result"]["zaloChannel"]>
+export type ZaloChannelOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "tenantId" | "oaId" | "oaName" | "accessTokenEncrypted" | "accessTokenExpiresAt" | "refreshTokenEncrypted" | "refreshTokenUpdatedAt" | "oaSecretKeyEncrypted" | "lastRefreshError" | "isActive" | "lastEventAt" | "nightResumeStartHour" | "nightResumeEndHour" | "createdAt" | "updatedAt", ExtArgs["result"]["zaloChannel"]>
 export type ZaloChannelInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
   conversations?: boolean | Prisma.ZaloChannel$conversationsArgs<ExtArgs>
@@ -872,6 +990,14 @@ export type $ZaloChannelPayload<ExtArgs extends runtime.Types.Extensions.Interna
     lastRefreshError: string | null
     isActive: boolean
     lastEventAt: Date | null
+    /**
+     * Khung giờ bot tự trả lời lại ban đêm, kể cả với hội thoại nhân viên đang
+     * giữ. Giờ theo Asia/Ho_Chi_Minh, 0-23. Khung qua nửa đêm hợp lệ. Cả hai
+     * cùng null = tắt tính năng. Không bao giờ sửa cờ `human_active` — hết
+     * khung giờ là hội thoại tự quay về trạng thái nhân viên giữ.
+     */
+    nightResumeStartHour: number | null
+    nightResumeEndHour: number | null
     createdAt: Date
     updatedAt: Date
   }, ExtArgs["result"]["zaloChannel"]>
@@ -1311,6 +1437,8 @@ export interface ZaloChannelFieldRefs {
   readonly lastRefreshError: Prisma.FieldRef<"ZaloChannel", 'String'>
   readonly isActive: Prisma.FieldRef<"ZaloChannel", 'Boolean'>
   readonly lastEventAt: Prisma.FieldRef<"ZaloChannel", 'DateTime'>
+  readonly nightResumeStartHour: Prisma.FieldRef<"ZaloChannel", 'Int'>
+  readonly nightResumeEndHour: Prisma.FieldRef<"ZaloChannel", 'Int'>
   readonly createdAt: Prisma.FieldRef<"ZaloChannel", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"ZaloChannel", 'DateTime'>
 }

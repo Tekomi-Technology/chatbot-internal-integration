@@ -230,6 +230,13 @@ model ZaloChannel {
   isActive    Boolean   @default(true) @map("is_active")
   lastEventAt DateTime? @map("last_event_at")
 
+  /// Khung giờ bot tự trả lời lại ban đêm, kể cả với hội thoại nhân viên đang
+  /// giữ. Giờ theo Asia/Ho_Chi_Minh, 0-23. Khung qua nửa đêm hợp lệ. Cả hai
+  /// cùng null = tắt tính năng. Không bao giờ sửa cờ `human_active` — hết
+  /// khung giờ là hội thoại tự quay về trạng thái nhân viên giữ.
+  nightResumeStartHour Int? @map("night_resume_start_hour")
+  nightResumeEndHour   Int? @map("night_resume_end_hour")
+
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
@@ -246,6 +253,10 @@ model ZaloConversation {
   zaloUserId String @map("zalo_user_id")
 
   difyConversationId String?  @map("dify_conversation_id")
+
+  humanActive Boolean   @default(false) @map("human_active")
+  handoverAt  DateTime? @map("handover_at")
+
   lastMessageAt      DateTime @default(now()) @map("last_message_at")
   createdAt          DateTime @default(now()) @map("created_at")
 

@@ -1,12 +1,17 @@
 import "server-only";
 
-import { markIdSeen } from "@/lib/channel-utils";
+import { markIdSeen, mayAnswerDespiteHuman } from "@/lib/channel-utils";
 import { decryptSecret } from "@/lib/crypto";
 import { DifyError, sendDifyChatMessage } from "@/lib/dify";
 import { env } from "@/lib/env";
 import { prisma } from "@/lib/prisma";
 import { checkRateLimit } from "@/lib/rate-limit";
-import { sendZaloText, ZaloError, type ZaloTextEvent } from "@/lib/zalo";
+import {
+  sendZaloText,
+  ZaloError,
+  type ZaloHumanEcho,
+  type ZaloTextEvent,
+} from "@/lib/zalo";
 import { getValidAccessToken } from "@/server/zalo-token";
 
 const FALLBACK_MESSAGE =
@@ -22,6 +27,64 @@ export async function handleZaloEvents(events: ZaloTextEvent[]): Promise<void> {
   }
 }
 
+/**
+ * Bật cờ khi phát hiện nhân viên đã nhắn tay cho khách qua app Zalo OA.
+ *
+ * Một chiều: chỉ bật `humanActive`, không bao giờ tắt. Xem spec, mục
+ * "Chính sách trả quyền — một chiều, đúng khuôn Messenger".
+ */
+export async function handleZaloHumanEchoes(echoes: ZaloHumanEcho[]): Promise<void> {
+  for (const echo of echoes) {
+    try {
+      await handleHumanTakeover(echo);
+    } catch (error) {
+      console.error("zalo -> tiếp quản", { oaId: echo.oaId, error });
+    }
+  }
+}
+
+async function handleHumanTakeover(echo: ZaloHumanEcho): Promise<void> {
+  const channel = await prisma.zaloChannel.findUnique({
+    where: { oaId: echo.oaId },
+    select: { id: true },
+  });
+
+  if (!channel) {
+    console.warn("zalo -> tiếp quản cho OA chưa kết nối", {
+      oaId: echo.oaId,
+      userId: echo.userId,
+    });
+    return;
+  }
+
+  // `upsert` vì row chỉ ra đời sau lượt Dify đầu tiên, mà nhân viên hoàn toàn
+  // có thể nhắn trước cho một khách bot chưa từng trả lời.
+  const before = await prisma.zaloConversation.findUnique({
+    where: { channelId_zaloUserId: { channelId: channel.id, zaloUserId: echo.userId } },
+    select: { humanActive: true },
+  });
+
+  await prisma.zaloConversation.upsert({
+    where: { channelId_zaloUserId: { channelId: channel.id, zaloUserId: echo.userId } },
+    create: {
+      channelId: channel.id,
+      zaloUserId: echo.userId,
+      humanActive: true,
+      handoverAt: new Date(),
+    },
+    update: { humanActive: true, handoverAt: new Date() },
+  });
+
+  // Chỉ ghi log ở LẦN ĐẦU. Nhân viên nhắn mười câu thì có mười echo, ghi hết
+  // là rác log mà không thêm thông tin gì.
+  if (!before?.humanActive) {
+    console.info("zalo -> nhân viên đã tiếp quản hội thoại", {
+      oaId: echo.oaId,
+      userId: echo.userId,
+    });
+  }
+}
+
 async function handleOne(event: ZaloTextEvent): Promise<void> {
   if (markIdSeen(event.msgId)) return;
 
@@ -30,6 +93,8 @@ async function handleOne(event: ZaloTextEvent): Promise<void> {
     select: {
       id: true,
       isActive: true,
+      nightResumeStartHour: true,
+      nightResumeEndHour: true,
       tenant: {
         select: {
           id: true,
@@ -56,6 +121,21 @@ async function handleOne(event: ZaloTextEvent): Promise<void> {
     return;
   }
 
+  const conversation = await prisma.zaloConversation.findUnique({
+    where: { channelId_zaloUserId: { channelId: channel.id, zaloUserId: event.userId } },
+    select: { difyConversationId: true, humanActive: true, handoverAt: true },
+  });
+
+  // Đọc hội thoại TRƯỚC khi lấy access token: nhân viên đang giữ hội thoại thì
+  // không cần tốn một lượt gọi refresh token cho việc sẽ im lặng ngay sau đó.
+  if (conversation?.humanActive && !mayAnswerDespiteHuman(channel, conversation)) {
+    console.warn("zalo -> nhân viên đang giữ hội thoại, bot im", {
+      oaId: event.oaId,
+      userId: event.userId,
+    });
+    return;
+  }
+
   // Lấy token TRƯỚC khi gọi Dify: hỏng token thì không tiêu quota Dify vô ích,
   // và cũng không gửi nổi câu xin lỗi.
   let accessToken: string;
@@ -68,11 +148,6 @@ async function handleOne(event: ZaloTextEvent): Promise<void> {
     });
     return;
   }
-
-  const conversation = await prisma.zaloConversation.findUnique({
-    where: { channelId_zaloUserId: { channelId: channel.id, zaloUserId: event.userId } },
-    select: { difyConversationId: true },
-  });
 
   const startedAt = Date.now();
   let result;
