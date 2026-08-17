@@ -7,6 +7,7 @@ import { ConfirmActionButton } from "@/components/confirm-action-button";
 import { ApiKeysTab } from "@/components/tenants/api-keys-tab";
 import { EmbedTab } from "@/components/tenants/embed-tab";
 import { GeneralTab } from "@/components/tenants/general-tab";
+import { LeadsTab } from "@/components/tenants/leads-tab";
 import { MetaTab } from "@/components/tenants/meta-tab";
 import { PluginTab } from "@/components/tenants/plugin-tab";
 import { TenantDetailTabs } from "@/components/tenants/tenant-detail-tabs";
@@ -16,6 +17,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { decryptSecret, maskSecret } from "@/lib/crypto";
 import { env } from "@/lib/env";
+import { parseLeadFields, readLeadExtra } from "@/lib/lead-fields";
 import { prisma } from "@/lib/prisma";
 import { buildEmbedSnippet } from "@/server/embed-script";
 import {
@@ -31,7 +33,7 @@ import {
 
 type PageProps = {
   params: Promise<{ id: string }>;
-  searchParams: Promise<{ tab?: string }>;
+  searchParams: Promise<{ tab?: string; leadPage?: string }>;
 };
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
@@ -51,11 +53,21 @@ const DEFAULT_WIDGET_CONFIG = {
   primaryColor: "#4F46E5",
   welcomeMessage: "Xin chào! Tôi có thể giúp gì cho bạn?",
   inputPlaceholder: "Nhập câu hỏi của bạn...",
+  leadFormEnabled: false,
+  leadFormTitle: "Trước khi bắt đầu",
+  leadFormDescription:
+    "Vui lòng để lại thông tin để chúng tôi tư vấn chính xác hơn.",
+  leadFormSubmitLabel: "Bắt đầu chat",
+  leadFormNameLabel: "Họ và tên",
+  leadFormPhoneLabel: "Số điện thoại",
+  leadFormFields: [],
 } as const;
+
+const LEADS_PER_PAGE = 50;
 
 export default async function TenantDetailPage({ params, searchParams }: PageProps) {
   const { id } = await params;
-  const { tab } = await searchParams;
+  const { tab, leadPage } = await searchParams;
 
   const tenant = await prisma.tenant.findUnique({
     where: { id },
@@ -117,6 +129,36 @@ export default async function TenantDetailPage({ params, searchParams }: PagePro
   const embedKey = tenant.apiKeys.find(
     (key) => key.type === "PUBLIC" && key.isActive,
   )?.keyValue;
+
+  // Lead có thể lên tới hàng nghìn dòng nên phải phân trang; đếm trước để biết
+  // số trang, rồi kẹp trang yêu cầu vào khoảng hợp lệ trước khi truy vấn.
+  const leadTotal = await prisma.lead.count({ where: { tenantId: tenant.id } });
+  const leadPageCount = Math.max(1, Math.ceil(leadTotal / LEADS_PER_PAGE));
+  const currentLeadPage = Math.min(
+    Math.max(1, Number.parseInt(leadPage ?? "1", 10) || 1),
+    leadPageCount,
+  );
+
+  const leads = await prisma.lead.findMany({
+    where: { tenantId: tenant.id },
+    orderBy: { createdAt: "desc" },
+    skip: (currentLeadPage - 1) * LEADS_PER_PAGE,
+    take: LEADS_PER_PAGE,
+    select: {
+      id: true,
+      fullName: true,
+      phone: true,
+      pageUrl: true,
+      createdAt: true,
+      extra: true,
+    },
+  });
+
+  const leadFields = parseLeadFields(widgetConfig.leadFormFields);
+  const leadRows = leads.map((lead) => ({
+    ...lead,
+    extra: readLeadExtra(lead.extra),
+  }));
 
   return (
     <div className="flex flex-col gap-6">
@@ -182,8 +224,29 @@ export default async function TenantDetailPage({ params, searchParams }: PagePro
               primaryColor: widgetConfig.primaryColor,
               welcomeMessage: widgetConfig.welcomeMessage,
               inputPlaceholder: widgetConfig.inputPlaceholder,
+              leadFormEnabled: widgetConfig.leadFormEnabled,
+              leadFormTitle: widgetConfig.leadFormTitle,
+              leadFormDescription: widgetConfig.leadFormDescription,
+              leadFormSubmitLabel: widgetConfig.leadFormSubmitLabel,
+              leadFormNameLabel: widgetConfig.leadFormNameLabel,
+              leadFormPhoneLabel: widgetConfig.leadFormPhoneLabel,
+              leadFormFields: leadFields,
             }}
             action={updateWidgetConfigAction.bind(null, tenant.id)}
+          />
+        }
+        leads={
+          <LeadsTab
+            tenantId={tenant.id}
+            leads={leadRows}
+            total={leadTotal}
+            page={currentLeadPage}
+            pageCount={leadPageCount}
+            leadFormEnabled={widgetConfig.leadFormEnabled}
+            extraColumns={leadFields.map((field) => ({
+              key: field.key,
+              label: field.label,
+            }))}
           />
         }
         meta={

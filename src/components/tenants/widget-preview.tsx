@@ -5,14 +5,6 @@ import { useState } from "react";
 
 import type { WidgetConfigValues } from "@/components/tenants/widget-config-tab";
 
-/**
- * Bản mô phỏng giao diện widget để admin xem trước khi lưu.
- *
- * Đây là bản dựng lại bằng Tailwind, KHÔNG phải widget thật — widget thật là
- * vanilla JS trong public/widget.js. Khi sửa CSS ở đó, sửa cả file này cho khớp:
- * header nền màu chủ đạo chữ trắng, vùng tin nhắn nền #f8fafc, bubble bot trắng
- * viền #e2e8f0, bubble user nền màu chủ đạo chữ trắng.
- */
 export function WidgetPreview({ config }: { config: WidgetConfigValues }) {
   const isInline = config.mode === "INLINE";
   const isLeft = config.position === "BOTTOM_LEFT";
@@ -20,7 +12,6 @@ export function WidgetPreview({ config }: { config: WidgetConfigValues }) {
   return (
     <div className="flex flex-col gap-2">
       <div className="rounded-xl border border-border bg-secondary p-4">
-        {/* Khung giả lập website của tenant. */}
         <div
           aria-hidden
           className="relative mx-auto h-[520px] w-full max-w-[360px] select-none overflow-hidden rounded-lg border border-border bg-white"
@@ -89,39 +80,86 @@ function ChatPanel({
           </p>
         ) : null}
 
-        <p
-          className="max-w-[82%] self-end rounded-xl rounded-br-sm px-3 py-2 text-[13px] leading-snug text-white"
-          style={{ backgroundColor: config.primaryColor }}
-        >
-          Cho tôi xem bảng giá với.
-        </p>
+        {config.leadFormEnabled ? null : (
+          <>
+            <p
+              className="max-w-[82%] self-end rounded-xl rounded-br-sm px-3 py-2 text-[13px] leading-snug text-white"
+              style={{ backgroundColor: config.primaryColor }}
+            >
+              Cho tôi xem bảng giá với.
+            </p>
 
-        <div className="flex items-center gap-1 self-start rounded-xl rounded-bl-sm border border-slate-200 bg-white px-3 py-3">
-          <span className="size-1.5 rounded-full bg-slate-400" />
-          <span className="size-1.5 rounded-full bg-slate-300" />
-          <span className="size-1.5 rounded-full bg-slate-200" />
-        </div>
+            <div className="flex items-center gap-1 self-start rounded-xl rounded-bl-sm border border-slate-200 bg-white px-3 py-3">
+              <span className="size-1.5 rounded-full bg-slate-400" />
+              <span className="size-1.5 rounded-full bg-slate-300" />
+              <span className="size-1.5 rounded-full bg-slate-200" />
+            </div>
+          </>
+        )}
       </div>
 
-      <div className="flex shrink-0 gap-2 border-t border-slate-200 bg-white p-3">
-        <div className="flex-1 truncate rounded-[10px] border border-slate-300 px-2.5 py-2 text-[13px] text-slate-400">
-          {config.inputPlaceholder.trim() || "Nhập câu hỏi của bạn..."}
+      {config.leadFormEnabled ? (
+        <LeadFormPreview config={config} />
+      ) : (
+        <div className="flex shrink-0 gap-2 border-t border-slate-200 bg-white p-3">
+          <div className="flex-1 truncate rounded-[10px] border border-slate-300 px-2.5 py-2 text-[13px] text-slate-400">
+            {config.inputPlaceholder.trim() || "Nhập câu hỏi của bạn..."}
+          </div>
+          <div
+            className="flex w-10 shrink-0 items-center justify-center rounded-[10px] text-white"
+            style={{ backgroundColor: config.primaryColor }}
+          >
+            <Send className="size-4" />
+          </div>
         </div>
-        <div
-          className="flex w-10 shrink-0 items-center justify-center rounded-[10px] text-white"
-          style={{ backgroundColor: config.primaryColor }}
-        >
-          <Send className="size-4" />
+      )}
+    </div>
+  );
+}
+
+function LeadFormPreview({ config }: { config: WidgetConfigValues }) {
+  return (
+    <div className="flex flex-col gap-2 overflow-y-auto border-t border-slate-200 bg-white p-3.5">
+      <p className="text-[13px] font-semibold text-slate-900">
+        {config.leadFormTitle.trim() || "Trước khi bắt đầu"}
+      </p>
+      <p className="text-xs text-slate-500">
+        {config.leadFormDescription.trim() ||
+          "Vui lòng để lại thông tin để chúng tôi tư vấn chính xác hơn."}
+      </p>
+
+      {[
+        { key: "__name", label: config.leadFormNameLabel.trim() || "Họ và tên", required: true },
+        {
+          key: "__phone",
+          label: config.leadFormPhoneLabel.trim() || "Số điện thoại",
+          required: true,
+        },
+        ...config.leadFormFields.map((field) => ({
+          key: field.key,
+          label: field.label.trim() || "(chưa đặt nhãn)",
+          required: field.required,
+        })),
+      ].map((field) => (
+        <div key={field.key} className="flex flex-col gap-1">
+          <span className="text-xs font-medium text-slate-900">
+            {field.label}
+            {field.required ? <span className="text-red-600"> *</span> : null}
+          </span>
+          <div className="h-8 rounded-[10px] border border-slate-300" />
         </div>
+      ))}
+
+      <div
+        className="mt-0.5 rounded-[10px] px-3 py-2 text-center text-[13px] font-semibold text-white"
+        style={{ backgroundColor: config.primaryColor }}
+      >
+        {config.leadFormSubmitLabel.trim() || "Bắt đầu chat"}
       </div>
     </div>
   );
 }
 
-/**
- * Logo tenant là URL tuỳ ý nên có thể hỏng hoặc chưa gõ xong — rơi về chữ cái
- * đầu của tên bot đúng như widget thật làm khi không có logoUrl.
- */
 function Avatar({
   logoUrl,
   botName,
@@ -136,7 +174,6 @@ function Avatar({
   return (
     <span className="flex size-8 shrink-0 items-center justify-center overflow-hidden rounded-full bg-white/20 text-[13px] font-semibold">
       {showImage ? (
-        // eslint-disable-next-line @next/next/no-img-element -- URL logo do tenant nhập, không nằm trong remotePatterns của next/image.
         <img
           src={url}
           alt=""

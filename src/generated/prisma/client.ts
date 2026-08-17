@@ -67,6 +67,11 @@ export type DomainWhitelist = Prisma.DomainWhitelistModel
  */
 export type WidgetConfig = Prisma.WidgetConfigModel
 /**
+ * Model Lead
+ * 
+ */
+export type Lead = Prisma.LeadModel
+/**
  * Model ConversationLog
  * 
  */

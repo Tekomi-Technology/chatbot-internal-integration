@@ -97,19 +97,7 @@ export function MetaTab({
               Chưa đặt MESSENGER_VERIFY_TOKEN và MESSENGER_APP_SECRET trong biến
               môi trường — webhook sẽ không hoạt động.
             </p>
-          )}
-
-          <p className="text-xs text-muted-foreground">
-            Sau khi xác minh, nhớ đăng ký (subscribe) các trường{" "}
-            <code className="font-mono">messages</code>,{" "}
-            <code className="font-mono">messaging_postbacks</code> và{" "}
-            <code className="font-mono">messaging_handovers</code> cho Page.
-          </p>
-          <p className="text-xs text-muted-foreground">
-            Muốn nhân viên tiếp quản được hội thoại thì phải bật “Kiểm soát cuộc
-            trò chuyện” trong Nhắn tin nâng cao của Page. Khi nhân viên kéo hội
-            thoại sang “Inbox”, bot sẽ ngừng trả lời khách đó vĩnh viễn.
-          </p>
+          )}      
         </CardContent>
       </Card>
 
@@ -225,12 +213,6 @@ export function MetaTab({
 
             <div className="flex flex-col gap-2 rounded-md border p-4">
               <p className="text-sm font-medium">Bot trả lời lại ban đêm</p>
-              <p className="text-xs text-muted-foreground">
-                Khi nhân viên đã tiếp quản một hội thoại, bot ngừng trả lời khách
-                đó. Trong khung giờ dưới đây, bot sẽ nhận lại việc — dùng cho lúc
-                nhân viên đã nghỉ. Giờ theo múi giờ Việt Nam, để trống cả hai ô
-                để tắt.
-              </p>
 
               <div className="flex items-end gap-3">
                 <FormField
@@ -271,13 +253,6 @@ export function MetaTab({
                   />
                 </FormField>
               </div>
-
-              <p className="text-xs text-muted-foreground">
-                Giờ bắt đầu tính vào khung, giờ kết thúc thì không: 1 đến 6 nghĩa
-                là 01:00–05:59. Khung qua nửa đêm (22 đến 6) cũng hợp lệ. Nếu nhân
-                viên vừa nhắn trong vòng 30 phút thì bot vẫn im, kể cả trong khung
-                giờ này.
-              </p>
             </div>
 
             {state.status !== "idle" && state.message ? (

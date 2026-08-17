@@ -104,6 +104,16 @@
   var history = stored ? sanitizeMessages(stored.messages) : [];
 
   /**
+   * Đã điền form thu thập thông tin chưa.
+   *
+   * Sống chung chỗ với `sessionId` là CỐ Ý. Lead ghi vào DB theo khoá
+   * `(tenantId, sessionId)`, nên cờ này phải có đúng tuổi thọ của `sessionId` —
+   * để ở `sessionStorage` thì tab mới sẽ hỏi lại người đã điền rồi, rồi ghi đè
+   * lên chính dòng lead cũ của họ.
+   */
+  var leadDone = Boolean(stored && stored.leadDone);
+
+  /**
    * Chỉ ghi khi thật sự có gì để nhớ.
    *
    * Cố ý KHÔNG ghi lúc khởi tạo: khách chỉ lướt qua trang mà không mở chat thì
@@ -119,6 +129,7 @@
           savedAt: Date.now(),
           sessionId: sessionId,
           conversationId: conversationId,
+          leadDone: leadDone,
           messages: history,
         }),
       );
@@ -141,6 +152,23 @@
     }
     saveState();
   }
+
+  function hasSubmittedLead() {
+    return leadDone;
+  }
+
+  function rememberLead() {
+    leadDone = true;
+    saveState();
+  }
+
+  var VN_MOBILE = /^(?:0|\+84)(?:3|5|7|8|9)\d{8}$/;
+
+  function isValidPhone(value) {
+    return VN_MOBILE.test(value.replace(/[\s.\-()]/g, ""));
+  }
+
+  var EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 
   function buildStyles(config) {
     return [
@@ -239,6 +267,30 @@
       "}",
       ".send:disabled { opacity: .5; cursor: not-allowed; }",
       ".send svg { width: 18px; height: 18px; }",
+
+      ".leadform {",
+      "  display: flex; flex-direction: column; gap: 8px; padding: 14px;",
+      "  border-top: 1px solid #e2e8f0; background: #fff;",
+      "  overflow-y: auto;",
+      "}",
+      ".leadform__title { font-weight: 600; }",
+      ".leadform__desc { margin: 0; font-size: 13px; color: #64748b; }",
+      ".leadform label { font-size: 13px; font-weight: 500; }",
+      ".leadform__req { color: #dc2626; }",
+      ".leadform input {",
+      "  border: 1px solid #cbd5e1; border-radius: 10px; padding: 9px 11px;",
+      "  font: inherit; color: inherit; outline: none; width: 100%;",
+      "}",
+      ".leadform input:focus { border-color: var(--primary); }",
+      ".leadform input[aria-invalid='true'] { border-color: #dc2626; }",
+      ".leadform__error { margin: 0; font-size: 13px; color: #b91c1c; }",
+      ".leadform__error[hidden] { display: none; }",
+      ".leadform__submit {",
+      "  margin-top: 2px; border: 0; border-radius: 10px; padding: 10px 12px;",
+      "  background: var(--primary); color: #fff; font: inherit; font-weight: 600;",
+      "  cursor: pointer;",
+      "}",
+      ".leadform__submit:disabled { opacity: .6; cursor: not-allowed; }",
     ].join("\n");
   }
 
@@ -260,6 +312,95 @@
     }
     return node;
   }
+
+  function buildLeadForm(leadForm) {
+    var form = el("form", "leadform", { novalidate: "novalidate" });
+
+    var title = el("div", "leadform__title");
+    title.textContent = leadForm.title || "Trước khi bắt đầu";
+    form.appendChild(title);
+
+    var desc = el("p", "leadform__desc");
+    desc.textContent =
+      leadForm.description ||
+      "Vui lòng để lại thông tin để chúng tôi tư vấn chính xác hơn.";
+    form.appendChild(desc);
+
+    var fields = {};
+
+    function addInput(spec) {
+      var id = "leadform-" + spec.name;
+      var label = el("label", null, { for: id });
+      label.textContent = spec.label;
+      if (spec.required) {
+        var mark = el("span", "leadform__req");
+        mark.textContent = " *";
+        label.appendChild(mark);
+      }
+
+      var attrs = { id: id, name: spec.name, type: spec.type };
+      if (spec.autocomplete) attrs.autocomplete = spec.autocomplete;
+      var field = el("input", null, attrs);
+      if (spec.required) field.setAttribute("aria-required", "true");
+      if (spec.type === "tel") field.setAttribute("inputmode", "tel");
+
+      form.appendChild(label);
+      form.appendChild(field);
+      return field;
+    }
+
+    fields.fullName = addInput({
+      name: "fullName",
+      label: leadForm.nameLabel || "Họ và tên",
+      type: "text",
+      autocomplete: "name",
+      required: true,
+    });
+
+    fields.phone = addInput({
+      name: "phone",
+      label: leadForm.phoneLabel || "Số điện thoại",
+      type: "tel",
+      autocomplete: "tel",
+      required: true,
+    });
+
+    var extra = [];
+    var extraSpecs = Array.isArray(leadForm.fields) ? leadForm.fields : [];
+
+    extraSpecs.forEach(function (spec, index) {
+      if (!spec || !spec.key || !spec.label) return;
+      var type = spec.type === "email" ? "email" : "text";
+      extra.push({
+        key: spec.key,
+        label: spec.label,
+        type: type,
+        required: Boolean(spec.required),
+        input: addInput({
+          name: "extra" + index,
+          label: spec.label,
+          type: type,
+          autocomplete: type === "email" ? "email" : null,
+          required: Boolean(spec.required),
+        }),
+      });
+    });
+
+    var errorEl = el("p", "leadform__error", { role: "alert" });
+    errorEl.hidden = true;
+    form.appendChild(errorEl);
+
+    var submitBtn = el("button", "leadform__submit", { type: "submit" });
+    submitBtn.textContent = leadForm.submitLabel || "Bắt đầu chat";
+    form.appendChild(submitBtn);
+
+    form.fields = fields;
+    form.extra = extra;
+    form.errorEl = errorEl;
+    form.submitBtn = submitBtn;
+    return form;
+  }
+
 
   fetch(origin + "/api/widget/config?key=" + encodeURIComponent(apiKey), {
     method: "GET",
@@ -358,9 +499,18 @@
     composer.appendChild(input);
     composer.appendChild(sendBtn);
 
-    panel.appendChild(composer);
+    var leadForm = config.leadForm || {};
+    var leadGateOn = Boolean(leadForm.enabled) && !hasSubmittedLead();
+    var leadEl = leadGateOn ? buildLeadForm(leadForm) : null;
+
+    panel.appendChild(leadEl || composer);
 
     root.appendChild(panel);
+
+    function focusFirstField() {
+      if (leadEl) leadEl.fields.fullName.focus();
+      else input.focus();
+    }
 
     if (mode === "bubble") {
       var launcher = el("button", "launcher", {
@@ -371,7 +521,7 @@
       launcher.innerHTML = ICON_CHAT;
       launcher.addEventListener("click", function () {
         panel.hidden = !panel.hidden;
-        if (!panel.hidden) input.focus();
+        if (!panel.hidden) focusFirstField();
       });
       root.appendChild(launcher);
     }
@@ -407,6 +557,149 @@
     } else if (config.welcomeMessage) {
       addMessage(config.welcomeMessage, "bot");
     }
+
+    var sendingLead = false;
+
+    function showLeadError(message, invalidField) {
+      leadEl.errorEl.textContent = message;
+      leadEl.errorEl.hidden = false;
+      if (invalidField) {
+        invalidField.setAttribute("aria-invalid", "true");
+        invalidField.focus();
+      }
+    }
+
+    function clearLeadError() {
+      leadEl.errorEl.hidden = true;
+      leadEl.fields.fullName.removeAttribute("aria-invalid");
+      leadEl.fields.phone.removeAttribute("aria-invalid");
+      leadEl.extra.forEach(function (entry) {
+        entry.input.removeAttribute("aria-invalid");
+      });
+    }
+
+    function collectExtra() {
+      var values = {};
+
+      for (var i = 0; i < leadEl.extra.length; i += 1) {
+        var entry = leadEl.extra[i];
+        var text = entry.input.value.trim();
+
+        if (!text) {
+          if (entry.required) {
+            showLeadError(
+              "Vui lòng nhập " + entry.label.toLowerCase() + ".",
+              entry.input,
+            );
+            return null;
+          }
+          continue;
+        }
+
+        if (entry.type === "email" && !EMAIL.test(text)) {
+          showLeadError(
+            entry.label + " chưa đúng định dạng. Ví dụ: ten@congty.com.",
+            entry.input,
+          );
+          return null;
+        }
+
+        values[entry.key] = text;
+      }
+
+      return values;
+    }
+
+    function unlockComposer(fullName) {
+      rememberLead();
+      leadEl.remove();
+      leadEl = null;
+      panel.appendChild(composer);
+      addMessage("Cảm ơn " + fullName + "! Bạn cần tư vấn về vấn đề gì ạ?", "bot");
+      input.focus();
+    }
+
+    function submitLead() {
+      if (sendingLead) return;
+      clearLeadError();
+
+      var fullName = leadEl.fields.fullName.value.trim();
+      var phone = leadEl.fields.phone.value.trim();
+
+      if (fullName.length < 2) {
+        showLeadError("Vui lòng nhập họ tên của bạn.", leadEl.fields.fullName);
+        return;
+      }
+      if (!isValidPhone(phone)) {
+        showLeadError(
+          "Số điện thoại không hợp lệ. Ví dụ: 0912345678.",
+          leadEl.fields.phone,
+        );
+        return;
+      }
+
+      var extraValues = collectExtra();
+      if (!extraValues) return;
+
+      sendingLead = true;
+      leadEl.submitBtn.disabled = true;
+
+      fetch(origin + "/api/widget/lead", {
+        method: "POST",
+        credentials: "omit",
+        headers: {
+          "Content-Type": "application/json",
+          "X-Api-Key": apiKey,
+        },
+        body: JSON.stringify({
+          fullName: fullName,
+          phone: phone,
+          sessionId: sessionId,
+          pageUrl: window.location.href,
+          extra: extraValues,
+        }),
+      })
+        .then(function (response) {
+          return response
+            .json()
+            .catch(function () {
+              return {};
+            })
+            .then(function (payload) {
+              return { ok: response.ok, payload: payload };
+            });
+        })
+        .then(function (result) {
+          if (!result.ok) {
+            showLeadError(
+              result.payload.message || "Không gửi được thông tin, vui lòng thử lại.",
+            );
+            return;
+          }
+          unlockComposer(fullName);
+        })
+        .catch(function (error) {
+          console.error("[chatbot] Gửi thông tin liên hệ thất bại.", error);
+          showLeadError("Không kết nối được tới máy chủ. Vui lòng thử lại.");
+        })
+        .finally(function () {
+          sendingLead = false;
+          if (leadEl) leadEl.submitBtn.disabled = false;
+        });
+    }
+
+    if (leadEl) {
+      leadEl.addEventListener("submit", function (event) {
+        event.preventDefault();
+        submitLead();
+      });
+      leadEl.fields.fullName.addEventListener("input", clearLeadError);
+      leadEl.fields.phone.addEventListener("input", clearLeadError);
+      leadEl.extra.forEach(function (entry) {
+        entry.input.addEventListener("input", clearLeadError);
+      });
+    }
+
 
     var sending = false;
 

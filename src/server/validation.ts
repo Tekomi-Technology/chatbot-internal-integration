@@ -1,6 +1,7 @@
 import { z } from "zod";
 
 import { normalizeDomain } from "@/lib/domain";
+import { leadFieldsSchema } from "@/lib/lead-fields";
 
 export const tenantCreateSchema = z.object({
   name: z.string().trim().min(2, "Tên tenant tối thiểu 2 ký tự.").max(120),
@@ -60,8 +61,6 @@ export const messengerChannelSchema = z.object({
     .transform((value) => (value ? value : null)),
   pageAccessToken: z.string().trim().max(500).optional(),
   isActive: z.enum(["ACTIVE", "INACTIVE"]),
-  // Giữ nguyên dạng chuỗi ở đây, đổi sang số trong action. Kiểm tra quan hệ giữa
-  // hai trường nằm ở `superRefine` bên dưới nên không tách ra được.
   nightResumeStartHour: z.string().trim().optional(),
   nightResumeEndHour: z.string().trim().optional(),
 }).superRefine((data, ctx) => {
@@ -83,8 +82,6 @@ export const messengerChannelSchema = z.object({
     }
   }
 
-  // Một trong hai để trống thì khung giờ vô nghĩa — bắt điền đủ hoặc bỏ trống cả
-  // hai, thay vì âm thầm tắt tính năng mà người dùng tưởng đã bật.
   if ((start === "") !== (end === "")) {
     ctx.addIssue({
       code: "custom",
@@ -125,6 +122,43 @@ export const widgetConfigSchema = z.object({
     .transform((value) => (value ? value : null)),
   welcomeMessage: z.string().trim().min(1, "Bắt buộc nhập tin nhắn chào.").max(500),
   inputPlaceholder: z.string().trim().min(1).max(120),
+  leadFormEnabled: z.unknown().transform((value) => value === "on"),
+  leadFormTitle: z
+    .string()
+    .trim()
+    .min(1, "Bắt buộc nhập tiêu đề form.")
+    .max(80),
+  leadFormDescription: z
+    .string()
+    .trim()
+    .min(1, "Bắt buộc nhập mô tả form.")
+    .max(300),
+  leadFormSubmitLabel: z
+    .string()
+    .trim()
+    .min(1, "Bắt buộc nhập nhãn nút gửi.")
+    .max(40),
+  leadFormNameLabel: z
+    .string()
+    .trim()
+    .min(1, "Bắt buộc nhập nhãn ô họ tên.")
+    .max(60),
+  leadFormPhoneLabel: z
+    .string()
+    .trim()
+    .min(1, "Bắt buộc nhập nhãn ô số điện thoại.")
+    .max(60),
+  leadFormFields: z
+    .string()
+    .transform((value, ctx) => {
+      try {
+        return JSON.parse(value || "[]") as unknown;
+      } catch {
+        ctx.addIssue({ code: "custom", message: "Danh sách trường không hợp lệ." });
+        return z.NEVER;
+      }
+    })
+    .pipe(leadFieldsSchema),
 });
 
 export function fieldErrors(error: z.ZodError): Record<string, string> {
