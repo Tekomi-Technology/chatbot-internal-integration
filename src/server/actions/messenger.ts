@@ -21,7 +21,6 @@ const META_ECHO_FIELDS = [
   "nightResumeEndHour",
 ] as const;
 
-/** Ô để trống nghĩa là tắt khung giờ. Zod đã chặn mọi giá trị ngoài 0-23. */
 function parseHour(value: string | undefined): number | null {
   return value ? Number(value) : null;
 }

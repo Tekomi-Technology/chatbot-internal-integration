@@ -1,6 +1,5 @@
 import { Label } from "@/components/ui/label";
 
-/** Bọc label + input + hint + lỗi để các form trong dashboard trông đồng nhất. */
 export function FormField({
   name,
   label,

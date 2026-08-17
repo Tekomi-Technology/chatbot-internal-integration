@@ -21,7 +21,6 @@ const ZALO_ECHO_FIELDS = [
   "nightResumeEndHour",
 ] as const;
 
-/** Ô để trống nghĩa là tắt khung giờ. Zod đã chặn mọi giá trị ngoài 0-23. */
 function parseHour(value: string | undefined): number | null {
   return value ? Number(value) : null;
 }
@@ -115,7 +114,6 @@ export async function updateZaloChannelAction(
           isActive: isActive === "ACTIVE",
           nightResumeStartHour,
           nightResumeEndHour,
-          // Khoá ký webhook độc lập với chuỗi token: để trống thì giữ khoá cũ.
           ...(oaSecretKey
             ? { oaSecretKeyEncrypted: encryptSecret(oaSecretKey) }
             : {}),

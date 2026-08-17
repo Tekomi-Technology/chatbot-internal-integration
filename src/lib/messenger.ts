@@ -112,16 +112,6 @@ type HandoverPayload = {
   }>;
 };
 
-/**
- * Rút các yêu cầu nhường quyền khỏi payload webhook.
- *
- * Hàm riêng, chạy song song với `collectTextEvents` trên cùng payload. Không gộp
- * vào hàm đó vì nó lọc bỏ mọi thứ không phải `message`/`postback` — nhồi vào là
- * làm hỏng một hàm đang chạy tốt.
- *
- * Bỏ qua có chủ đích: `pass_thread_control`. Thiết kế này một chiều, nhân viên
- * bấm "Done" cũng không trả quyền lại cho AI. Xem spec, mục "Thiết kế một chiều".
- */
 export function collectHandoverRequests(
   payload: unknown,
 ): MessengerHandoverRequest[] {
@@ -139,7 +129,6 @@ export function collectHandoverRequests(
       const appId = item?.request_thread_control?.requested_owner_app_id;
       if (!psid || !appId) continue;
 
-      // Meta có lúc gửi app id dạng số, có lúc dạng chuỗi. Chuẩn hoá về chuỗi.
       requests.push({ pageId, psid, requestedOwnerAppId: String(appId) });
     }
   }
@@ -147,18 +136,10 @@ export function collectHandoverRequests(
   return requests;
 }
 
-/** Một tin do người khác — không phải app này — gửi cho khách từ phía Page. */
 export type MessengerHumanEcho = {
-  /** `entry[].id` — khoá tra ngược ra tenant. */
   pageId: string;
-  /**
-   * PSID của khách.
-   *
-   * Đọc từ `recipient.id`, KHÔNG phải `sender.id`. Với echo thì chiều bị đảo:
-   * người gửi là Page, người nhận là khách. Lấy nhầm là ghi cờ vào Page ID.
-   */
+
   psid: string;
-  /** App id của bên đã gửi. `null` khi payload không có, ví dụ gửi từ app Trang. */
   senderAppId: string | null;
 };
 
@@ -173,21 +154,6 @@ type EchoPayload = {
   }>;
 };
 
-/**
- * Rút các tin do NGƯỜI KHÁC gửi cho khách từ phía Page.
- *
- * Đây là tín hiệu "nhân viên đã tiếp quản hội thoại". Thay cho
- * `request_thread_control` — sự kiện đó đã được chứng minh là không bao giờ bắn
- * trên Meta Business Suite Inbox (xem spec, mục "Vì sao bỏ Handover Protocol").
- *
- * Cách phân biệt: so `message.app_id` với app id của CHÍNH MÌNH. Mọi thứ khác
- * đều tính là người ngoài — đúng với Page Inbox, app Trang trên di động, và bất
- * kỳ công cụ nào nhân viên dùng sau này, không phải liệt kê trước từng cái.
- *
- * Trả mảng rỗng khi không biết `ownAppId`. Fail-safe có chủ đích: không biết app
- * id của mình thì echo của chính bot cũng trông như người lạ, và bot sẽ tự bịt
- * miệng ngay sau câu trả lời đầu tiên. Thà tắt tính năng còn hơn.
- */
 export function collectHumanEchoes(
   payload: unknown,
   ownAppId: string | null,
@@ -210,7 +176,6 @@ export function collectHumanEchoes(
       if (!psid) continue;
 
       const rawAppId = item.message.app_id;
-      // Meta có lúc gửi app id dạng số, có lúc dạng chuỗi. Chuẩn hoá rồi mới so.
       const senderAppId =
         rawAppId === undefined || rawAppId === null ? null : String(rawAppId);
 
@@ -223,15 +188,12 @@ export function collectHumanEchoes(
   return echoes;
 }
 
-// --- Send API ---------------------------------------------------------------
-
 function graphUrl(path: string): string {
   return `https://graph.facebook.com/${env.messenger.graphApiVersion}/${path}`;
 }
 
 async function callSendApi(
   pageAccessToken: string,
-  /** Path Graph API, ví dụ `me/messages` hoặc `me/pass_thread_control`. */
   path: string,
   body: Record<string, unknown>,
 ): Promise<void> {
@@ -265,9 +227,7 @@ async function callSendApi(
     let detail: unknown = raw.slice(0, 500);
     try {
       detail = raw ? JSON.parse(raw) : null;
-    } catch {
-      // Giữ nguyên chuỗi thô nếu Meta không trả JSON.
-    }
+    } catch {}
     throw new MessengerError(
       `Graph API ${path} trả về lỗi ${response.status}.`,
       response.status,
@@ -276,7 +236,6 @@ async function callSendApi(
   }
 }
 
-/** Gửi text về cho người dùng Messenger, tự cắt nếu vượt 2000 ký tự. */
 export async function sendMessengerText(options: {
   pageAccessToken: string;
   psid: string;
@@ -291,7 +250,6 @@ export async function sendMessengerText(options: {
   }
 }
 
-/** Bật/tắt chấm "đang soạn tin". Chỉ là trang trí — lỗi ở đây không đáng chặn luồng. */
 export async function sendSenderAction(options: {
   pageAccessToken: string;
   psid: string;
@@ -303,15 +261,6 @@ export async function sendSenderAction(options: {
   });
 }
 
-/**
- * Nhường quyền điều khiển hội thoại cho app khác — ở đây luôn là Page Inbox.
- *
- * App của ta là primary receiver: KHÔNG gọi hàm này thì Page Inbox không nhắn
- * cho khách được, dù nhân viên đã kéo hội thoại sang "Inbox". Ghi cờ trong DB
- * thôi là chưa đủ.
- *
- * `targetAppId` đọc từ `requested_owner_app_id` trong payload, không hardcode.
- */
 export async function passThreadControl(options: {
   pageAccessToken: string;
   psid: string;

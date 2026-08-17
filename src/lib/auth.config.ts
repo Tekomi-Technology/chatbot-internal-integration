@@ -1,17 +1,12 @@
 import type { NextAuthConfig } from "next-auth";
 
-/**
- * Phần cấu hình chạy được trên Edge runtime — KHÔNG import Prisma/bcrypt ở đây.
- * `src/middleware.ts` dùng riêng file này; provider thật nằm ở `src/lib/auth.ts`
- * và chỉ chạy trong Node runtime.
- */
 export const authConfig = {
   session: { strategy: "jwt", maxAge: 60 * 60 * 8 },
   pages: {
     signIn: "/login",
     error: "/login",
   },
-  providers: [], // được thêm ở src/lib/auth.ts
+  providers: [],
   callbacks: {
     authorized({ auth, request }) {
       const isLoggedIn = Boolean(auth?.user);
@@ -23,7 +18,6 @@ export const authConfig = {
         pathname.startsWith("/api/admin");
 
       if (isProtected && !isLoggedIn) {
-        // Với API trả JSON 401 thay vì redirect sang trang HTML.
         if (pathname.startsWith("/api/")) {
           return Response.json({ error: "unauthorized" }, { status: 401 });
         }

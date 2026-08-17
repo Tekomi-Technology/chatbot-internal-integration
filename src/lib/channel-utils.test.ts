@@ -44,15 +44,9 @@ test("markIdSeen: id null luôn trả false, không chặn xử lý", () => {
   assert.equal(markIdSeen(null), false);
 });
 
-// --- Khung giờ bot tự trả lời lại ban đêm -----------------------------------
-
-/** 2026-08-17 03:00 giờ VN. Viết dạng UTC vì test phải chạy đúng ở mọi múi giờ. */
 const AT_3AM_VN = new Date("2026-08-16T20:00:00Z");
-/** 2026-08-17 09:00 giờ VN — ngoài mọi khung giờ đêm dùng trong test. */
 const AT_9AM_VN = new Date("2026-08-17T02:00:00Z");
-/** 2026-08-17 23:30 giờ VN. */
 const AT_1130PM_VN = new Date("2026-08-17T16:30:00Z");
-/** 2026-08-17 00:30 giờ VN. */
 const AT_0030_VN = new Date("2026-08-16T17:30:00Z");
 
 test("isWithinNightWindow: trong khung 1-6 giờ", () => {
@@ -97,8 +91,6 @@ test("isWithinNightWindow: khung 0-6 giờ chạy đúng ngay sau nửa đêm", 
   assert.equal(isWithinNightWindow(0, 6, AT_1130PM_VN), false);
 });
 
-// --- mayAnswerDespiteHuman ---------------------------------------------------
-
 test("mayAnswerDespiteHuman: ngoài khung giờ đêm thì luôn false", () => {
   const channel = { nightResumeStartHour: 1, nightResumeEndHour: 6 };
   const conversation = { handoverAt: new Date(Date.now() - 60 * 60_000) };
@@ -111,8 +103,6 @@ test("mayAnswerDespiteHuman: chưa cấu hình khung giờ thì luôn false dù 
 
   assert.equal(mayAnswerDespiteHuman(channel, { handoverAt: null }), false);
 });
-
-// --- Đăng ký tin bot tự gửi --------------------------------------------------
 
 test("markSelfSent + wasSelfSent: id vừa đăng ký thì nhận ra là tự gửi", () => {
   const id = `self-${Math.random()}`;

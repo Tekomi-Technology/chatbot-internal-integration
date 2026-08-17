@@ -27,12 +27,6 @@ export async function handleZaloEvents(events: ZaloTextEvent[]): Promise<void> {
   }
 }
 
-/**
- * Bật cờ khi phát hiện nhân viên đã nhắn tay cho khách qua app Zalo OA.
- *
- * Một chiều: chỉ bật `humanActive`, không bao giờ tắt. Xem spec, mục
- * "Chính sách trả quyền — một chiều, đúng khuôn Messenger".
- */
 export async function handleZaloHumanEchoes(echoes: ZaloHumanEcho[]): Promise<void> {
   for (const echo of echoes) {
     try {
@@ -57,8 +51,6 @@ async function handleHumanTakeover(echo: ZaloHumanEcho): Promise<void> {
     return;
   }
 
-  // `upsert` vì row chỉ ra đời sau lượt Dify đầu tiên, mà nhân viên hoàn toàn
-  // có thể nhắn trước cho một khách bot chưa từng trả lời.
   const before = await prisma.zaloConversation.findUnique({
     where: { channelId_zaloUserId: { channelId: channel.id, zaloUserId: echo.userId } },
     select: { humanActive: true },
@@ -75,8 +67,6 @@ async function handleHumanTakeover(echo: ZaloHumanEcho): Promise<void> {
     update: { humanActive: true, handoverAt: new Date() },
   });
 
-  // Chỉ ghi log ở LẦN ĐẦU. Nhân viên nhắn mười câu thì có mười echo, ghi hết
-  // là rác log mà không thêm thông tin gì.
   if (!before?.humanActive) {
     console.info("zalo -> nhân viên đã tiếp quản hội thoại", {
       oaId: echo.oaId,
@@ -126,8 +116,6 @@ async function handleOne(event: ZaloTextEvent): Promise<void> {
     select: { difyConversationId: true, humanActive: true, handoverAt: true },
   });
 
-  // Đọc hội thoại TRƯỚC khi lấy access token: nhân viên đang giữ hội thoại thì
-  // không cần tốn một lượt gọi refresh token cho việc sẽ im lặng ngay sau đó.
   if (conversation?.humanActive && !mayAnswerDespiteHuman(channel, conversation)) {
     console.warn("zalo -> nhân viên đang giữ hội thoại, bot im", {
       oaId: event.oaId,
@@ -136,8 +124,6 @@ async function handleOne(event: ZaloTextEvent): Promise<void> {
     return;
   }
 
-  // Lấy token TRƯỚC khi gọi Dify: hỏng token thì không tiêu quota Dify vô ích,
-  // và cũng không gửi nổi câu xin lỗi.
   let accessToken: string;
   try {
     accessToken = await getValidAccessToken(channel.id);
@@ -192,7 +178,6 @@ async function handleOne(event: ZaloTextEvent): Promise<void> {
       text: result.answer.trim() || FALLBACK_MESSAGE,
     });
   } catch (error) {
-    // Ngoài cửa sổ 7 ngày thì gửi lại cũng hỏng vì cùng lý do — chỉ log, không thử lại.
     console.error("zalo -> gửi CS message", {
       oaId: event.oaId,
       error: error instanceof ZaloError ? { code: error.code, detail: error.detail } : error,
@@ -219,7 +204,6 @@ async function handleOne(event: ZaloTextEvent): Promise<void> {
   }
 }
 
-/** Hội thoại Dify có thể bị xoá phía Dify; gặp 404 thì bắt đầu lại mạch mới. */
 async function askDify(options: {
   tenant: { difyApiKeyEncrypted: string; difyApiBaseUrl: string | null };
   query: string;

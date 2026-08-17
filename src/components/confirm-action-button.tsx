@@ -14,12 +14,6 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 
-/**
- * Nút mở hộp thoại xác nhận rồi mới chạy Server Action.
- *
- * `action` là Server Action đã bind sẵn tham số ở phía server, nên component
- * này không cần biết id nào cả.
- */
 export function ConfirmActionButton({
   action,
   title,

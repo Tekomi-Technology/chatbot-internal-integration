@@ -19,7 +19,6 @@ export function LoginForm({ callbackUrl }: { callbackUrl?: string }) {
         <form action={formAction} className="flex flex-col gap-4">
           <input type="hidden" name="callbackUrl" value={callbackUrl ?? "/"} />
 
-          {/* key đổi sau mỗi lần lỗi để input remount và nhận lại defaultValue */}
           <div key={state.stamp ?? "init"} className="flex flex-col gap-4">
             <div className="flex flex-col gap-2">
               <Label htmlFor="email">Email</Label>

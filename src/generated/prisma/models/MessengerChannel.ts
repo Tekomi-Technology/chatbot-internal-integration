@@ -780,12 +780,6 @@ export type $MessengerChannelPayload<ExtArgs extends runtime.Types.Extensions.In
     pageName: string | null
     pageAccessTokenEncrypted: string
     isActive: boolean
-    /**
-     * Khung giờ bot tự trả lời lại ban đêm, kể cả với hội thoại nhân viên đang
-     * giữ. Giờ theo Asia/Ho_Chi_Minh, 0-23. Khung qua nửa đêm (22 -> 6) hợp lệ.
-     * Cả hai cùng null = tắt tính năng. Không bao giờ sửa cờ `human_active` —
-     * hết khung giờ là hội thoại tự quay về trạng thái nhân viên giữ.
-     */
     nightResumeStartHour: number | null
     nightResumeEndHour: number | null
     createdAt: Date

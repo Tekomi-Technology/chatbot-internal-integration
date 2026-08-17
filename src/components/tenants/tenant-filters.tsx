@@ -7,10 +7,6 @@ import { useEffect, useState, useTransition } from "react";
 import { Input } from "@/components/ui/input";
 import { Select } from "@/components/ui/select";
 
-/**
- * Đẩy bộ lọc lên URL search params thay vì giữ trong state, để trang danh sách
- * vẫn là Server Component và filter chia sẻ / reload được.
- */
 export function TenantFilters({
   defaultQuery,
   defaultStatus,
@@ -29,7 +25,6 @@ export function TenantFilters({
     startTransition(() => router.replace(qs ? `${pathname}?${qs}` : pathname));
   }
 
-  // Debounce ô tìm kiếm để mỗi lần gõ không tạo một round-trip xuống DB.
   useEffect(() => {
     const timer = setTimeout(() => {
       const next = new URLSearchParams(searchParams.toString());

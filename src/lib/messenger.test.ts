@@ -154,16 +154,6 @@ test("collectTextEvents: payload handover không lọt vào luồng trả lời"
   assert.deepEqual(collectTextEvents(HANDOVER_PAYLOAD), []);
 });
 
-/**
- * Ghi lại bằng test một hành vi đã gây sự cố thật: khi Handover Protocol bật
- * trên Page mà app không giữ quyền điều khiển thread, Facebook chuyển tin của
- * khách sang `entry[].standby[]`. Cả hai parser đều bỏ qua, nên webhook trả 200
- * mà bot im hoàn toàn và không ghi log gì — trông y hệt lỗi code.
- *
- * Test này không đòi hỏi phải xử lý `standby`; nó chốt lại rằng KHÔNG xử lý là
- * hành vi hiện tại, để lần sau ai đọc cũng biết đây là cấu hình Meta chứ không
- * phải parser hỏng.
- */
 test("collectTextEvents: tin nằm ở standby thì bị bỏ qua — dấu hiệu app không giữ quyền thread", () => {
   const standbyPayload = {
     object: "page",

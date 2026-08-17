@@ -130,8 +130,6 @@ export default async function TenantDetailPage({ params, searchParams }: PagePro
     (key) => key.type === "PUBLIC" && key.isActive,
   )?.keyValue;
 
-  // Lead có thể lên tới hàng nghìn dòng nên phải phân trang; đếm trước để biết
-  // số trang, rồi kẹp trang yêu cầu vào khoảng hợp lệ trước khi truy vấn.
   const leadTotal = await prisma.lead.count({ where: { tenantId: tenant.id } });
   const leadPageCount = Math.max(1, Math.ceil(leadTotal / LEADS_PER_PAGE));
   const currentLeadPage = Math.min(

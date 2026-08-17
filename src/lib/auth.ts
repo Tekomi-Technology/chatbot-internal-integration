@@ -15,8 +15,6 @@ class InvalidCredentials extends CredentialsSignin {
   code = "invalid_credentials";
 }
 
-// Hash "mồi" để lần đăng nhập với email không tồn tại vẫn tốn thời gian tương
-// đương lần email có thật — tránh lộ danh sách email qua timing.
 const DUMMY_HASH = "$2b$12$C6UzMDM.H6dfI/f/IKcEeO1n3Nw8V1QO0N5c9m0Wz2n3S3rXQ6dJq";
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
@@ -48,7 +46,6 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
   ],
 });
 
-/** Dùng trong Server Action / Route Handler admin để chắc chắn đã đăng nhập. */
 export async function requireAdmin() {
   const session = await auth();
   if (!session?.user?.id) {

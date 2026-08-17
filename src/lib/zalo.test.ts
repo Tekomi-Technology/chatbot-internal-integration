@@ -16,7 +16,6 @@ import { markSelfSent } from "@/lib/channel-utils";
 const APP_ID = "1234567890";
 const SECRET = "secret-key-cua-app";
 
-/** Dựng cặp (rawBody, header chữ ký) hợp lệ để test. */
 function signedPayload(body: Record<string, unknown>) {
   const rawBody = JSON.stringify(body);
   const mac = createHash("sha256")
@@ -73,7 +72,6 @@ test("verifyZaloSignature: header rác không làm throw", () => {
   assert.equal(verifyZaloSignature(rawBody, "", APP_ID, SECRET), false);
 });
 
-// --- readOaId: chọn field theo chiều event_name ------------------------------
 
 test("readOaId: user_send_text thì đọc recipient.id (OA nhận tin từ khách)", () => {
   assert.equal(readOaId(JSON.stringify(SAMPLE)), "oa-xyz");
@@ -265,9 +263,6 @@ test("readZaloResult: error không ép được thành số thì ném lỗi thay
   );
 });
 
-// --- Echo: nhân viên tiếp quản hội thoại -------------------------------------
-
-/** Payload Zalo gửi khi OA gửi tin ra khách — cả bot tự gửi lẫn nhân viên gõ tay. */
 const OA_SEND_PAYLOAD = {
   event_name: "oa_send_text",
   sender: { id: "oa-xyz" },

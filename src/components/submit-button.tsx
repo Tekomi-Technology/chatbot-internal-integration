@@ -5,10 +5,6 @@ import { useFormStatus } from "react-dom";
 
 import { Button, type ButtonProps } from "@/components/ui/button";
 
-/**
- * Nút submit tự khoá khi form đang pending. Phải nằm *bên trong* <form> thì
- * useFormStatus mới đọc được trạng thái.
- */
 export function SubmitButton({ children, disabled, ...props }: ButtonProps) {
   const { pending } = useFormStatus();
 

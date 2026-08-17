@@ -2,11 +2,6 @@ import * as React from "react";
 
 import { cn } from "@/lib/utils";
 
-/**
- * Select gốc của trình duyệt thay vì Radix Select: nó hoạt động trong form
- * Server Action mà không cần state phía client, và dashboard chỉ dùng vài
- * dropdown đơn giản (mode, position, status).
- */
 export function Select({ className, ...props }: React.ComponentProps<"select">) {
   return (
     <select

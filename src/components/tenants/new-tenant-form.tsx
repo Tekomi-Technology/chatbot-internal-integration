@@ -16,8 +16,6 @@ export function NewTenantForm() {
   return (
     <Card>
       <CardContent className="pt-5">
-        {/* key đổi sau mỗi lần lỗi: React 19 reset form sau action, remount để
-            input nhận lại giá trị người dùng vừa nhập thay vì trắng trơn. */}
         <form
           key={state.stamp ?? "init"}
           action={formAction}

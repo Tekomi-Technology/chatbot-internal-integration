@@ -24,7 +24,6 @@ export function CopyButton({
       await navigator.clipboard.writeText(value);
       setCopied(true);
     } catch {
-      // Clipboard API cần secure context (https hoặc localhost).
       toast.error("Trình duyệt chặn clipboard. Hãy bôi đen và copy thủ công.");
     }
   }

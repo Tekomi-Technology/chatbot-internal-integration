@@ -62,7 +62,6 @@ export async function updateWidgetConfigAction(
   }
 
   try {
-    // upsert vì tenant tạo từ trước bản này có thể chưa có bản ghi config.
     await prisma.widgetConfig.upsert({
       where: { tenantId },
       create: { tenantId, ...parsed.data },

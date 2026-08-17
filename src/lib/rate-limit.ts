@@ -4,16 +4,8 @@ import { env } from "@/lib/env";
 
 type Bucket = { count: number; resetAt: number };
 
-/**
- * Rate limiter fixed-window, lưu trong bộ nhớ tiến trình.
- *
- * GIỚI HẠN ĐÃ BIẾT: chỉ đúng khi chạy 1 instance. Khi scale ra nhiều instance
- * hoặc deploy serverless, thay bằng store dùng chung (Redis / @upstash/ratelimit)
- * — giữ nguyên chữ ký `checkRateLimit` là đủ.
- */
 const buckets = new Map<string, Bucket>();
 
-// Dọn rác định kỳ để Map không phình vô hạn theo số key/IP đã gặp.
 const SWEEP_INTERVAL_MS = 60_000;
 let lastSweep = 0;
 
@@ -29,9 +21,7 @@ export type RateLimitResult = {
   success: boolean;
   limit: number;
   remaining: number;
-  /** Epoch ms thời điểm cửa sổ hiện tại kết thúc. */
   resetAt: number;
-  /** Số giây client nên chờ, chỉ có khi bị chặn. */
   retryAfterSeconds?: number;
 };
 
@@ -62,7 +52,6 @@ export function checkRateLimit(identifier: string): RateLimitResult {
   };
 }
 
-/** Lấy IP client, ưu tiên header do proxy/CDN đặt. */
 export function clientIpFrom(headers: Headers): string {
   const forwarded = headers.get("x-forwarded-for");
   if (forwarded) return forwarded.split(",")[0].trim();

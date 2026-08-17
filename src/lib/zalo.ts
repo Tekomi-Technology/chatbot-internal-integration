@@ -49,14 +49,6 @@ export function verifyZaloSignature(
   return timingSafeEqual(receivedBuffer, expectedBuffer);
 }
 
-/**
- * Đọc `oa_id` từ raw body webhook để tra kênh trước khi verify chữ ký.
- *
- * Chiều field phụ thuộc `event_name`: sự kiện OA gửi ra (`oa_send_*`, ví dụ
- * `oa_send_text`) thì OA nằm ở `sender`; các sự kiện khác — khách gửi vào,
- * ví dụ `user_send_text` — thì OA nằm ở `recipient`. Xem doc comment của
- * `collectZaloHumanEchoes` bên dưới về chiều field bị đảo ngược này.
- */
 export function readOaId(rawBody: string): string | null {
   try {
     const parsed = JSON.parse(rawBody) as {
@@ -101,7 +93,6 @@ export function collectZaloTextEvents(payload: unknown): ZaloTextEvent[] {
   return [{ oaId, userId, text, msgId: body.message?.msg_id ?? null }];
 }
 
-/** Một tin do NHÂN VIÊN gửi tay cho khách qua app Zalo OA — không phải bot. */
 export type ZaloHumanEcho = {
   oaId: string;
   userId: string;
@@ -115,17 +106,6 @@ type ZaloEchoPayload = {
   message?: { msg_id?: string };
 };
 
-/**
- * Rút các tin do NHÂN VIÊN gửi tay cho khách qua app Zalo OA.
- *
- * `oa_send_text` bắn cho MỌI tin OA gửi ra khách — cả tin bot tự gửi qua API
- * lẫn tin nhân viên gõ tay. Zalo không có field kiểu `app_id` như Facebook để
- * phân biệt, nên so `msg_id` với registry `markSelfSent` ghi lại lúc
- * `sendZaloText` gửi thành công: khớp thì là bot, không khớp (kể cả thiếu
- * msg_id) thì là nhân viên.
- *
- * Chú ý chiều: `sender` là OA, `recipient` là khách — ngược với `user_send_text`.
- */
 export function collectZaloHumanEchoes(payload: unknown): ZaloHumanEcho[] {
   const body = payload as ZaloEchoPayload | null;
   if (body?.event_name !== "oa_send_text") return [];

@@ -175,10 +175,6 @@ model MessengerChannel {
   pageAccessTokenEncrypted String @map("page_access_token_encrypted")
   isActive                 Boolean @default(true) @map("is_active")
 
-  /// Khung giờ bot tự trả lời lại ban đêm, kể cả với hội thoại nhân viên đang
-  /// giữ. Giờ theo Asia/Ho_Chi_Minh, 0-23. Khung qua nửa đêm (22 -> 6) hợp lệ.
-  /// Cả hai cùng null = tắt tính năng. Không bao giờ sửa cờ `human_active` —
-  /// hết khung giờ là hội thoại tự quay về trạng thái nhân viên giữ.
   nightResumeStartHour Int? @map("night_resume_start_hour")
   nightResumeEndHour   Int? @map("night_resume_end_hour")
 
@@ -230,10 +226,6 @@ model ZaloChannel {
   isActive    Boolean   @default(true) @map("is_active")
   lastEventAt DateTime? @map("last_event_at")
 
-  /// Khung giờ bot tự trả lời lại ban đêm, kể cả với hội thoại nhân viên đang
-  /// giữ. Giờ theo Asia/Ho_Chi_Minh, 0-23. Khung qua nửa đêm hợp lệ. Cả hai
-  /// cùng null = tắt tính năng. Không bao giờ sửa cờ `human_active` — hết
-  /// khung giờ là hội thoại tự quay về trạng thái nhân viên giữ.
   nightResumeStartHour Int? @map("night_resume_start_hour")
   nightResumeEndHour   Int? @map("night_resume_end_hour")
 

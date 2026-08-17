@@ -32,12 +32,6 @@ export async function handleMessengerEvents(
   }
 }
 
-/**
- * Xử lý các yêu cầu nhường quyền từ Page Inbox.
- *
- * Một chiều: chỉ bật `humanActive`, không bao giờ tắt. Xem spec, mục "Thiết kế
- * một chiều" — kể cả khi nhân viên bấm "Done", bot vẫn im vĩnh viễn với khách đó.
- */
 export async function handleMessengerHandovers(
   requests: MessengerHandoverRequest[],
 ): Promise<void> {
@@ -53,16 +47,6 @@ export async function handleMessengerHandovers(
   }
 }
 
-/**
- * Bật cờ khi phát hiện người khác đã nhắn cho khách từ phía Page.
- *
- * Đường chính để tính năng này hoạt động trên Meta Business Suite, nơi
- * `request_thread_control` không bao giờ bắn. Khác `handleMessengerHandovers` ở
- * một điểm quan trọng: KHÔNG gọi Graph API nào, chỉ ghi DB — nên không có cảnh
- * "đã nhường quyền nhưng chưa ghi được cờ" như bên kia.
- *
- * Vẫn một chiều: chỉ bật, không bao giờ tắt. Xem spec.
- */
 export async function handleHumanTakeovers(
   echoes: MessengerHumanEcho[],
 ): Promise<void> {
@@ -92,8 +76,6 @@ async function handleHumanTakeover(echo: MessengerHumanEcho): Promise<void> {
     return;
   }
 
-  // `upsert` vì row chỉ ra đời sau lượt Dify đầu tiên, mà nhân viên hoàn toàn có
-  // thể nhắn trước cho một khách bot chưa từng trả lời.
   const before = await prisma.messengerConversation.findUnique({
     where: { channelId_psid: { channelId: channel.id, psid: echo.psid } },
     select: { humanActive: true },
@@ -110,8 +92,6 @@ async function handleHumanTakeover(echo: MessengerHumanEcho): Promise<void> {
     update: { humanActive: true, handoverAt: new Date() },
   });
 
-  // Chỉ ghi log ở LẦN ĐẦU. Nhân viên nhắn mười câu thì có mười echo, ghi hết là
-  // rác log mà không thêm thông tin gì.
   if (!before?.humanActive) {
     console.info("messenger -> nhân viên đã tiếp quản hội thoại", {
       pageId: echo.pageId,
@@ -137,17 +117,12 @@ async function handleHandover(
     return;
   }
 
-  // Nhường quyền TRƯỚC khi ghi cờ. Nếu Graph lỗi thì hàm này throw, cờ không
-  // bật, bot vẫn trả lời như cũ — thà thế còn hơn bot im mà nhân viên cũng
-  // không nhắn được cho khách.
   await passThreadControl({
     pageAccessToken: decryptSecret(channel.pageAccessTokenEncrypted),
     psid: request.psid,
     targetAppId: request.requestedOwnerAppId,
   });
 
-  // Phải là `upsert`, không phải `update`: row chỉ ra đời sau lượt Dify đầu
-  // tiên, mà sự kiện handover hoàn toàn có thể đến trước đó.
   try {
     await prisma.messengerConversation.upsert({
       where: {
@@ -165,10 +140,6 @@ async function handleHandover(
       },
     });
   } catch (error) {
-    // ĐÃ nhường quyền cho Page Inbox nhưng KHÔNG ghi được cờ humanActive — trạng
-    // thái bị chia đôi. Retry webhook không tự sửa được: lần sau passThreadControl
-    // sẽ lỗi trước (ta không còn giữ quyền nữa) nên hàm return sớm, không bao giờ
-    // chạm lại đoạn upsert này. Phải sửa tay theo (channelId, psid) dưới đây.
     console.error(
       "messenger -> handover: ĐÃ nhường quyền nhưng CHƯA ghi được cờ humanActive, cần sửa tay",
       { pageId: request.pageId, psid: request.psid, error },
@@ -185,8 +156,6 @@ async function handleHandover(
 
 async function handleOne(event: MessengerTextEvent): Promise<void> {
   if (markIdSeen(event.mid)) {
-    // Bỏ im lặng ở đây thì trùng `mid` trong 10 phút cũng khiến bot câm, biểu
-    // hiện giống hệt mọi nguyên nhân khác khiến bot không trả lời.
     console.info("messenger -> bỏ qua tin trùng mid", {
       pageId: event.pageId,
       mid: event.mid,
@@ -223,9 +192,6 @@ async function handleOne(event: MessengerTextEvent): Promise<void> {
 
   const pageAccessToken = decryptSecret(channel.pageAccessTokenEncrypted);
 
-  // Đọc hội thoại TRƯỚC typing_on. Cửa chặn phải nằm trước mọi tín hiệu gửi ra
-  // ngoài, không chỉ trước lời gọi Dify — nếu không khách vẫn thấy chấm "đang
-  // soạn tin" trong lúc nhân viên đang chat, trông rất lạ.
   const conversation = await prisma.messengerConversation.findUnique({
     where: { channelId_psid: { channelId: channel.id, psid: event.psid } },
     select: {

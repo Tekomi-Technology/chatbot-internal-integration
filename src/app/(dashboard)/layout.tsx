@@ -11,8 +11,6 @@ export default async function DashboardLayout({
 }: {
   children: React.ReactNode;
 }) {
-  // proxy.ts đã chặn khách vãng lai, nhưng layout vẫn lấy session để hiển thị
-  // tên admin — và làm hàng rào thứ hai nếu matcher bị đổi.
   const session = await auth();
   if (!session?.user) redirect("/login");
 
