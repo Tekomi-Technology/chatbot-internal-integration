@@ -7,6 +7,7 @@ import { parseLeadFields, validateLeadExtra } from "@/lib/lead-fields";
 import { normalizeVnPhone } from "@/lib/phone";
 import { prisma } from "@/lib/prisma";
 import { checkRateLimit, clientIpFrom } from "@/lib/rate-limit";
+import { sendTelegramMessage } from "@/lib/telegram";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -70,6 +71,7 @@ export async function POST(request: NextRequest) {
       tenant: {
         select: {
           id: true,
+          name: true,
           status: true,
           domains: { select: { domain: true } },
           widgetConfig: { select: { leadFormFields: true } },
@@ -129,6 +131,13 @@ export async function POST(request: NextRequest) {
     extra: extra.value,
   };
 
+  const existing = await prisma.lead.findUnique({
+    where: {
+      tenantId_sessionId: { tenantId: tenant.id, sessionId: parsed.data.sessionId },
+    },
+    select: { id: true },
+  });
+
   try {
     await prisma.lead.upsert({
       where: {
@@ -143,6 +152,18 @@ export async function POST(request: NextRequest) {
       { error: "save_failed", message: "Không lưu được thông tin, vui lòng thử lại." },
       { status: 500, origin },
     );
+  }
+
+  // Chỉ báo khi khách để lại thông tin lần đầu — khách sửa lại form (upsert)
+  // không nên báo lặp lại cho nhân viên.
+  if (!existing) {
+    void sendTelegramMessage(
+      `📞 <b>Khách mới để lại số điện thoại</b>\n` +
+        `Tenant: ${tenant.name}\n` +
+        `Họ tên: ${parsed.data.fullName}\n` +
+        `SĐT: ${phone}` +
+        (parsed.data.pageUrl ? `\nTrang: ${parsed.data.pageUrl}` : ""),
+    ).catch((error) => console.error("widget/lead -> telegram", error));
   }
 
   return jsonWithCors({ ok: true }, { origin });

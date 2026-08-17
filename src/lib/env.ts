@@ -65,4 +65,11 @@ export const env = {
       windowMs: Number(process.env.WIDGET_POLL_RATE_LIMIT_WINDOW_MS ?? 60_000),
     };
   },
+
+  get telegram() {
+    return {
+      botToken: process.env.TELEGRAM_BOT_TOKEN?.trim() || null,
+      chatId: process.env.TELEGRAM_CHAT_ID?.trim() || null,
+    };
+  },
 };
