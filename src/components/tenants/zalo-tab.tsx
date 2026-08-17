@@ -222,6 +222,55 @@ export function ZaloTab({
               </Select>
             </FormField>
 
+            {/*
+              Bản nháp giao diện, chưa nối gì phía sau: `zalo_channels` không có
+              cột giờ, `zaloChannelSchema` bỏ qua hai field này, nên bấm Lưu là
+              mất giá trị vừa nhập. Bên Messenger khung giờ dùng để đè lên cờ
+              `humanActive`, mà `ZaloConversation` chưa có cờ đó — Zalo không có
+              giao thức handover tương đương `pass_thread_control`.
+            */}
+            <div className="flex flex-col gap-2 rounded-md border border-dashed p-4">
+              <p className="flex items-center gap-2 text-sm font-medium">
+                Bot trả lời lại ban đêm
+                <Badge variant="neutral">Chưa chạy</Badge>
+              </p>
+              <p className="text-xs text-muted-foreground">
+                Bên Messenger, khi nhân viên tiếp quản một hội thoại thì bot ngừng
+                trả lời khách đó, và trong khung giờ dưới đây bot sẽ nhận lại việc.
+                Zalo chưa có phần nhân viên tiếp quản nên khung giờ này{" "}
+                <strong className="font-medium">chưa có tác dụng</strong> — giá
+                trị nhập vào cũng chưa được lưu.
+              </p>
+
+              <div className="flex items-end gap-3">
+                <FormField name="nightResumeStartHour" label="Từ giờ">
+                  <Input
+                    id="nightResumeStartHour"
+                    name="nightResumeStartHour"
+                    inputMode="numeric"
+                    className="w-24"
+                    placeholder="1"
+                  />
+                </FormField>
+
+                <FormField name="nightResumeEndHour" label="Đến giờ">
+                  <Input
+                    id="nightResumeEndHour"
+                    name="nightResumeEndHour"
+                    inputMode="numeric"
+                    className="w-24"
+                    placeholder="6"
+                  />
+                </FormField>
+              </div>
+
+              <p className="text-xs text-muted-foreground">
+                Dự kiến giống Messenger: giờ bắt đầu tính vào khung, giờ kết thúc
+                thì không — 1 đến 6 nghĩa là 01:00–05:59. Khung qua nửa đêm (22
+                đến 6) cũng hợp lệ. Giờ theo múi giờ Việt Nam.
+              </p>
+            </div>
+
             {channel ? (
               <div className="flex flex-col gap-1 rounded-md bg-muted px-3 py-2 text-xs text-muted-foreground">
                 <p>
