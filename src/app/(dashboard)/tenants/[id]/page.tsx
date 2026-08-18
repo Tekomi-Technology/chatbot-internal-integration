@@ -158,13 +158,49 @@ export default async function TenantDetailPage({ params, searchParams }: PagePro
   const conversationRows = conversations.map((conversation) => {
     const lead = leadBySessionId.get(conversation.sessionId);
     return {
-      id: conversation.id,
+      id: conversation.id as string | null,
       fullName: lead?.fullName ?? null,
       phone: lead?.phone ?? null,
       staffActive: conversation.staffActive,
       lastMessageAt: conversation.lastMessageAt,
     };
   });
+
+  const allConversationSessionIds = await prisma.widgetConversation.findMany({
+    where: { tenantId: tenant.id },
+    select: { sessionId: true },
+  });
+  const conversationSessionIdSet = new Set(
+    allConversationSessionIds.map((row) => row.sessionId),
+  );
+
+  const leadOnlyLeads = await prisma.lead.findMany({
+    where: {
+      tenantId: tenant.id,
+      sessionId: { notIn: [...conversationSessionIdSet] },
+    },
+    orderBy: { createdAt: "desc" },
+    take: LEADS_PER_PAGE,
+    select: { sessionId: true, fullName: true, phone: true, createdAt: true },
+  });
+
+  const leadOnlyRows = leadOnlyLeads.map((lead) => ({
+    id: null as string | null,
+    fullName: lead.fullName,
+    phone: lead.phone,
+    staffActive: false,
+    lastMessageAt: lead.createdAt,
+  }));
+
+  const leadOnlyTotal = await prisma.lead.count({
+    where: { tenantId: tenant.id, sessionId: { notIn: [...conversationSessionIdSet] } },
+  });
+
+  const customerRows = [...conversationRows, ...leadOnlyRows]
+    .sort((a, b) => b.lastMessageAt.getTime() - a.lastMessageAt.getTime())
+    .slice(0, LEADS_PER_PAGE);
+
+  const customerTotal = conversationTotal + leadOnlyTotal;
 
   return (
     <div className="flex flex-col gap-6">
@@ -245,8 +281,8 @@ export default async function TenantDetailPage({ params, searchParams }: PagePro
         leads={
           <LeadsTab
             tenantId={tenant.id}
-            conversations={conversationRows}
-            total={conversationTotal}
+            conversations={customerRows}
+            total={customerTotal}
           />
         }
         meta={

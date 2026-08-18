@@ -19,7 +19,7 @@ import {
 import { formatDateTime } from "@/lib/utils";
 
 export type ConversationRow = {
-  id: string;
+  id: string | null;
   fullName: string | null;
   phone: string | null;
   staffActive: boolean;
@@ -39,10 +39,6 @@ export function LeadsTab({
     <Card>
       <CardHeader>
         <CardTitle>Khách hàng</CardTitle>
-        <CardDescription>
-          Danh sách hội thoại trên widget web, mới nhất trước. Tên/SĐT chỉ hiện
-          nếu khách có điền form thu thập thông tin.
-        </CardDescription>
       </CardHeader>
 
       <CardContent>
@@ -62,21 +58,29 @@ export function LeadsTab({
               </TableHeader>
               <TableBody>
                 {conversations.map((conversation) => (
-                  <TableRow key={conversation.id}>
+                  <TableRow key={conversation.id ?? `lead-${conversation.phone}-${conversation.lastMessageAt.getTime()}`}>
                     <TableCell className="font-medium">
-                      <Link
-                        href={`/tenants/${tenantId}/conversations/${conversation.id}`}
-                        className="underline-offset-4 hover:underline"
-                      >
-                        {conversation.fullName
-                          ? `${conversation.fullName} · ${conversation.phone}`
-                          : "Chưa để lại thông tin"}
-                      </Link>
+                      {conversation.id ? (
+                        <Link
+                          href={`/tenants/${tenantId}/conversations/${conversation.id}`}
+                          className="underline-offset-4 hover:underline"
+                        >
+                          {conversation.fullName
+                            ? `${conversation.fullName} · ${conversation.phone}`
+                            : "Chưa để lại thông tin"}
+                        </Link>
+                      ) : (
+                        <span>{conversation.fullName} · {conversation.phone}</span>
+                      )}
                     </TableCell>
                     <TableCell>
-                      <Badge variant={conversation.staffActive ? "destructive" : "neutral"}>
-                        {conversation.staffActive ? "Nhân viên đang xử lý" : "Bot đang trả lời"}
-                      </Badge>
+                      {conversation.id ? (
+                        <Badge variant={conversation.staffActive ? "destructive" : "neutral"}>
+                          {conversation.staffActive ? "Nhân viên đang xử lý" : "Bot đang trả lời"}
+                        </Badge>
+                      ) : (
+                        <Badge variant="outline">Chưa chat</Badge>
+                      )}
                     </TableCell>
                     <TableCell className="whitespace-nowrap text-xs text-muted-foreground">
                       {formatDateTime(conversation.lastMessageAt)}
