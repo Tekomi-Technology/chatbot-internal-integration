@@ -719,6 +719,21 @@
     var pollTimer = null;
     var lastSeenAt =
       history.length > 0 ? history[history.length - 1].c : new Date().toISOString();
+    // Tin BOT/STAFF đến từ hai đường (response của /chat và poll /messages), khoá theo
+    // createdAt do server cấp. Không so giờ vì lastSeenAt có thể mang giờ máy khách.
+    var shownAt = {};
+
+    function alreadyShown(createdAt) {
+      return Boolean(createdAt) && shownAt[createdAt] === true;
+    }
+
+    function markShown(createdAt) {
+      if (createdAt) shownAt[createdAt] = true;
+    }
+
+    function advanceLastSeen(createdAt) {
+      if (createdAt && createdAt > lastSeenAt) lastSeenAt = createdAt;
+    }
 
     function pollForNewMessages() {
       fetch(
@@ -742,10 +757,15 @@
           for (var i = 0; i < payload.messages.length; i += 1) {
             var item = payload.messages[i];
             if (!item || (item.sender !== "STAFF" && item.sender !== "BOT")) continue;
+            if (alreadyShown(item.createdAt)) {
+              advanceLastSeen(item.createdAt);
+              continue;
+            }
             var role = item.sender === "STAFF" ? "s" : "b";
             addMessage(item.text, role === "s" ? "staff" : "bot");
             recordMessage(role, item.text, item.createdAt);
-            lastSeenAt = item.createdAt;
+            markShown(item.createdAt);
+            advanceLastSeen(item.createdAt);
           }
         })
         .catch(function () {
@@ -815,10 +835,16 @@
             return;
           }
           rememberConversation(result.payload.conversationId);
+          var createdAt = result.payload.createdAt;
+          // Tin BOT cũng nằm trong DB nên poll sẽ trả lại nó: đánh dấu để poll bỏ qua,
+          // và ngược lại bỏ qua nếu poll đã hiện trước.
+          if (alreadyShown(createdAt)) return;
+          markShown(createdAt);
+          advanceLastSeen(createdAt);
           var answer =
             result.payload.answer || "(Trợ lý không trả về nội dung nào.)";
           addMessage(answer, "bot");
-          recordMessage("b", answer, result.payload.createdAt);
+          recordMessage("b", answer, createdAt);
         })
         .catch(function (error) {
           indicator.remove();
