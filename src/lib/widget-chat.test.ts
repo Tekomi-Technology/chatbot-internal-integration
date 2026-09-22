@@ -1,7 +1,11 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
 
-import { isStaffResumeExpired, serializeWidgetMessage } from "@/lib/widget-chat";
+import {
+  isStaffResumeExpired,
+  resolveDifyIdentity,
+  serializeWidgetMessage,
+} from "@/lib/widget-chat";
 
 test("isStaffResumeExpired: chưa từng có nhân viên trả lời thì luôn hết hạn", () => {
   assert.equal(isStaffResumeExpired(null, 24, new Date()), true);
@@ -29,6 +33,32 @@ test("isStaffResumeExpired: số giờ cấu hình nhỏ hơn vẫn tính đúng
   const now = new Date("2026-08-17T13:00:01Z");
   const lastStaffReplyAt = new Date("2026-08-17T12:00:00Z");
   assert.equal(isStaffResumeExpired(lastStaffReplyAt, 1, now), true);
+});
+
+test("resolveDifyIdentity: chưa có lead thì dùng sessionId, không kèm inputs", () => {
+  const result = resolveDifyIdentity(null, "s_abc", null);
+  assert.deepEqual(result, { user: "s_abc", inputs: {} });
+});
+
+test("resolveDifyIdentity: có lead và chưa có conversationId thì dùng SĐT + kèm inputs", () => {
+  const result = resolveDifyIdentity(
+    { fullName: "Nguyễn Văn A", phone: "0912345678" },
+    "s_abc",
+    null,
+  );
+  assert.deepEqual(result, {
+    user: "0912345678",
+    inputs: { customer_name: "Nguyễn Văn A", customer_phone: "0912345678" },
+  });
+});
+
+test("resolveDifyIdentity: có lead và đã có conversationId thì dùng SĐT nhưng không kèm inputs", () => {
+  const result = resolveDifyIdentity(
+    { fullName: "Nguyễn Văn A", phone: "0912345678" },
+    "s_abc",
+    "conv_123",
+  );
+  assert.deepEqual(result, { user: "0912345678", inputs: {} });
 });
 
 test("serializeWidgetMessage: chuyển Date thành ISO string", () => {

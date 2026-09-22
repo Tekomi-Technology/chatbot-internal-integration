@@ -8,7 +8,7 @@ import { hostnameFromHeader, isDomainAllowed } from "@/lib/domain";
 import { env } from "@/lib/env";
 import { prisma } from "@/lib/prisma";
 import { checkRateLimit, clientIpFrom } from "@/lib/rate-limit";
-import { isStaffResumeExpired } from "@/lib/widget-chat";
+import { isStaffResumeExpired, resolveDifyIdentity } from "@/lib/widget-chat";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -150,6 +150,17 @@ export async function POST(request: NextRequest) {
     });
   }
 
+  const lead = await prisma.lead.findUnique({
+    where: { tenantId_sessionId: { tenantId: tenant.id, sessionId: parsed.data.sessionId } },
+    select: { fullName: true, phone: true },
+  });
+
+  const identity = resolveDifyIdentity(
+    lead,
+    parsed.data.sessionId,
+    parsed.data.conversationId ?? null,
+  );
+
   const startedAt = Date.now();
   let result;
   try {
@@ -157,7 +168,8 @@ export async function POST(request: NextRequest) {
       baseUrl: tenant.difyApiBaseUrl,
       apiKey: decryptSecret(tenant.difyApiKeyEncrypted),
       query: parsed.data.message,
-      user: parsed.data.sessionId,
+      user: identity.user,
+      inputs: identity.inputs,
       conversationId: parsed.data.conversationId ?? null,
     });
   } catch (error) {
