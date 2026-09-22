@@ -624,12 +624,11 @@
       return values;
     }
 
-    function unlockComposer(fullName) {
+    function unlockComposer() {
       rememberLead();
       leadEl.remove();
       leadEl = null;
       panel.appendChild(composer);
-      addMessage("Cảm ơn " + fullName + "! Bạn cần tư vấn về vấn đề gì ạ?", "bot");
       input.focus();
     }
 
@@ -690,7 +689,7 @@
             );
             return;
           }
-          unlockComposer(fullName);
+          unlockComposer();
         })
         .catch(function (error) {
           console.error("[chatbot] Gửi thông tin liên hệ thất bại.", error);
